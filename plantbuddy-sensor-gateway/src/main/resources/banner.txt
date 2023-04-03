@@ -1,0 +1,1 @@
+PlantBuddy Sensor Gateway v${project.version}
