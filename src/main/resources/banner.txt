@@ -1,1 +1,0 @@
-PlantBuddy Server v${project.version}
