@@ -6,20 +6,400 @@ info:
     version: 1.0.0
 
 servers:
-    -   url: http://localhost:5000/v1
-        description: Local server
+    - url: http://localhost:5000/v1
+      description: Local server
 
 paths:
-    /hello:
+    /sensors:
         get:
-            summary: Returns hello world
-            description: Just a first endpoint
-            operationId: hello
+            summary: Returns all sensors
+            description: Returns all sensors.
+            operationId: getSensors
+
             responses:
-                '200':
-                    description: A string containing hello world
+                "200":
+                    description: An array of sensors
                     content:
-                        plain/text:
+                        application/json:
                             schema:
-                                type: string
-                                example: hello, world
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Sensor"
+
+    /sensors/{id}:
+        get:
+            summary: Returns a sensor
+            description: Returns a sensor.
+            operationId: getSensor
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the sensor
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: A sensor
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Sensor"
+
+                "404":
+                    description: Sensor not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Sensor not found"
+
+    /sensor-types:
+        get:
+            summary: Returns all sensor types
+            description: Returns all sensor types.
+            operationId: getSensorTypes
+
+            responses:
+                "200":
+                    description: An array of sensor types
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/SensorType"
+
+    /sensor-types/{id}:
+        get:
+            summary: Returns a sensor type
+            description: Returns a sensor type.
+            operationId: getSensorType
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the sensor type
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: A sensor type
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SensorType"
+
+                "404":
+                    description: Sensor type not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Sensor type not found"
+
+    /plants:
+        get:
+            summary: Returns all plants
+            description: Returns all plants.
+            operationId: getPlants
+
+            responses:
+                "200":
+                    description: An array of plants
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Plant"
+
+    /plants/{id}:
+        get:
+            summary: Returns a plant
+            description: Returns a plant.
+            operationId: getPlant
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the plant
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: A plant
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Plant"
+
+                "404":
+                    description: Plant not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Plant not found"
+
+    /plant-groups:
+        get:
+            summary: Returns all plant groups
+            description: Returns all plant groups.
+            operationId: getPlantGroups
+
+            responses:
+                "200":
+                    description: An array of plant groups
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/PlantGroup"
+
+    /plant-groups/{id}:
+        get:
+            summary: Returns a plant group
+            description: Returns a plant group.
+            operationId: getPlantGroup
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the plant group
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: A plant group
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PlantGroup"
+
+                "404":
+                    description: Plant group not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Plant group not found"
+
+    /plant-ql:
+        get:
+            summary: Returns plants based on a query
+            description: Returns plants based on a query.
+            operationId: getPlantsQL
+
+            parameters:
+                - name: query
+                  in: query
+                  description: Query to execute
+                  required: true
+
+                  schema:
+                      type: string
+
+            responses:
+                "200":
+                    description: An array of plants
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Plant"
+
+                "400":
+                    description: Invalid query
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid query"
+
+components:
+    schemas:
+        Sensor:
+            type: object
+            description: A sensor that collects data.
+
+            required:
+                - "id"
+                - "plant"
+                - "type"
+                - "interval"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the sensor.
+                    example: 1
+
+                plant:
+                    description: Plant the sensor monitors.
+                    $ref: "#/components/schemas/Plant"
+
+                type:
+                    description: Type of the sensor.
+                    $ref: "#/components/schemas/SensorType"
+
+                interval:
+                    type: integer
+                    description: Interval in seconds at which the sensor collects data.
+                    example: 50
+
+        Plant:
+            type: object
+            description: A plant.
+
+            required:
+                - "id"
+                - "group"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the plant.
+                    example: 1
+
+                group:
+                    description: Plant group of the plant.
+                    $ref: "#/components/schemas/PlantGroup"
+
+                additionalCareTips:
+                    type: array
+                    description: Optional additional care tips.
+
+                    items:
+                        type: string
+                        example: "Massage every morning"
+
+        PlantGroup:
+            type: object
+            description: A group of plants of the same type.
+
+            required:
+                - "id"
+                - "type"
+                - "ranges"
+
+            properties:
+                id:
+                    type: integer
+                    example: 1
+
+                type:
+                    type: string
+                    description: Type of the plant group.
+                    example: "Cactaceae"
+
+                description:
+                    type: string
+                    description: An optional description.
+                    example: ["The big one behind the door"]
+
+                careTips:
+                    type: array
+                    description: Optional care tips.
+
+                    items:
+                        type: string
+                        example:
+                            - "Play Mozart music every evening"
+                            - "Place in the sun"
+
+                ranges:
+                    type: array
+                    description: Ranges of values to be interpreted as normal for the sensors of the plant group.
+
+                    items:
+                        $ref: "#/components/schemas/SensorRange"
+
+        SensorRange:
+            type: object
+            description: Range of values to be interpreted as normal for a sensor.
+
+            required:
+                - "type"
+                - "min"
+                - "max"
+
+            properties:
+                type:
+                    description: Type of the sensor.
+                    $ref: "#/components/schemas/SensorType"
+
+                min:
+                    type: integer
+                    description: Minimum value of the range (inclusive).
+                    example: 20
+
+                max:
+                    type: integer
+                    description: Maximum value of the range (inclusive).
+                    example: 80
+
+        SensorType:
+            type: object
+            description: Type of sensor.
+
+            required:
+                - "name"
+                - "unit"
+
+            properties:
+                name:
+                    type: string
+                    description: Name of the sensor type.
+                    example: "humidity"
+
+                unit:
+                    type: string
+                    description: Unit of the sensor type.
+                    example: "percent"
+
+        PlantQL:
+            type: object
+            description: Plant Query Language result.
+
+            required:
+                - "query"
+                - "data"
+
+            properties:
+                query:
+                    type: string
+                    description: The query that was executed.
+                    example: 'Sensor.type="humidity" & Data.value > 50 & Plant.type="Cactaceae"'
+
+                data:
+                    type: array
+                    description: The result of the query.
+
+                    items:
+                        $ref: "#/components/schemas/Plant"
