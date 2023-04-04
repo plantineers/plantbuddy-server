@@ -1,4 +1,4 @@
-package de.dhbw.plantbuddy.server.sensor;
+package de.dhbw.plantbuddy.server;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
