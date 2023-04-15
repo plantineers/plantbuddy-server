@@ -10,13 +10,13 @@ import (
 
 func main() {
 
-	// Read configuration file and panic if it fails
-	config, err := config.ReadConfig()
+	// Read configuration file into a global variable and panic if it fails
+	err := config.InitConfig()
 	if err != nil {
 		panic(err)
 	}
 
 	http.HandleFunc("/v1/plant/", plant.PlantHandler)
 
-	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil))
+	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }

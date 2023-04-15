@@ -17,16 +17,18 @@ type Database struct {
 	DriverName string `json:"driver_name"`
 }
 
+// Holds the global configuration
+var PlantBuddyConfig Config
+
 // Reads the buddy.json file and returns a Config object
-func ReadConfig() (Config, error) {
+func InitConfig() error {
 	file, file_err := ioutil.ReadFile("buddy.json")
 	if file_err != nil {
-		return Config{}, file_err
+		return file_err
 	}
-	var config Config
-	json_err := json.Unmarshal(file, &config)
+	json_err := json.Unmarshal(file, &PlantBuddyConfig)
 	if json_err != nil {
-		return Config{}, json_err
+		return json_err
 	}
-	return config, nil
+	return nil
 }
