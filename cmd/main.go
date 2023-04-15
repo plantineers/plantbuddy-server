@@ -20,7 +20,12 @@ func main() {
 	}
 
 	http.HandleFunc("/v1/plant/", plant.PlantHandler)
+
+	http.HandleFunc("/v1/sensors", sensor.SensorsHandler)
 	http.HandleFunc("/v1/sensor/", sensor.SensorHandler)
+
+	http.HandleFunc("/v1/sensor-types", sensor.SensorTypesHandler)
+	http.HandleFunc("/v1/sensor-type/", sensor.SensorTypeHandler)
 
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }

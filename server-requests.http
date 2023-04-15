@@ -3,3 +3,12 @@ GET http://localhost:3333/v1/plant/1
 
 ### Get a single sensor.
 GET http://localhost:3333/v1/sensor/1
+
+### Get all sensor IDs
+GET http://localhost:3333/v1/sensors
+
+### Get a single sensor type.
+GET http://localhost:3333/v1/sensor-type/1
+
+### Get all sensor type IDs
+GET http://localhost:3333/v1/sensor-types
