@@ -17,6 +17,8 @@ func main() {
 
 	http.HandleFunc("/v1/plant/", plant.PlantHandler)
 	http.HandleFunc("/v1/plants", plant.PlantsHandler)
+	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
+	http.HandleFunc("/v1/plant-groups", plant.PlantGroupsHandler)
 
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }
