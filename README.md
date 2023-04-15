@@ -34,7 +34,8 @@ Please note that every commit message will be scanned on push and fails in case 
 ### Pull requests
 
 Pushing on `main` is forbidden (exceptions apply to [@yannickkirschen](https://github.com/yannickkirschen), as he is silly enough
-to deal with Git hell). Please create a pull request and wait for a review. When merging, squashing is enabled. That means, all commits
+to deal with Git hell. If he breaks the git history with a force push, he buys the team a shot in a bar of their choice).
+Please create a pull request and wait for a review. When merging, squashing is enabled. That means, all commits
 will result in a single commit having the title you provide when merging. Please double check this title, as it will be
 linted as well!
 
