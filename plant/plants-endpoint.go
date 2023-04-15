@@ -44,10 +44,10 @@ func getAllPlants() (*[]*model.Plant, error) {
 		return nil, err
 	}
 
-	plantRepository, err := NewRepository(session)
+	plantRepository, err := NewPlantRepository(session)
 	if err != nil {
 		return nil, err
 	}
 
-	return plantRepository.GetAllPlants()
+	return plantRepository.GetAll()
 }

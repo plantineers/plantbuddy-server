@@ -43,10 +43,10 @@ func getAllPlantGroups() (*[]*model.PlantGroup, error) {
 		return nil, err
 	}
 
-	plantGroupRepository, err := NewRepository(session)
+	repository, err := NewPlantGroupRepository(session)
 	if err != nil {
 		return nil, err
 	}
 
-	return plantGroupRepository.GetAllPlantGroups()
+	return repository.GetAll()
 }

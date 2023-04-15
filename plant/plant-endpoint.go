@@ -56,10 +56,10 @@ func getPlantById(id int64) (*model.Plant, error) {
 		return nil, err
 	}
 
-	repository, err := NewRepository(session)
+	repository, err := NewPlantRepository(session)
 	if err != nil {
 		return nil, err
 	}
 
-	return repository.GetPlantById(id)
+	return repository.GetById(id)
 }
