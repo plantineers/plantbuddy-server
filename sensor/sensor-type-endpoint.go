@@ -11,8 +11,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
-func SensorHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/sensor/")
+func SensorTypeHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/sensor-type/")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -21,22 +21,22 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		handleSensorGet(w, r, id)
+		handleSensorTypeGet(w, r, id)
 	}
 }
 
-func handleSensorGet(w http.ResponseWriter, r *http.Request, id int64) {
-	sensor, err := getSensorById(id)
+func handleSensorTypeGet(w http.ResponseWriter, r *http.Request, id int64) {
+	sensorType, err := getSensorTypeById(id)
 
 	switch err {
 	case sql.ErrNoRows:
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Sensor not found"))
+		w.Write([]byte("Sensor type not found"))
 	case nil:
-		b, err := json.Marshal(sensor)
+		b, err := json.Marshal(sensorType)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error converting sensor %d to JSON: %s", sensor.ID, err.Error())))
+			w.Write([]byte(fmt.Sprintf("Error converting sensor %s to JSON: %s", sensorType.Name, err.Error())))
 			return
 		}
 
@@ -48,7 +48,7 @@ func handleSensorGet(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 }
 
-func getSensorById(id int64) (*model.Sensor, error) {
+func getSensorTypeById(id int64) (*model.SensorType, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -57,7 +57,7 @@ func getSensorById(id int64) (*model.Sensor, error) {
 		return nil, err
 	}
 
-	repository, err := NewSensorRepository(session)
+	repository, err := NewSensorTypeRepository(session)
 	if err != nil {
 		return nil, err
 	}

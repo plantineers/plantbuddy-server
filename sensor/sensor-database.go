@@ -7,3 +7,9 @@ type SensorRepository interface {
 
 	GetAllIds() ([]int64, error)
 }
+
+type SensorTypeRepository interface {
+	GetById(id int64) (*model.SensorType, error)
+
+	GetAllIds() ([]int64, error)
+}

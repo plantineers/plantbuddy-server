@@ -69,11 +69,9 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: array
-                                items:
-                                    $ref: "#/components/schemas/SensorType"
+                                $ref: "#/components/schemas/SensorTypes"
 
-    /sensor-types/{id}:
+    /sensor-type/{id}:
         get:
             summary: Returns a sensor type
             description: Returns a sensor type.
@@ -401,6 +399,20 @@ components:
                     type: string
                     description: Unit of the sensor type.
                     example: "percent"
+
+        SensorTypes:
+            type: object
+            description: An array of sensor types.
+
+            required:
+                - "types"
+
+            properties:
+                types:
+                    type: array
+                    description: An array of sensor types.
+                    items:
+                        $ref: "#/components/schemas/SensorType"
 
         PlantQL:
             type: object
