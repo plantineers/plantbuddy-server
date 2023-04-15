@@ -121,3 +121,7 @@ this issue.
 
 *Example*: assume your path is `/v1/hello/123` and your prefix is `/v1/hello/`. Calling
 `PathParameterFilter` will result in `123` as a path parameter (`int64`).
+
+## Fun
+
+**Get number of lines of code:** `git ls-files | grep '\.go' | xargs wc -l`
