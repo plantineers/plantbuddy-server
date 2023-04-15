@@ -63,3 +63,29 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 
 	return &plant, nil
 }
+
+// Reads all plantIds from the database and returns them as a slice of plants.
+func (r *PlantSqliteRepository) GetAll() ([]*model.Plant, error) {
+	var plants []*model.Plant
+	rows, err := r.db.Query(`SELECT ID FROM PLANT;`)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	// Iterate over all rows and query the plant by its ID.
+	for rows.Next() {
+		var plantId int64
+		err = rows.Scan(&plantId)
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+		plant, err := r.GetById(plantId)
+		if err != nil {
+			return nil, err
+		}
+		plants = append(plants, plant)
+	}
+	return plants, nil
+}
