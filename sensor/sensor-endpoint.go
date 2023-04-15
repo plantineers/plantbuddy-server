@@ -20,18 +20,18 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		handleGet(w, r, id)
+		handleSensorGet(w, r, id)
 	}
 }
 
-func handleGet(w http.ResponseWriter, r *http.Request, id int64) {
+func handleSensorGet(w http.ResponseWriter, r *http.Request, id int64) {
 	sensor, err := getSensorById(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 	} else if sensor == nil {
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Plant not found"))
+		w.Write([]byte("Sensor not found"))
 	} else {
 		b, err := json.Marshal(sensor)
 		if err != nil {
