@@ -1,4 +1,3 @@
-// Author: Maximilian Floto, Yannick Kirschen
 package plant
 
 import (
@@ -12,8 +11,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
-func PlantHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
+func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant-group/")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -22,34 +21,34 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		handlePlantGet(w, r, id)
+		handlePlantGroupGet(w, r, id)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
-func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
-	plant, err := getPlantById(id)
+func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
+	plantGroup, err := getPlantGroupById(id)
+
 	switch err {
 	case sql.ErrNoRows:
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Plant not found"))
+		w.Write([]byte("Plant group not found"))
 	case nil:
-		b, err := json.Marshal(plant)
+		b, err := json.Marshal(plantGroup)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error converting plant %d to JSON: %s", plant.ID, err.Error())))
+			w.Write([]byte(fmt.Sprintf("Error converting plant group %d to JSON: %s", plantGroup.ID, err.Error())))
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
-
 	}
 }
 
-func getPlantById(id int64) (*model.Plant, error) {
+func getPlantGroupById(id int64) (*model.PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -58,7 +57,7 @@ func getPlantById(id int64) (*model.Plant, error) {
 		return nil, err
 	}
 
-	repository, err := NewPlantRepository(session)
+	repository, err := NewPlantGroupRepository(session)
 	if err != nil {
 		return nil, err
 	}
