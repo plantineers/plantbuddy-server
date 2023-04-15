@@ -20,7 +20,7 @@ type Database struct {
 // Holds the global configuration
 var PlantBuddyConfig Config
 
-// Reads the buddy.json file and returns a Config object
+// Reads the buddy.json file
 func InitConfig() error {
 	file, file_err := ioutil.ReadFile("buddy.json")
 	if file_err != nil {
