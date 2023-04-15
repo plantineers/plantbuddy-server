@@ -15,7 +15,7 @@ type SensorSqliteRepository struct {
 
 // NewRepository creates a new repository for sensors.
 // It will use the configured driver and data source from `buddy.json`
-func NewRepository(session *db.Session) (*SensorSqliteRepository, error) {
+func NewRepository(session *db.Session) (SensorRepository, error) {
 	if !session.IsOpen() {
 		return nil, errors.New("session is not open")
 	}
@@ -64,4 +64,25 @@ func (r *SensorSqliteRepository) GetById(id int64) (*model.Sensor, error) {
 	}
 
 	return &sensor, nil
+}
+
+func (r *SensorSqliteRepository) GetAllIds() ([]int64, error) {
+	var rows, err = r.db.Query(`SELECT ID FROM SENSOR;`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var ids []int64
+	for rows.Next() {
+		var id int64
+		err = rows.Scan(&id)
+		if err != nil {
+			rows.Close()
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }

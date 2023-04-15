@@ -24,6 +24,13 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func SensorsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		handleSensorsGet(w, r)
+	}
+}
+
 func handleSensorGet(w http.ResponseWriter, r *http.Request, id int64) {
 	sensor, err := getSensorById(id)
 	if err != nil {
@@ -37,6 +44,24 @@ func handleSensorGet(w http.ResponseWriter, r *http.Request, id int64) {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting sensor %d to JSON: %s", sensor.ID, err.Error())))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(b)
+	}
+}
+
+func handleSensorsGet(w http.ResponseWriter, r *http.Request) {
+	sensors, err := getSensors()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	} else {
+		b, err := json.Marshal(&model.Sensors{Sensors: sensors})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(fmt.Sprintf("Error converting sensors to JSON: %s", err.Error())))
 			return
 		}
 
@@ -60,4 +85,21 @@ func getSensorById(id int64) (*model.Sensor, error) {
 	}
 
 	return repository.GetById(id)
+}
+
+func getSensors() ([]int64, error) {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repository, err := NewRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetAllIds()
 }

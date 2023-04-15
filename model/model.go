@@ -21,6 +21,10 @@ type SensorType struct {
 	Unit string `json:"unit"`
 }
 
+type Sensors struct {
+	Sensors []int64 `json:"sensors"`
+}
+
 type Plant struct {
 	ID                 int64       `json:"id"`
 	Description        string      `json:"description"`
