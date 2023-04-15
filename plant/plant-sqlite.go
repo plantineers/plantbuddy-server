@@ -1,3 +1,4 @@
+// Author: Maximilian Floto, Yannick Kirschen
 package plant
 
 import (

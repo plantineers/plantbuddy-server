@@ -1,3 +1,6 @@
+// Reads the `buddy.json` file and stores the configuration in the global variable `PlantBuddyConfig`.
+//
+// Author: Maximilian Floto
 package config
 
 import (
