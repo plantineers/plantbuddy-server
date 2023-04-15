@@ -1,3 +1,6 @@
+// The main executable of the PlantBuddy server.
+//
+// Author: Maximilian Floto, Yannick Kirschen
 package main
 
 import (

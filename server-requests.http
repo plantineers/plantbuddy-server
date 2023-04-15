@@ -1,1 +1,2 @@
+# Get a single plant.
 GET http://localhost:3333/v1/plant/1

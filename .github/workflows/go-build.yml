@@ -33,7 +33,7 @@ jobs:
                   fi
 
             - name: Build
-              run: go build -v ./cmd/main.go
+              run: go build -v $(go list ./... | grep -v /vendor/)
 
             - name: Test
-              run: go test -v ./cmd/main.go
+              run: go test -v $(go list ./... | grep -v /vendor/)
