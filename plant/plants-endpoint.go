@@ -15,6 +15,10 @@ func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
+	handlePlantsGet(w, r)
+}
+
+func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	allPlants, err := getAllPlants()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
