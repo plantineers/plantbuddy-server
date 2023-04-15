@@ -1,14 +1,23 @@
 ### Get a single plant.
-GET http://localhost:3333/v1/plant/1
+GET http://localhost:3333/v1/plants
+
+### Get all plant IDs.
+GET http://localhost:3333/v1/plants
+
+### Get a single plant group.
+GET http://localhost:3333/v1/plant-group/1
+
+### Get all plant group IDs.
+GET http://localhost:3333/v1/plant-groups
 
 ### Get a single sensor.
 GET http://localhost:3333/v1/sensor/1
 
-### Get all sensor IDs
+### Get all sensor IDs.
 GET http://localhost:3333/v1/sensors
 
 ### Get a single sensor type.
 GET http://localhost:3333/v1/sensor-type/1
 
-### Get all sensor type IDs
+### Get all sensor type IDs.
 GET http://localhost:3333/v1/sensor-types
