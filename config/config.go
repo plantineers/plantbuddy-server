@@ -13,8 +13,8 @@ type Config struct {
 
 // Holds the database configuration
 type Database struct {
-	DataSource string `json:"data_source"`
-	DriverName string `json:"driver_name"`
+	DataSource string `json:"dataSource"`
+	DriverName string `json:"driverName"`
 }
 
 // Holds the global configuration

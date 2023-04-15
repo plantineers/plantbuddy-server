@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	// Read configuration file into a global variable and panic if it fails
 	err := config.InitConfig()
 	if err != nil {
