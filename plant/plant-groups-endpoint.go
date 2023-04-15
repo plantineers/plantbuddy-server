@@ -34,7 +34,7 @@ func handlePlantGroupsGet(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getAllPlantGroups() (*[]*model.PlantGroup, error) {
+func getAllPlantGroups() (*model.PlantGroups, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

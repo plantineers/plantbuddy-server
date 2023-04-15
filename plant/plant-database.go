@@ -9,5 +9,5 @@ type PlantRepository interface {
 
 type PlantGroupRepository interface {
 	GetById(id int64) (*model.PlantGroup, error)
-	GetAll() (*[]*model.PlantGroup, error)
+	GetAll() (*model.PlantGroups, error)
 }

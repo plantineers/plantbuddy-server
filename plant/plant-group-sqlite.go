@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
@@ -54,11 +53,11 @@ func (r *PlantGroupSqliteRepository) GetById(id int64) (*model.PlantGroup, error
 }
 
 // Reads all plantGroupIds from the database and returns them as a slice of plant groups.
-func (r *PlantGroupSqliteRepository) GetAll() (*[]*model.PlantGroup, error) {
-	var plantGroups []*model.PlantGroup
+func (r *PlantGroupSqliteRepository) GetAll() (*model.PlantGroups, error) {
+	var plantGroupIds []int64
 	rows, err := r.db.Query(`SELECT ID FROM PLANT_GROUP;`)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
 		return nil, err
 	}
 
@@ -67,14 +66,13 @@ func (r *PlantGroupSqliteRepository) GetAll() (*[]*model.PlantGroup, error) {
 		var plantGroupId int64
 		err = rows.Scan(&plantGroupId)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Print(err)
 			return nil, err
 		}
-		plantGroup, err := r.GetById(plantGroupId)
-		if err != nil {
-			return nil, err
-		}
-		plantGroups = append(plantGroups, plantGroup)
+		plantGroupIds = append(plantGroupIds, plantGroupId)
+	}
+	plantGroups := model.PlantGroups{
+		PlantGroups: plantGroupIds,
 	}
 	return &plantGroups, nil
 }
