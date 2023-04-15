@@ -2,34 +2,36 @@ package plant
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
-
+	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 )
 
 type PlantSqliteRepository struct {
-	db *sql.DB // TODO: make this a connection pool
+	db *sql.DB
 }
 
-func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
-	db, err := sql.Open("sqlite3", "./plantbuddy.sqlite")
-
-	if err != nil {
-		return nil, err
+// NewRepository creates a new repository for plants.
+// It will use the configured driver and data source from `buddy.json`
+func NewRepository(session *db.Session) (*PlantSqliteRepository, error) {
+	if !session.IsOpen() {
+		return nil, errors.New("session is not open")
 	}
 
-	r.db = db
+	return &PlantSqliteRepository{db: session.DB}, nil
+}
 
-	defer db.Close()
-
+// GetById returns a plant by its ID.
+// If the plant does not exist, it will return nil.
+func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 	var plantId int64
 	var plantDescription *string
 	var plantGroupId int64
 	var plantGroupName string
 	var plantGroupDescription *string
-	err = db.QueryRow(`
+	var err = r.db.QueryRow(`
     SELECT P.ID AS PLANT_ID,
         P.DESCRIPTION AS PLANT_DESCRIPTION,
         PG.ID AS PLANT_GROUP_ID,

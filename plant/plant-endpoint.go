@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
@@ -19,17 +20,19 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		plant, err := getPlantById(id)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(err.Error()))
-			return
-		} else if plant == nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("Plant not found"))
-			return
-		}
+		handleGet(w, r, id)
+	}
+}
 
+func handleGet(w http.ResponseWriter, r *http.Request, id int64) {
+	plant, err := getPlantById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	} else if plant == nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Plant not found"))
+	} else {
 		b, err := json.Marshal(plant)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -39,11 +42,22 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
-		return
 	}
 }
 
 func getPlantById(id int64) (*model.Plant, error) {
-	plantRepository := PlantSqliteRepository{}
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	plantRepository, err := NewRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
 	return plantRepository.GetById(id)
 }

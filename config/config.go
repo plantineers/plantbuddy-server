@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 )
 
 // Holds the configuration
@@ -22,13 +22,13 @@ var PlantBuddyConfig Config
 
 // Reads the buddy.json file
 func InitConfig() error {
-	file, file_err := ioutil.ReadFile("buddy.json")
-	if file_err != nil {
-		return file_err
+	file, fileErr := os.ReadFile("buddy.json")
+	if fileErr != nil {
+		return fileErr
 	}
-	json_err := json.Unmarshal(file, &PlantBuddyConfig)
-	if json_err != nil {
-		return json_err
+	jsonErr := json.Unmarshal(file, &PlantBuddyConfig)
+	if jsonErr != nil {
+		return jsonErr
 	}
 	return nil
 }
