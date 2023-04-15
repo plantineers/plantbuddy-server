@@ -1,8 +1,11 @@
+// Package model contains the data model for the application`s REST interface.
+//
+// Author: Maximilian Floto, Yannick Kirschen
 package model
 
 type Sensor struct {
 	ID         int64       `json:"id"`
-	Plant      *Plant      `json:"plant"`
+	Plant      int64       `json:"plant"`
 	SensorType *SensorType `json:"sensorType"`
 	Interval   int64       `json:"interval"`
 }
@@ -11,6 +14,19 @@ type SensorRange struct {
 	SensorType *SensorType `json:"sensorType"`
 	Min        float64     `json:"min"`
 	Max        float64     `json:"max"`
+}
+
+type SensorType struct {
+	Name string `json:"name"`
+	Unit string `json:"unit"`
+}
+
+type Sensors struct {
+	Sensors []int64 `json:"sensors"`
+}
+
+type SensorTypes struct {
+	SensorTypes []int64 `json:"sensorTypes"`
 }
 
 type Plant struct {

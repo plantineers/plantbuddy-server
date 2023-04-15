@@ -1,3 +1,4 @@
+// Author: Maximilian Floto, Yannick Kirschen
 package plant
 
 import (
@@ -39,7 +40,12 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
         PG.NAME AS PLANT_GROUP_NAME,
         PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION FROM PLANT P
     LEFT JOIN PLANT_GROUP PG ON P.ID = PG.ID
-        WHERE PLANT_ID = ?;`, id).Scan(&plantId, &plantDescription, &plantGroupId, &plantGroupName, &plantGroupDescription)
+        WHERE PLANT_ID = ?;`, id).Scan(
+		&plantId,
+		&plantDescription,
+		&plantGroupId,
+		&plantGroupName,
+		&plantGroupDescription)
 
 	if err != nil {
 		fmt.Print(err)

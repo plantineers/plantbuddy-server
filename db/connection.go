@@ -1,4 +1,6 @@
-// Package db provides functions to connect to a database.
+// Package db provides a session to manage the database connection.
+//
+// Author: Yannick Kirschen
 package db
 
 import (
