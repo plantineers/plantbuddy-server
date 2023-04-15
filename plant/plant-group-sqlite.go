@@ -3,6 +3,7 @@ package plant
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/plantineers/plantbuddy-server/db"
@@ -35,7 +36,8 @@ func (r *PlantGroupSqliteRepository) GetById(id int64) (*model.PlantGroup, error
     WHERE PG.ID = ?;`, id).Scan(&plantGroupId, &plantGroupName, &plantGroupDescription)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print(err)
+		return nil, err
 	}
 
 	if plantGroupDescription == nil {

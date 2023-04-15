@@ -1,6 +1,7 @@
 package plant
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -28,22 +29,22 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 
 func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	plant, err := getPlantById(id)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-	} else if plant == nil {
+	switch err {
+	case sql.ErrNoRows:
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Plant not found"))
-	} else {
+	case nil:
 		b, err := json.Marshal(plant)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting plant %d to JSON: %s", plant.ID, err.Error())))
-			return
 		}
-
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+
 	}
 }
 

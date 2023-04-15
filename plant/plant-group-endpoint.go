@@ -1,6 +1,7 @@
 package plant
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -28,22 +29,22 @@ func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 
 func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
 	plantGroup, err := getPlantGroupById(id)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-	} else if plantGroup == nil {
+
+	switch err {
+	case sql.ErrNoRows:
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Plant group not found"))
-	} else {
+	case nil:
 		b, err := json.Marshal(plantGroup)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting plant group %d to JSON: %s", plantGroup.ID, err.Error())))
-			return
 		}
-
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 	}
 }
 
