@@ -51,8 +51,3 @@ type PlantGroup struct {
 type PlantGroups struct {
 	PlantGroups []int64 `json:"plantGroups"`
 }
-
-type SensorType struct {
-	Name string `json:"name"`
-	Unit string `json:"unit"`
-}
