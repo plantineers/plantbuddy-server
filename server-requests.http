@@ -1,5 +1,5 @@
 ### Get a single plant.
-GET http://localhost:3333/v1/plants
+GET http://localhost:3333/v1/plant/1
 
 ### Get all plant IDs.
 GET http://localhost:3333/v1/plants

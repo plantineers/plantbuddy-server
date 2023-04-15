@@ -3,7 +3,6 @@ package plant
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
@@ -31,11 +30,11 @@ func (r *PlantGroupSqliteRepository) GetById(id int64) (*model.PlantGroup, error
 	err := r.db.QueryRow(`
     SELECT PG.ID AS PLANT_GROUP_ID,
         PG.NAME AS PLANT_GROUP_NAME,
-        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION FROM PLANT_GROUP PG
+        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION
+        FROM PLANT_GROUP PG
     WHERE PG.ID = ?;`, id).Scan(&plantGroupId, &plantGroupName, &plantGroupDescription)
 
 	if err != nil {
-		fmt.Print(err)
 		return nil, err
 	}
 
@@ -57,7 +56,6 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 	var plantGroupIds []int64
 	rows, err := r.db.Query(`SELECT ID FROM PLANT_GROUP;`)
 	if err != nil {
-		fmt.Print(err)
 		return nil, err
 	}
 
@@ -66,7 +64,6 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 		var plantGroupId int64
 		err = rows.Scan(&plantGroupId)
 		if err != nil {
-			fmt.Print(err)
 			return nil, err
 		}
 		plantGroupIds = append(plantGroupIds, plantGroupId)

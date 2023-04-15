@@ -4,7 +4,6 @@ package plant
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/plantineers/plantbuddy-server/db"
@@ -38,7 +37,8 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
         P.DESCRIPTION AS PLANT_DESCRIPTION,
         PG.ID AS PLANT_GROUP_ID,
         PG.NAME AS PLANT_GROUP_NAME,
-        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION FROM PLANT P
+        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION
+        FROM PLANT P
     LEFT JOIN PLANT_GROUP PG ON P.ID = PG.ID
         WHERE PLANT_ID = ?;`, id).Scan(
 		&plantId,
@@ -48,7 +48,6 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 		&plantGroupDescription)
 
 	if err != nil {
-		fmt.Print(err)
 		return nil, err
 	}
 
