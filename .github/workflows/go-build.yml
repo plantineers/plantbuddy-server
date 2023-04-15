@@ -1,0 +1,39 @@
+name: Go Build
+
+on:
+    push:
+        branches: ["**"]
+    pull_request:
+        branches: ["**"]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.20"
+                  check-latest: true
+
+            - name: Version
+              run: go version
+
+            - name: Format
+              run: |
+                  OUT="$(go fmt $(go list ./... | grep -v /vendor/) 2>&1)"
+                  if [ -n "$OUT" ]; then
+                      echo "The following files are not correctly formatted"
+                      echo "${OUT}"
+                      exit 1
+                  fi
+
+            - name: Build
+              run: go build -v ./cmd/main.go
+
+            - name: Test
+              run: go test -v ./cmd/main.go
