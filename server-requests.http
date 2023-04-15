@@ -1,1 +1,1 @@
-GET localhost:8080/v1/hello
+GET http://localhost:3333/v1/plant/1
