@@ -25,7 +25,7 @@ jobs:
 
             - name: Format
               run: |
-                  OUT="$(go fmt github.com/$GITHUB_REPOSITORY/... 2>&1)"
+                  OUT="$(go fmt $(go list ./... | grep -v /vendor/) 2>&1)"
                   if [ -n "$OUT" ]; then
                       echo "The following files are not correctly formatted"
                       echo "${OUT}"

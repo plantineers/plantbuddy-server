@@ -2,17 +2,13 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"net/http"
+
+	"github.com/plantineers/plantbuddy-server/plant"
 )
 
 func main() {
-	http.HandleFunc("/v1/hello", getHello)
+	http.HandleFunc("/v1/plant/", plant.PlantHandler)
 
 	fmt.Println(http.ListenAndServe(":3333", nil))
-}
-
-func getHello(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "text/plain")
-	io.WriteString(w, "hello, world\n")
 }
