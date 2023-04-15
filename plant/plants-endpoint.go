@@ -35,7 +35,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getAllPlants() (*[]*model.Plant, error) {
+func getAllPlants() (*model.Plants, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

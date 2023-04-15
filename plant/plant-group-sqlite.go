@@ -61,7 +61,7 @@ func (r *PlantGroupSqliteRepository) GetAll() (*model.PlantGroups, error) {
 		return nil, err
 	}
 
-	// Iterate over all rows and query the plant group by its ID.
+	// Iterate over all rows and query the ID of the plant group..
 	for rows.Next() {
 		var plantGroupId int64
 		err = rows.Scan(&plantGroupId)
