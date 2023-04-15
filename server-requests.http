@@ -1,2 +1,5 @@
-# Get a single plant.
+### Get a single plant.
 GET http://localhost:3333/v1/plant/1
+
+### Get a single sensor.
+GET http://localhost:3333/v1/sensor/1

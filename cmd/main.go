@@ -9,6 +9,7 @@ import (
 
 	"github.com/plantineers/plantbuddy-server/config"
 	"github.com/plantineers/plantbuddy-server/plant"
+	"github.com/plantineers/plantbuddy-server/sensor"
 )
 
 func main() {
@@ -19,6 +20,7 @@ func main() {
 	}
 
 	http.HandleFunc("/v1/plant/", plant.PlantHandler)
+	http.HandleFunc("/v1/sensor/", sensor.SensorHandler)
 
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }

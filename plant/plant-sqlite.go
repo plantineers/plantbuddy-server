@@ -37,8 +37,15 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
         P.DESCRIPTION AS PLANT_DESCRIPTION,
         PG.ID AS PLANT_GROUP_ID,
         PG.NAME AS PLANT_GROUP_NAME,
-        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION FROM PLANT P
-    LEFT JOIN PLANT_GROUP PG on P.ID = PG.ID;`).Scan(&plantId, &plantDescription, &plantGroupId, &plantGroupName, &plantGroupDescription)
+        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION
+    FROM PLANT P
+    LEFT JOIN PLANT_GROUP PG on P.ID = PG.ID;`).Scan(
+		&plantId,
+		&plantDescription,
+		&plantGroupId,
+		&plantGroupName,
+		&plantGroupDescription,
+	)
 
 	if err != nil {
 		log.Fatal(err)
