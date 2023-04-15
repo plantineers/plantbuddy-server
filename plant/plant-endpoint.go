@@ -21,6 +21,8 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handlePlantGet(w, r, id)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 

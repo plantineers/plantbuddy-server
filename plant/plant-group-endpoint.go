@@ -21,6 +21,8 @@ func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handlePlantGroupGet(w, r, id)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
