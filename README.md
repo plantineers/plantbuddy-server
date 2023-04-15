@@ -50,6 +50,13 @@ linted as well!
 - `plant`: business logic for working with plants
 - `utils`: utility functions (see [utils](#utils))
 
+### Other directories or files
+
+- `/docs/sql`: SQL scripts for development
+- `auth-proposal.md`: proposal for authentication and authorization
+- `plantbuddy.sqlite`: the database used for development
+- `server-requests.http`: example requests for the API
+
 ## Configuration
 
 The configuration file `buddy.json` is located in the root directory of the project. Properties

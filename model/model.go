@@ -5,7 +5,7 @@ package model
 
 type Sensor struct {
 	ID         int64       `json:"id"`
-	Plant      *Plant      `json:"plant"`
+	Plant      int64       `json:"plant"`
 	SensorType *SensorType `json:"sensorType"`
 	Interval   int64       `json:"interval"`
 }
@@ -14,6 +14,11 @@ type SensorRange struct {
 	SensorType *SensorType `json:"sensorType"`
 	Min        float64     `json:"min"`
 	Max        float64     `json:"max"`
+}
+
+type SensorType struct {
+	Name string `json:"name"`
+	Unit string `json:"unit"`
 }
 
 type Plant struct {
@@ -29,9 +34,4 @@ type PlantGroup struct {
 	Description string       `json:"description"`
 	CareTips    []string     `json:"careTips"`
 	SensorRange *SensorRange `json:"sensorRange"`
-}
-
-type SensorType struct {
-	Name string `json:"name"`
-	Unit string `json:"unit"`
 }

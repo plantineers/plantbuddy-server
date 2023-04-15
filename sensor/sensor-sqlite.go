@@ -1,0 +1,67 @@
+package sensor
+
+import (
+	"database/sql"
+	"errors"
+	"log"
+
+	"github.com/plantineers/plantbuddy-server/db"
+	"github.com/plantineers/plantbuddy-server/model"
+)
+
+type SensorSqliteRepository struct {
+	db *sql.DB
+}
+
+// NewRepository creates a new repository for sensors.
+// It will use the configured driver and data source from `buddy.json`
+func NewRepository(session *db.Session) (*SensorSqliteRepository, error) {
+	if !session.IsOpen() {
+		return nil, errors.New("session is not open")
+	}
+
+	return &SensorSqliteRepository{db: session.DB}, nil
+}
+
+// GetById returns a sensor by its ID.
+// If the sensor does not exist, it will return nil.
+func (r *SensorSqliteRepository) GetById(id int64) (*model.Sensor, error) {
+	var sensorId int64
+	var plantId int64
+	var interval int64
+	var sensorTypeId int64
+	var sensorTypeName string
+	var sensorTypeUnit string
+	var err = r.db.QueryRow(`
+    SELECT S.ID AS SENSOR_ID,
+       S.PLANT AS PLANT_ID,
+       S.INTERVAL AS INTERVAL,
+       ST.ID AS SENSOR_TYPE_ID,
+       ST.NAME AS SENSOR_TYPE_NAME,
+       ST.UNIT AS SENSOR_TYPE_UNIT
+    FROM SENSOR S
+    LEFT JOIN SENSOR_TYPE ST;`).Scan(
+		&sensorId,
+		&plantId,
+		&interval,
+		&sensorTypeId,
+		&sensorTypeName,
+		&sensorTypeUnit,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var sensor = model.Sensor{
+		ID:       sensorId,
+		Plant:    plantId,
+		Interval: interval,
+		SensorType: &model.SensorType{
+			Name: sensorTypeName,
+			Unit: sensorTypeUnit,
+		},
+	}
+
+	return &sensor, nil
+}
