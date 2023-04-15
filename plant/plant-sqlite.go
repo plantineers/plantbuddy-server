@@ -68,7 +68,7 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 }
 
 // Reads all plantIds from the database and returns them as a slice of plants.
-func (r *PlantSqliteRepository) GetAll() (*model.Plants, error) {
+func (r *PlantSqliteRepository) GetAll() ([]int64, error) {
 	var plantIds []int64
 	rows, err := r.db.Query(`SELECT ID FROM PLANT;`)
 	if err != nil {
@@ -86,8 +86,6 @@ func (r *PlantSqliteRepository) GetAll() (*model.Plants, error) {
 		}
 		plantIds = append(plantIds, plantId)
 	}
-	plants := model.Plants{
-		Plants: plantIds,
-	}
-	return &plants, nil
+
+	return plantIds, nil
 }

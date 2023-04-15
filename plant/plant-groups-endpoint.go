@@ -48,5 +48,7 @@ func getAllPlantGroups() (*model.PlantGroups, error) {
 		return nil, err
 	}
 
-	return repository.GetAll()
+	plantGroupIds, err := repository.GetAll()
+
+	return &model.PlantGroups{PlantGroups: plantGroupIds}, nil
 }

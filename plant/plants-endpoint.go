@@ -49,5 +49,7 @@ func getAllPlants() (*model.Plants, error) {
 		return nil, err
 	}
 
-	return plantRepository.GetAll()
+	plantIds, err := plantRepository.GetAll()
+
+	return &model.Plants{Plants: plantIds}, nil
 }
