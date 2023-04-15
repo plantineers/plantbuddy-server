@@ -23,8 +23,6 @@ func NewSensorRepository(session *db.Session) (SensorRepository, error) {
 	return &SensorSqliteRepository{db: session.DB}, nil
 }
 
-// GetById returns a sensor by its ID.
-// If the sensor does not exist, it will return nil.
 func (r *SensorSqliteRepository) GetById(id int64) (*model.Sensor, error) {
 	var sensorId int64
 	var plantId int64
