@@ -1,7 +1,7 @@
 {
-    "database" : {
-        "dataSource" : "plantbuddy.sqlite",
-        "driverName" : "SQLite"
+    "database": {
+        "driverName": "sqlite3",
+        "dataSource": "plantbuddy.sqlite"
     },
-    "port" : 3333
+    "port": 3333
 }
