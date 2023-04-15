@@ -17,12 +17,12 @@ func SensorTypesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSensorTypesGet(w http.ResponseWriter, r *http.Request) {
-	sensors, err := getSensorTypes()
+	sensorTypes, err := getSensorTypes()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 	} else {
-		b, err := json.Marshal(&model.Sensors{Sensors: sensors})
+		b, err := json.Marshal(&model.SensorTypes{SensorTypes: sensorTypes})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting sensors to JSON: %s", err.Error())))

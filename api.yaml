@@ -59,13 +59,13 @@ paths:
 
     /sensor-types:
         get:
-            summary: Returns all sensor types
-            description: Returns all sensor types.
+            summary: Returns all sensor type IDs
+            description: Returns all sensor type IDs.
             operationId: getSensorTypes
 
             responses:
                 "200":
-                    description: An array of sensor types
+                    description: An array of sensor type IDs
                     content:
                         application/json:
                             schema:
@@ -253,7 +253,7 @@ components:
                     description: An array of sensor IDs.
                     items:
                         type: integer
-                        example: 1
+                        example: [1]
 
         Sensor:
             type: object
@@ -402,7 +402,7 @@ components:
 
         SensorTypes:
             type: object
-            description: An array of sensor types.
+            description: An array of sensor type IDs.
 
             required:
                 - "types"
@@ -410,9 +410,10 @@ components:
             properties:
                 types:
                     type: array
-                    description: An array of sensor types.
+                    description: An array of sensor type IDs.
                     items:
-                        $ref: "#/components/schemas/SensorType"
+                        type: integer
+                        example: [1]
 
         PlantQL:
             type: object
