@@ -297,7 +297,7 @@ components:
 
                     items:
                         type: string
-                        example: "Massage every morning"
+                        example: ["Massage every morning"]
 
         PlantGroup:
             type: object
@@ -313,7 +313,7 @@ components:
                     type: integer
                     example: 1
 
-                type:
+                name:
                     type: string
                     description: Type of the plant group.
                     example: "Cactaceae"
@@ -321,7 +321,7 @@ components:
                 description:
                     type: string
                     description: An optional description.
-                    example: ["The big one behind the door"]
+                    example: "The big one behind the door"
 
                 careTips:
                     type: array
@@ -353,6 +353,11 @@ components:
                 type:
                     description: Type of the sensor.
                     $ref: "#/components/schemas/SensorType"
+
+                unit:
+                    type: string
+                    description: Unit of the sensor data.
+                    example: "percent"
 
                 min:
                     type: integer
