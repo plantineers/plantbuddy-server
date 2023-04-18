@@ -8,10 +8,13 @@ import (
 
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/plant"
 )
 
 type SensorSqliteRepository struct {
-	db *sql.DB
+	db                   *sql.DB
+	sensorTypeRepository SensorTypeRepository
+	plantRepository      plant.PlantRepository
 }
 
 // NewSensorRepository creates a new repository for sensors.
@@ -21,7 +24,17 @@ func NewSensorRepository(session *db.Session) (SensorRepository, error) {
 		return nil, errors.New("session is not open")
 	}
 
-	return &SensorSqliteRepository{db: session.DB}, nil
+	sensorTypeRepository, err := NewSensorTypeRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	plantRepository, err := plant.NewPlantRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SensorSqliteRepository{db: session.DB, sensorTypeRepository: sensorTypeRepository, plantRepository: plantRepository}, nil
 }
 
 func (r *SensorSqliteRepository) GetById(id int64) (*model.Sensor, error) {
@@ -91,15 +104,17 @@ func (r *SensorSqliteRepository) Create(sensor *sensorChange) (*model.Sensor, er
 
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	if r.db.QueryRow(`SELECT ID FROM SENSOR_TYPE WHERE ID = ?;`, sensor.SensorType).Scan(&sensor.SensorType) != nil {
+	_, err := r.sensorTypeRepository.GetById(sensor.SensorType)
+	if err != nil {
 		return nil, errors.New("Sensor type does not exist")
 	}
 
-	if r.db.QueryRow(`SELECT ID FROM PLANT WHERE ID = ?;`, sensor.Plant).Scan(&sensor.Plant) != nil {
+	_, err = r.plantRepository.GetById(sensor.Plant)
+	if err != nil {
 		return nil, errors.New("Plant does not exist")
 	}
 
-	var statement, err = r.db.Prepare(`
+	statement, err := r.db.Prepare(`
     INSERT INTO SENSOR (PLANT, TYPE, INTERVAL)
     VALUES (?, ?, ?);`)
 	defer statement.Close()
