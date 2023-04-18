@@ -1,3 +1,3 @@
 FROM scratch
-COPY app /
+COPY /home/runner/work/plantineers/plantbuddy-server/app /
 CMD ["/app"]
