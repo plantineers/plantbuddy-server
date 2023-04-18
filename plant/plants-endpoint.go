@@ -19,7 +19,11 @@ func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
-	allPlants, err := getAllPlants()
+	filter := &PlantsFilter{
+		PlantGroupId: r.URL.Query().Get("plantGroupId"),
+	}
+
+	allPlants, err := getAllPlants(filter)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("Error getting all plants: %s", err.Error())))
@@ -35,7 +39,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getAllPlants() (*model.Plants, error) {
+func getAllPlants(filter *PlantsFilter) (*model.Plants, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -49,7 +53,7 @@ func getAllPlants() (*model.Plants, error) {
 		return nil, err
 	}
 
-	plantIds, err := plantRepository.GetAll()
+	plantIds, err := plantRepository.GetAll(filter)
 
 	return &model.Plants{Plants: plantIds}, nil
 }

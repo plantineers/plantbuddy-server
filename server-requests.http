@@ -4,6 +4,9 @@ GET http://localhost:3333/v1/plant/1
 ### Get all plant IDs.
 GET http://localhost:3333/v1/plants
 
+###
+GET http://localhost:3333/v1/plants?plantGroupId=1
+
 ### Get a single plant group.
 GET http://localhost:3333/v1/plant-group/1
 

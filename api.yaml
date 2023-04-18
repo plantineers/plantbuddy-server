@@ -110,6 +110,14 @@ paths:
             description: Returns all plants.
             operationId: getPlants
 
+            parameters:
+                - name: plantGroupId
+                  in: query
+                  description: ID of the plant
+                  required: false
+                  schema:
+                      type: integer
+
             responses:
                 "200":
                     description: An array of plants
