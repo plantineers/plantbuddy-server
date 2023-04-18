@@ -68,14 +68,7 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.
 }
 
 func (r *SensorDataSqliteRepository) Save(data *model.SensorData) error {
-	statement, err := r.db.Prepare("INSERT INTO SENSOR_DATA (SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?)")
-	if err != nil {
-		return err
-	}
-	defer statement.Close()
-
 	tx, _ := r.db.BeginTx(context.Background(), nil)
-	defer tx.Rollback()
 
 	sensor, err := r.sensorRepository.GetById(data.Sensor)
 	if err == sql.ErrNoRows {
@@ -84,8 +77,15 @@ func (r *SensorDataSqliteRepository) Save(data *model.SensorData) error {
 		return err
 	}
 
+	statement, err := r.db.Prepare("INSERT INTO SENSOR_DATA (SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
 	res, err := statement.Exec(sensor.ID, data.Value, data.Timestamp)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
