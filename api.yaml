@@ -373,7 +373,6 @@ components:
                     description: Interval in seconds at which the sensor collects data.
                     example: 50
 
-        #TODO: rename and change description
         SensorChange:
             type: object
             description: A request for a new sensor.
