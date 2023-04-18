@@ -1,6 +1,7 @@
 package sensor
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"log"
@@ -88,6 +89,8 @@ func (r *SensorSqliteRepository) GetAllIds() ([]int64, error) {
 
 func (r *SensorSqliteRepository) Create(sensor *sensorChange) (*model.Sensor, error) {
 
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
 	if r.db.QueryRow(`SELECT ID FROM SENSOR_TYPE WHERE ID = ?;`, sensor.SensorType).Scan(&sensor.SensorType) != nil {
 		return nil, errors.New("Sensor type does not exist")
 	}
@@ -112,11 +115,17 @@ func (r *SensorSqliteRepository) Create(sensor *sensorChange) (*model.Sensor, er
 	)
 
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
 	id, _ := result.LastInsertId()
 	createdSensor, _ := r.GetById(id)
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
 
 	return createdSensor, err
 }
