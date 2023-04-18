@@ -24,6 +24,39 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/SensorIds"
 
+    /sensor:
+        post:
+            summary: Creates a new sensor
+            description: Creates a new sensor.
+            operationId: createSensor
+
+            requestBody:
+                description: Sensor to create.
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/SensorPost"
+
+            responses:
+                "201":
+                    description: Sensor created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Sensor"
+
+                "400":
+                    description: Invalid sensor
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid sensor"
+
     /sensor/{id}:
         get:
             summary: Returns a sensor
@@ -283,6 +316,31 @@ components:
                 type:
                     description: Type of the sensor.
                     $ref: "#/components/schemas/SensorType"
+
+                interval:
+                    type: integer
+                    description: Interval in seconds at which the sensor collects data.
+                    example: 50
+
+        SensorPost:
+            type: object
+            description: A request for a new sensor.
+
+            required:
+                - "plant"
+                - "type"
+                - "interval"
+
+            properties:
+                plant:
+                    type: integer
+                    description: ID of the Plant the sensor monitors.
+                    example: 1
+
+                type:
+                    description: ID of sensor type.
+                    type: integer
+                    example: 1
 
                 interval:
                     type: integer
