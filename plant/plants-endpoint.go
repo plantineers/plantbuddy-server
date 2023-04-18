@@ -54,6 +54,5 @@ func getAllPlants(filter *PlantsFilter) (*model.Plants, error) {
 	}
 
 	plantIds, err := plantRepository.GetAll(filter)
-
-	return &model.Plants{Plants: plantIds}, nil
+	return &model.Plants{Plants: plantIds}, err
 }
