@@ -10,7 +10,11 @@ type SensorRepository interface {
 	// GetAllIds returns all sensor IDs.
 	GetAllIds() ([]int64, error)
 
+	// Create creates a new sensor and returns it.
 	Create(*model.SensorPost) (*model.Sensor, error)
+
+	// Update updates an existing sensor and returns it.
+	Update(*model.SensorPost, int64) (*model.Sensor, error)
 }
 
 type SensorTypeRepository interface {

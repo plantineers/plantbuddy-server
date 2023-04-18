@@ -120,3 +120,32 @@ func (r *SensorSqliteRepository) Create(sensor *model.SensorPost) (*model.Sensor
 
 	return createdSensor, err
 }
+
+func (r *SensorSqliteRepository) Update(sensor *model.SensorPost, id int64) (*model.Sensor, error) {
+	var statement, err = r.db.Prepare(`
+    UPDATE SENSOR
+    SET PLANT = ?,
+        TYPE = ?,
+        INTERVAL = ?
+    WHERE ID = ?;`)
+	defer statement.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = statement.Exec(
+		sensor.Plant,
+		sensor.SensorType,
+		sensor.Interval,
+		id,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	updatedSensor, _ := r.GetById(id)
+
+	return updatedSensor, err
+}
