@@ -87,6 +87,15 @@ func (r *SensorSqliteRepository) GetAllIds() ([]int64, error) {
 }
 
 func (r *SensorSqliteRepository) Create(sensor *model.SensorPost) (*model.Sensor, error) {
+
+	if r.db.QueryRow(`SELECT ID FROM SENSOR_TYPE WHERE ID = ?;`, sensor.SensorType).Scan(&sensor.SensorType) != nil {
+		return nil, errors.New("Sensor type does not exist")
+	}
+
+	if r.db.QueryRow(`SELECT ID FROM PLANT WHERE ID = ?;`, sensor.Plant).Scan(&sensor.Plant) != nil {
+		return nil, errors.New("Plant does not exist")
+	}
+
 	var statement, err = r.db.Prepare(`
     INSERT INTO SENSOR (PLANT, TYPE, INTERVAL)
     VALUES (?, ?, ?);`)
