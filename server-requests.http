@@ -27,7 +27,7 @@ GET http://localhost:3333/v1/plant-group/1
 GET http://localhost:3333/v1/plant-groups
 
 ### Get a single sensor.
-GET http://localhost:3333/v1/sensor/1
+GET http://localhost:3333/v1/sensor/2
 
 ### Get all sensor IDs.
 GET http://localhost:3333/v1/sensors
@@ -37,3 +37,26 @@ GET http://localhost:3333/v1/sensor-type/1
 
 ### Get all sensor type IDs.
 GET http://localhost:3333/v1/sensor-types
+
+### Create a new sensor
+POST http://localhost:3333/v1/sensor
+Content-Type: application/json
+
+{
+  "interval": 1337,
+  "sensorType": 1,
+  "plant": 1
+}
+
+### Update a sensor
+PUT http://localhost:3333/v1/sensor/1
+Content-Type: application/json
+
+{
+  "interval": 1338,
+  "sensorType": 2,
+  "plant": 1
+}
+
+### Delete a sensor
+DELETE http://localhost:3333/v1/sensor/2
