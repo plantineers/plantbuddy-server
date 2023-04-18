@@ -1,7 +1,7 @@
 # PlantBuddy Server
 
 [![Lint commit message](https://github.com/plantineers/plantbuddy-server/actions/workflows/commit-lint.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/commit-lint.yml)
-[![Build & Unit Tests](https://github.com/plantineers/plantbuddy-server/actions/workflows/go-build.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go-build.yml)
+[![Go Workflow](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml)
 [![GitHub release](https://img.shields.io/github/release/plantineers/plantbuddy-server.svg)](https://github.com/plantineers/plantbuddy-server/releases/)
 
 ## Usage
