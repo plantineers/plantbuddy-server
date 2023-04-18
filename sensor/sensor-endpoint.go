@@ -11,6 +11,12 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+type sensorChange struct {
+	Plant      int64 `json:"plant"`
+	SensorType int64 `json:"sensorType"`
+	Interval   int64 `json:"interval"`
+}
+
 func SensorHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/sensor/")
 	if err != nil {
@@ -70,7 +76,7 @@ func getSensorById(id int64) (*model.Sensor, error) {
 }
 
 func handleSensorPut(w http.ResponseWriter, r *http.Request, id int64) {
-	var sensor model.SensorPost
+	var sensor sensorChange
 	err := json.NewDecoder(r.Body).Decode(&sensor)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -100,7 +106,7 @@ func handleSensorPut(w http.ResponseWriter, r *http.Request, id int64) {
 
 }
 
-func updateSensor(sensor *model.SensorPost, id int64) (*model.Sensor, error) {
+func updateSensor(sensor *sensorChange, id int64) (*model.Sensor, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -158,7 +164,7 @@ func SensorCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSensorPost(w http.ResponseWriter, r *http.Request) {
-	var sensor model.SensorPost
+	var sensor sensorChange
 	err := json.NewDecoder(r.Body).Decode(&sensor)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -178,7 +184,7 @@ func handleSensorPost(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(b))
 }
 
-func createSensor(sensor *model.SensorPost) (*model.Sensor, error) {
+func createSensor(sensor *sensorChange) (*model.Sensor, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

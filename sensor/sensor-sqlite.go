@@ -86,7 +86,7 @@ func (r *SensorSqliteRepository) GetAllIds() ([]int64, error) {
 	return ids, nil
 }
 
-func (r *SensorSqliteRepository) Create(sensor *model.SensorPost) (*model.Sensor, error) {
+func (r *SensorSqliteRepository) Create(sensor *sensorChange) (*model.Sensor, error) {
 
 	if r.db.QueryRow(`SELECT ID FROM SENSOR_TYPE WHERE ID = ?;`, sensor.SensorType).Scan(&sensor.SensorType) != nil {
 		return nil, errors.New("Sensor type does not exist")
@@ -121,7 +121,7 @@ func (r *SensorSqliteRepository) Create(sensor *model.SensorPost) (*model.Sensor
 	return createdSensor, err
 }
 
-func (r *SensorSqliteRepository) Update(sensor *model.SensorPost, id int64) (*model.Sensor, error) {
+func (r *SensorSqliteRepository) Update(sensor *sensorChange, id int64) (*model.Sensor, error) {
 	var statement, err = r.db.Prepare(`
     UPDATE SENSOR
     SET PLANT = ?,

@@ -36,7 +36,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/SensorPost"
+                            $ref: "#/components/schemas/SensorChange"
 
             responses:
                 "201":
@@ -101,7 +101,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/SensorPost"
+                            $ref: "#/components/schemas/SensorChange"
 
             responses:
                 "200":
@@ -374,7 +374,7 @@ components:
                     example: 50
 
         #TODO: rename and change description
-        SensorPost:
+        SensorChange:
             type: object
             description: A request for a new sensor.
 
