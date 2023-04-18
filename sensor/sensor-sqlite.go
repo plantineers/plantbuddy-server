@@ -149,3 +149,16 @@ func (r *SensorSqliteRepository) Update(sensor *model.SensorPost, id int64) (*mo
 
 	return updatedSensor, err
 }
+
+func (r *SensorSqliteRepository) Delete(id int64) error {
+	var statement, err = r.db.Prepare(`DELETE FROM SENSOR WHERE ID = ?;`)
+	defer statement.Close()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = statement.Exec(id)
+
+	return err
+}

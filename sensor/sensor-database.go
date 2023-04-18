@@ -15,6 +15,9 @@ type SensorRepository interface {
 
 	// Update updates an existing sensor and returns it.
 	Update(*model.SensorPost, int64) (*model.Sensor, error)
+
+	// Delete deletes a sensor by its ID.
+	Delete(id int64) error
 }
 
 type SensorTypeRepository interface {

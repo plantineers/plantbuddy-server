@@ -24,6 +24,8 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 		handleSensorGet(w, r, id)
 	case http.MethodPut:
 		handleSensorPut(w, r, id)
+	case http.MethodDelete:
+		handleSensorDelete(w, r, id)
 	}
 }
 
@@ -113,6 +115,38 @@ func updateSensor(sensor *model.SensorPost, id int64) (*model.Sensor, error) {
 	}
 
 	return repository.Update(sensor, id)
+}
+
+func handleSensorDelete(w http.ResponseWriter, r *http.Request, id int64) {
+	err := deleteSensor(id)
+
+	switch err {
+	case sql.ErrNoRows:
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Sensor not found"))
+	case nil:
+		w.WriteHeader(http.StatusOK)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	}
+}
+
+func deleteSensor(id int64) error {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repository, err := NewSensorRepository(session)
+	if err != nil {
+		return err
+	}
+
+	return repository.Delete(id)
 }
 
 func SensorCreateHandler(w http.ResponseWriter, r *http.Request) {
