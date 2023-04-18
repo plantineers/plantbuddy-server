@@ -2,6 +2,12 @@ package sensor
 
 import "github.com/plantineers/plantbuddy-server/model"
 
+type SensorDataRepository interface {
+	GetAll(filter *SensorDataFilter) ([]*model.SensorData, error)
+
+	Save(data *model.SensorData) error
+}
+
 type SensorRepository interface {
 	// GetById returns a sensor by its ID.
 	// If the sensor does not exist, it will return nil.
