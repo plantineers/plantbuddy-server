@@ -64,3 +64,49 @@ func getSensorById(id int64) (*model.Sensor, error) {
 
 	return repository.GetById(id)
 }
+
+func SensorCreateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	handleSensorPost(w, r)
+}
+
+func handleSensorPost(w http.ResponseWriter, r *http.Request) {
+	var sensor model.SensorPost
+	err := json.NewDecoder(r.Body).Decode(&sensor)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("Error decoding JSON: %s", err.Error())))
+		return
+	}
+
+	createdSensor, err := createSensor(&sensor)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	b, err := json.Marshal(createdSensor)
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(b))
+}
+
+func createSensor(sensor *model.SensorPost) (*model.Sensor, error) {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repository, err := NewSensorRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.Create(sensor)
+}

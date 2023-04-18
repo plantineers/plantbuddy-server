@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
 
 	http.HandleFunc("/v1/sensors", sensor.SensorsHandler)
+	http.HandleFunc("/v1/sensor", sensor.SensorCreateHandler)
 	http.HandleFunc("/v1/sensor/", sensor.SensorHandler)
 
 	http.HandleFunc("/v1/sensor-types", sensor.SensorTypesHandler)

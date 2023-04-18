@@ -24,3 +24,13 @@ GET http://localhost:3333/v1/sensor-type/1
 
 ### Get all sensor type IDs.
 GET http://localhost:3333/v1/sensor-types
+
+### Post a new sensor
+POST http://localhost:3333/v1/sensor
+Content-Type: application/json
+
+{
+  "interval": 1337,
+  "sensorType": 1,
+  "plant": 1
+}

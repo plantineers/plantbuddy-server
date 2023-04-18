@@ -85,3 +85,29 @@ func (r *SensorSqliteRepository) GetAllIds() ([]int64, error) {
 
 	return ids, nil
 }
+
+func (r *SensorSqliteRepository) Create(sensor *model.SensorPost) (*model.Sensor, error) {
+	var statement, err = r.db.Prepare(`
+    INSERT INTO SENSOR (PLANT, TYPE, INTERVAL)
+    VALUES (?, ?, ?);`)
+	defer statement.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := statement.Exec(
+		sensor.Plant,
+		sensor.SensorType,
+		sensor.Interval,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id, _ := result.LastInsertId()
+	createdSensor, _ := r.GetById(id)
+
+	return createdSensor, err
+}

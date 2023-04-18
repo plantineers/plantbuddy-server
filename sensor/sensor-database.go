@@ -9,6 +9,8 @@ type SensorRepository interface {
 
 	// GetAllIds returns all sensor IDs.
 	GetAllIds() ([]int64, error)
+
+	Create(*model.SensorPost) (*model.Sensor, error)
 }
 
 type SensorTypeRepository interface {

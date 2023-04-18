@@ -10,6 +10,12 @@ type Sensor struct {
 	Interval   int64       `json:"interval"`
 }
 
+type SensorPost struct {
+	Plant      int64 `json:"plant"`
+	SensorType int64 `json:"sensorType"`
+	Interval   int64 `json:"interval"`
+}
+
 type SensorRange struct {
 	SensorType *SensorType `json:"sensorType"`
 	Min        float64     `json:"min"`
