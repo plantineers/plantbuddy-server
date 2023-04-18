@@ -57,6 +57,38 @@ paths:
                                         type: string
                                         example: "Invalid sensor"
 
+        put:
+            summary: Updates a sensor
+            description: Updates a sensor.
+            operationId: updateSensor
+
+            requestBody:
+                description: Sensor to update.
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/SensorPost"
+
+            responses:
+                "200":
+                    description: Sensor updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Sensor"
+
+                "404":
+                    description: Sensor not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Sensor not found"
+
     /sensor/{id}:
         get:
             summary: Returns a sensor
@@ -322,6 +354,7 @@ components:
                     description: Interval in seconds at which the sensor collects data.
                     example: 50
 
+        #TODO: rename and change description
         SensorPost:
             type: object
             description: A request for a new sensor.
