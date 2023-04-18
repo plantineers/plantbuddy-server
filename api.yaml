@@ -57,6 +57,39 @@ paths:
                                         type: string
                                         example: "Invalid sensor"
 
+    /sensor/{id}:
+        get:
+            summary: Returns a sensor
+            description: Returns a sensor.
+            operationId: getSensor
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the sensor
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: A sensor
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Sensor"
+
+                "404":
+                    description: Sensor not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Sensor not found"
+
         put:
             summary: Updates a sensor
             description: Updates a sensor.
@@ -88,28 +121,14 @@ paths:
                                     message:
                                         type: string
                                         example: "Sensor not found"
-
-    /sensor/{id}:
-        get:
-            summary: Returns a sensor
-            description: Returns a sensor.
-            operationId: getSensor
-
-            parameters:
-                - name: id
-                  in: path
-                  description: ID of the sensor
-                  required: true
-                  schema:
-                      type: integer
+        delete:
+            summary: Deletes a sensor
+            description: Deletes a sensor.
+            operationId: deleteSensor
 
             responses:
-                "200":
-                    description: A sensor
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/Sensor"
+                "204":
+                    description: Sensor deleted
 
                 "404":
                     description: Sensor not found

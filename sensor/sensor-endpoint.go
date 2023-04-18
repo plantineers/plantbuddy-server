@@ -125,7 +125,7 @@ func handleSensorDelete(w http.ResponseWriter, r *http.Request, id int64) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Sensor not found"))
 	case nil:
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusNoContent)
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
