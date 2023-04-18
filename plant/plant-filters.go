@@ -1,5 +1,5 @@
 package plant
 
 type PlantsFilter struct {
-	PlantGroupId string
+	PlantGroupId int64
 }

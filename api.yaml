@@ -10,6 +10,85 @@ servers:
       description: Local server
 
 paths:
+    /sensor-data:
+        get:
+            summary: Returns sensor data
+            description: Returns sensor data.
+            operationId: getSensorData
+
+            parameters:
+                - name: sensorId
+                  in: query
+                  description: ID of the sensor
+                  required: true
+                  schema:
+                      type: integer
+
+                - name: plantId
+                  in: query
+                  description: ID of the plant
+                  required: true
+                  schema:
+                      type: integer
+
+                - name: from
+                  in: query
+                  description: Start of the time range. Default to 24 hours ago.
+                  required: false
+                  schema:
+                      type: string
+                      format: date-time
+
+                - name: to
+                  in: query
+                  description: End of the time range. Default to now.
+                  required: false
+                  schema:
+                      type: string
+                      format: date-time
+
+            responses:
+                "200":
+                    description: An array of sensor data
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/SensorData"
+
+        post:
+            summary: Adds sensor data
+            description: Adds sensor data.
+            operationId: addSensorData
+
+            requestBody:
+                description: Sensor data to add
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/SensorDataPost"
+
+            responses:
+                "200":
+                    description: Sensor data added
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SensorData"
+
+                "400":
+                    description: Invalid sensor data
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid sensor data"
+
     /sensors:
         get:
             summary: Returns all sensor IDs
@@ -244,6 +323,63 @@ paths:
 
 components:
     schemas:
+        SensorData:
+            type: object
+            description: Data collected by a sensor.
+
+            required:
+                - "id"
+                - "sensor"
+                - "value"
+                - "timestamp"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the data set.
+                    example: 1
+
+                sensor:
+                    type: integer
+                    description: ID of the sensor that collected the data.
+                    example: 1
+
+                value:
+                    type: number
+                    description: Value collected by the sensor.
+                    example: 1.5
+
+                timestamp:
+                    type: string
+                    format: date-time
+                    description: Timestamp of the data.
+                    example: "2020-01-01T00:00:00.000Z"
+
+        SensorDataPost:
+            type: object
+            description: Data collected by a sensor.
+
+            required:
+                - "sensor"
+                - "value"
+                - "timestamp"
+
+            properties:
+                sensor:
+                    type: integer
+                    description: ID of the sensor that collected the data.
+                    example: 1
+
+                value:
+                    type: number
+                    description: Value collected by the sensor.
+                    example: 1.5
+
+                timestamp:
+                    type: string
+                    description: Timestamp of the data.
+                    example: "2020-01-01T00:00:00.000Z"
+
         SensorIds:
             type: object
             description: An array of sensor IDs.

@@ -4,7 +4,6 @@ package plant
 import (
 	"database/sql"
 	"errors"
-	"log"
 
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
@@ -74,20 +73,21 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 
 // Reads all plantIds from the database and returns them as a slice of plants.
 func (r *PlantSqliteRepository) GetAll(filter *PlantsFilter) ([]int64, error) {
-	var plantIds []int64
 	rows, err := r.getAllApplyFilter(filter)
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
 	// Iterate over all rows and query the ID of the plant.
+	var plantIds []int64
 	for rows.Next() {
 		var plantId int64
+
 		err = rows.Scan(&plantId)
 		if err != nil {
 			return nil, err
 		}
+
 		plantIds = append(plantIds, plantId)
 	}
 
@@ -95,7 +95,7 @@ func (r *PlantSqliteRepository) GetAll(filter *PlantsFilter) ([]int64, error) {
 }
 
 func (r *PlantSqliteRepository) getAllApplyFilter(filter *PlantsFilter) (*sql.Rows, error) {
-	if filter.PlantGroupId != "" {
+	if filter.PlantGroupId != 0 {
 		return r.db.Query(`SELECT ID FROM PLANT WHERE PLANT_GROUP = ?;`, filter.PlantGroupId)
 	}
 
