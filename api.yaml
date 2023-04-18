@@ -116,9 +116,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: array
-                                items:
-                                    $ref: "#/components/schemas/Plant"
+                                $ref: "#/components/schemas/PlantIds"
 
     /plant/{id}:
         get:
@@ -165,11 +163,9 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: array
-                                items:
-                                    $ref: "#/components/schemas/PlantGroup"
+                                $ref: "#/components/schemas/PlantGroupIds"
 
-    /plant-groups/{id}:
+    /plant-group/{id}:
         get:
             summary: Returns a plant group
             description: Returns a plant group.
@@ -316,6 +312,21 @@ components:
                         type: string
                         example: ["Massage every morning"]
 
+        PlantIds:
+            type: object
+            description: An array of plant IDs.
+
+            required:
+                - "plants"
+
+            properties:
+                plants:
+                    type: array
+                    description: An array of plant IDs.
+                    items:
+                        type: integer
+                        example: [1]
+
         PlantGroup:
             type: object
             description: A group of plants of the same type.
@@ -356,6 +367,21 @@ components:
 
                     items:
                         $ref: "#/components/schemas/SensorRange"
+
+        PlantGroupIds:
+            type: object
+            description: An array of plant group IDs.
+
+            required:
+                - "plantGroups"
+
+            properties:
+                plantGroups:
+                    type: array
+                    description: An array of plant group IDs.
+                    items:
+                        type: integer
+                        example: [1]
 
         SensorRange:
             type: object
