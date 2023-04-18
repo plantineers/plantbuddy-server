@@ -1,3 +1,4 @@
+// Author: Yannick Kirschen
 package sensor
 
 type SensorDataFilter struct {

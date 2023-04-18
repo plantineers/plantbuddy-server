@@ -1,3 +1,4 @@
+// Author: Yannick Kirschen
 package sensor
 
 import "github.com/plantineers/plantbuddy-server/model"
