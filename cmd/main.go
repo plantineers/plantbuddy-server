@@ -19,11 +19,7 @@ func main() {
 		panic(err)
 	}
 
-	http.HandleFunc("/v1/plants", plant.PlantsHandler)
-	http.HandleFunc("/v1/plant/", plant.PlantHandler)
-
-	http.HandleFunc("/v1/plant-groups", plant.PlantGroupsHandler)
-	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
+	http.HandleFunc("/v1/sensor-data", sensor.SensorDataHandler)
 
 	http.HandleFunc("/v1/sensors", sensor.SensorsHandler)
 	http.HandleFunc("/v1/sensor", sensor.SensorCreateHandler)
@@ -31,6 +27,12 @@ func main() {
 
 	http.HandleFunc("/v1/sensor-types", sensor.SensorTypesHandler)
 	http.HandleFunc("/v1/sensor-type/", sensor.SensorTypeHandler)
+
+	http.HandleFunc("/v1/plants", plant.PlantsHandler)
+	http.HandleFunc("/v1/plant/", plant.PlantHandler)
+
+	http.HandleFunc("/v1/plant-groups", plant.PlantGroupsHandler)
+	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
 
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }

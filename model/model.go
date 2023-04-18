@@ -3,6 +3,13 @@
 // Author: Maximilian Floto, Yannick Kirschen
 package model
 
+type SensorData struct {
+	ID        int64   `json:"id"`
+	Sensor    int64   `json:"sensor"`
+	Value     float64 `json:"value"`
+	Timestamp string  `json:"timestamp"`
+}
+
 type Sensor struct {
 	ID         int64       `json:"id"`
 	Plant      int64       `json:"plant"`

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
@@ -19,8 +20,15 @@ func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
+	plantGroupId, err := strconv.ParseInt(r.URL.Query().Get("plantGroupId"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("Error parsing plantGroupId: %s", err.Error())))
+		return
+	}
+
 	filter := &PlantsFilter{
-		PlantGroupId: r.URL.Query().Get("plantGroupId"),
+		PlantGroupId: plantGroupId,
 	}
 
 	allPlants, err := getAllPlants(filter)
@@ -29,12 +37,14 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("Error getting all plants: %s", err.Error())))
 		return
 	}
+
 	b, err := json.Marshal(allPlants)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("Error converting plants to JSON: %s", err.Error())))
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 }

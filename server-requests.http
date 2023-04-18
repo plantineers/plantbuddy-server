@@ -1,3 +1,16 @@
+### Get sensor data sets.
+GET http://localhost:3333/v1/sensor-data?sensor=1&plant=1&from=2019-01-01T00:00:00.000Z&to=2020-01-01T00:00:00.000Z
+
+### Save a new sensor data set.
+POST http://localhost:3333/v1/sensor-data
+Content-Type: application/json
+
+{
+    "sensor": 1,
+    "value": 1.0,
+    "timestamp": "2019-01-01T00:00:00.000Z"
+}
+
 ### Get a single plant.
 GET http://localhost:3333/v1/plant/1
 
