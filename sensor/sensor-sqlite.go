@@ -106,12 +106,12 @@ func (r *SensorSqliteRepository) Create(sensor *sensorChange) (*model.Sensor, er
 
 	_, err := r.sensorTypeRepository.GetById(sensor.SensorType)
 	if err != nil {
-		return nil, errors.New("Sensor type does not exist")
+		return nil, errors.New("sensor type does not exist")
 	}
 
 	_, err = r.plantRepository.GetById(sensor.Plant)
 	if err != nil {
-		return nil, errors.New("Plant does not exist")
+		return nil, errors.New("plant does not exist")
 	}
 
 	statement, err := r.db.Prepare(`
