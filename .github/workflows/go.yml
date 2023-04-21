@@ -81,6 +81,9 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+    
       - name: Download executable
         uses: actions/download-artifact@v3
         with:
@@ -98,7 +101,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: /home/runner/work/plantbuddy-server/plantbuddy-server
-          file: /home/runner/work/plantbuddy-server/plantbuddy-server/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: false
           tags: ${{ github.repository }}/server:${{ github.sha }}
