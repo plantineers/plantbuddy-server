@@ -108,4 +108,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ github.repository }}/server:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
