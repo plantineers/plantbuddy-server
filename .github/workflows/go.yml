@@ -76,7 +76,7 @@ jobs:
               exit 1
           fi
 
-  docker:
+  container:
     runs-on: ubuntu-latest
     permissions:
       packages: write
