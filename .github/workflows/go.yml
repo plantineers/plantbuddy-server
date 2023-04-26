@@ -91,6 +91,9 @@ jobs:
         with:
           name: app
 
+      - name: Set permission for executable
+        run: chmod +x ./app
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
