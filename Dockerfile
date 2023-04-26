@@ -1,5 +1,5 @@
-FROM scratch
-COPY app /app
-COPY buddy.json /buddy.json
-COPY buddy.sqlite /buddy.sqlite
+FROM debian
+COPY app /
+COPY buddy.json /
+COPY buddy.sqlite /
 CMD ["/app"]
