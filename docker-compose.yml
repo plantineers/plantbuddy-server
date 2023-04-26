@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  plant_buddy:
+    container_name: plant_buddy_server
+    image: ghcr.io/plantineers/plantbuddy-server:latest-dev
+    restart: unless-stopped
+    volumes:
+      - ./container_buddy_data:/buddy_data
+
+  tunnel:
+    container_name: cloudflared-tunnel
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=<<CLOUDFLARE_TOKEN_HERE>>
