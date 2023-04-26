@@ -1,7 +1,7 @@
 {
     "database": {
         "driverName": "sqlite3",
-        "dataSource": "buddy.sqlite"
+        "dataSource": "buddy_data/buddy.sqlite"
     },
     "port": 3333
 }
