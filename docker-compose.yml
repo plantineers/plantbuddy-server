@@ -5,7 +5,7 @@ services:
     image: ghcr.io/plantineers/plantbuddy-server:latest-dev
     restart: unless-stopped
     volumes:
-      - ./container_buddy_data:/buddy_data
+      - plant-buddy-volume:/buddy_data
 
   tunnel:
     container_name: cloudflared-tunnel
@@ -14,3 +14,7 @@ services:
     command: tunnel run
     environment:
       - TUNNEL_TOKEN=<<CLOUDFLARE_TOKEN_HERE>>
+
+volumes:
+    plant-buddy-volume:
+        external: false
