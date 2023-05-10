@@ -26,6 +26,3 @@ go.work
 # Other
 .idea/*
 *.iml
-
-# PlantBuddy
-buddy_data/

@@ -10,7 +10,6 @@ import (
 	"github.com/plantineers/plantbuddy-server/config"
 	"github.com/plantineers/plantbuddy-server/plant"
 	"github.com/plantineers/plantbuddy-server/sensor"
-	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func main() {
@@ -19,8 +18,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	utils.CopyDatabase()
 
 	http.HandleFunc("/v1/sensor-data", sensor.SensorDataHandler)
 
