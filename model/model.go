@@ -58,3 +58,17 @@ type PlantGroup struct {
 type PlantGroups struct {
 	PlantGroups []int64 `json:"plantGroups"`
 }
+
+type User struct {
+	ID       int64
+	Name     string
+	Password string
+	Role     Role
+}
+
+type Role int8
+
+const (
+	Admin Role = iota
+	Gardener
+)
