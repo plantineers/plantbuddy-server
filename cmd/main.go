@@ -31,6 +31,9 @@ func main() {
 	http.HandleFunc("/v1/plants", plant.PlantsHandler)
 	http.HandleFunc("/v1/plant/", plant.PlantHandler)
 
+	// Example for implementing UserAuthMiddleware
+	// http.Handle("/v1/plant/", user_management.UserAuthMiddleware(http.HandlerFunc(plant.PlantHandler)))
+
 	http.HandleFunc("/v1/plant-groups", plant.PlantGroupsHandler)
 	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
 
