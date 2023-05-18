@@ -20,15 +20,19 @@ func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
-	plantGroupId, err := strconv.ParseInt(r.URL.Query().Get("plantGroupId"), 10, 64)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Error parsing plantGroupId: %s", err.Error())))
-		return
-	}
+	plantGroupIdStr := r.URL.Query().Get("plantGroupId")
+	var filter *PlantsFilter
+	if plantGroupIdStr != "" {
+		plantGroupId, err := strconv.ParseInt(plantGroupIdStr, 10, 64)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf("Error parsing plantGroupId: %s", err.Error())))
+			return
+		}
 
-	filter := &PlantsFilter{
-		PlantGroupId: plantGroupId,
+		filter = &PlantsFilter{
+			PlantGroupId: plantGroupId,
+		}
 	}
 
 	allPlants, err := getAllPlants(filter)
@@ -45,6 +49,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 }

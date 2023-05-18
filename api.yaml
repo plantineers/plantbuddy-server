@@ -17,19 +17,21 @@ paths:
             operationId: getSensorData
 
             parameters:
-                - name: sensorId
+                - name: sensor
                   in: query
-                  description: ID of the sensor
+                  description: Type of the sensor.
                   required: true
                   schema:
-                      type: integer
+                      type: string
+                      example: "humidity"
 
-                - name: plantId
+                - name: plant
                   in: query
                   description: ID of the plant
                   required: true
                   schema:
                       type: integer
+                      example: 1
 
                 - name: from
                   in: query
@@ -53,9 +55,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: array
-                                items:
-                                    $ref: "#/components/schemas/SensorData"
+                                $ref: "#/components/schemas/SensorDataSet"
 
         post:
             summary: Adds sensor data
@@ -89,77 +89,44 @@ paths:
                                         type: string
                                         example: "Invalid sensor data"
 
-    /sensors:
+    /controllers:
         get:
-            summary: Returns all sensor IDs
-            description: Returns all sensor IDs.
-            operationId: getSensors
+            summary: Returns all controller UUIDs
+            description: Returns all controller UUIDs.
+            operationId: getControllers
 
             responses:
                 "200":
-                    description: An array of sensor IDs
+                    description: An array of controller UUIDs
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/SensorIds"
+                                $ref: "#/components/schemas/ControllerUUIDs"
 
-    /sensor:
-        post:
-            summary: Creates a new sensor
-            description: Creates a new sensor.
-            operationId: createSensor
-
-            requestBody:
-                description: Sensor to create.
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/SensorChange"
-
-            responses:
-                "201":
-                    description: Sensor created
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/Sensor"
-
-                "400":
-                    description: Invalid sensor
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    message:
-                                        type: string
-                                        example: "Invalid sensor"
-
-    /sensor/{id}:
+    /controller/{uuid}:
         get:
-            summary: Returns a sensor
-            description: Returns a sensor.
-            operationId: getSensor
+            summary: Returns a controller
+            description: Returns a controller.
+            operationId: getController
 
             parameters:
-                - name: id
+                - name: uuid
                   in: path
-                  description: ID of the sensor
+                  description: UUID of the controller
                   required: true
                   schema:
-                      type: integer
+                      type: string
 
             responses:
                 "200":
-                    description: A sensor
+                    description: A controller
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Sensor"
+                                $ref: "#/components/schemas/Controller"
 
                 "404":
-                    description: Sensor not found
+                    description: Controller not found
                     content:
                         application/json:
                             schema:
@@ -167,58 +134,7 @@ paths:
                                 properties:
                                     message:
                                         type: string
-                                        example: "Sensor not found"
-
-        put:
-            summary: Updates a sensor
-            description: Updates a sensor.
-            operationId: updateSensor
-
-            requestBody:
-                description: Sensor to update.
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/SensorChange"
-
-            responses:
-                "200":
-                    description: Sensor updated
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/Sensor"
-
-                "404":
-                    description: Sensor not found
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    message:
-                                        type: string
-                                        example: "Sensor not found"
-        delete:
-            summary: Deletes a sensor
-            description: Deletes a sensor.
-            operationId: deleteSensor
-
-            responses:
-                "204":
-                    description: Sensor deleted
-
-                "404":
-                    description: Sensor not found
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    message:
-                                        type: string
-                                        example: "Sensor not found"
+                                        example: "Controller not found"
 
     /sensor-types:
         get:
@@ -233,39 +149,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/SensorTypes"
-
-    /sensor-type/{id}:
-        get:
-            summary: Returns a sensor type
-            description: Returns a sensor type.
-            operationId: getSensorType
-
-            parameters:
-                - name: id
-                  in: path
-                  description: ID of the sensor type
-                  required: true
-                  schema:
-                      type: integer
-
-            responses:
-                "200":
-                    description: A sensor type
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/SensorType"
-
-                "404":
-                    description: Sensor type not found
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    message:
-                                        type: string
-                                        example: "Sensor type not found"
 
     /plants:
         get:
@@ -369,42 +252,6 @@ paths:
                                         type: string
                                         example: "Plant group not found"
 
-    /plant-ql:
-        get:
-            summary: Returns plants based on a query
-            description: Returns plants based on a query.
-            operationId: getPlantsQL
-
-            parameters:
-                - name: query
-                  in: query
-                  description: Query to execute
-                  required: true
-
-                  schema:
-                      type: string
-
-            responses:
-                "200":
-                    description: An array of plants
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: "#/components/schemas/Plant"
-
-                "400":
-                    description: Invalid query
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    message:
-                                        type: string
-                                        example: "Invalid query"
-
 components:
     schemas:
         SensorData:
@@ -412,21 +259,20 @@ components:
             description: Data collected by a sensor.
 
             required:
-                - "id"
+                - "controller"
                 - "sensor"
                 - "value"
-                - "timestamp"
 
             properties:
-                id:
-                    type: integer
-                    description: ID of the data set.
-                    example: 1
+                controller:
+                    type: string
+                    description: UUID of the micro controller that collected the data.
+                    example: "fbf30c62-ce17-45fc-a596-42bc33d11758"
 
                 sensor:
-                    type: integer
-                    description: ID of the sensor that collected the data.
-                    example: 1
+                    type: string
+                    description: Type of the sensor that collected the data.
+                    example: "humidity"
 
                 value:
                     type: number
@@ -436,103 +282,78 @@ components:
                 timestamp:
                     type: string
                     format: date-time
-                    description: Timestamp of the data.
+                    description: Timestamp of the data. If not set, the time the server received the data will be used.
                     example: "2020-01-01T00:00:00.000Z"
+
+        SensorDataSet:
+            type: object
+            description: Data collected by a sensor.
+
+            required:
+                - "data"
+
+            properties:
+                data:
+                    type: array
+                    description: An array of data collected by a micro controller.
+                    items:
+                        $ref: "#/components/schemas/SensorData"
 
         SensorDataPost:
             type: object
             description: Data collected by a sensor.
 
             required:
-                - "sensor"
-                - "value"
-                - "timestamp"
+                - "data"
 
             properties:
-                sensor:
-                    type: integer
-                    description: ID of the sensor that collected the data.
-                    example: 1
+                data:
+                    type: array
+                    description: An array of data collected by a micro controller.
+                    items:
+                        $ref: "#/components/schemas/SensorData"
 
-                value:
-                    type: number
-                    description: Value collected by the sensor.
-                    example: 1.5
-
-                timestamp:
-                    type: string
-                    description: Timestamp of the data.
-                    example: "2020-01-01T00:00:00.000Z"
-
-        SensorIds:
+        Controller:
             type: object
-            description: An array of sensor IDs.
+            description: A micro controller.
 
             required:
+                - "uuid"
+                - "plant"
                 - "sensors"
 
             properties:
+                uuid:
+                    type: string
+                    description: UUID of the micro controller.
+                    example: "fbf30c62-ce17-45fc-a596-42bc33d11758"
+
+                plant:
+                    type: integer
+                    description: ID of the Plant the controller monitors.
+                    example: 1
+
                 sensors:
                     type: array
-                    description: An array of sensor IDs.
+                    description: An array of sensor types.
                     items:
-                        type: integer
-                        example: [1]
+                        type: string
+                        example: ["humidity", "temperature", "nitrate"]
 
-        Sensor:
+        ControllerUUIDs:
             type: object
-            description: A sensor that collects data.
+            description: An array of controller UUIDs.
 
             required:
-                - "id"
-                - "plant"
-                - "type"
-                - "interval"
+                - "controllers"
 
             properties:
-                id:
-                    type: integer
-                    description: ID of the sensor.
-                    example: 1
-
-                plant:
-                    type: integer
-                    description: ID of the Plant the sensor monitors.
-                    example: 1
-
-                type:
-                    description: Type of the sensor.
-                    $ref: "#/components/schemas/SensorType"
-
-                interval:
-                    type: integer
-                    description: Interval in seconds at which the sensor collects data.
-                    example: 50
-
-        SensorChange:
-            type: object
-            description: A request for a new sensor.
-
-            required:
-                - "plant"
-                - "type"
-                - "interval"
-
-            properties:
-                plant:
-                    type: integer
-                    description: ID of the Plant the sensor monitors.
-                    example: 1
-
-                type:
-                    description: ID of sensor type.
-                    type: integer
-                    example: 1
-
-                interval:
-                    type: integer
-                    description: Interval in seconds at which the sensor collects data.
-                    example: 50
+                controllers:
+                    type: array
+                    description: An array of controller UUIDs.
+                    items:
+                        type: string
+                        example: ["fbf30c62-ce17-45fc-a596-42bc33d11758"]
 
         Plant:
             type: object
@@ -647,8 +468,9 @@ components:
 
             properties:
                 type:
+                    type: string
                     description: Type of the sensor.
-                    $ref: "#/components/schemas/SensorType"
+                    example: "humidity"
 
                 min:
                     type: number
@@ -681,7 +503,7 @@ components:
 
         SensorTypes:
             type: object
-            description: An array of sensor type IDs.
+            description: An array of sensor types.
 
             required:
                 - "types"
@@ -689,28 +511,6 @@ components:
             properties:
                 types:
                     type: array
-                    description: An array of sensor type IDs.
+                    description: An array of sensor types.
                     items:
-                        type: integer
-                        example: [1]
-
-        PlantQL:
-            type: object
-            description: Plant Query Language result.
-
-            required:
-                - "query"
-                - "data"
-
-            properties:
-                query:
-                    type: string
-                    description: The query that was executed.
-                    example: 'Sensor.type="humidity" & Data.value > 50 & Plant.type="Cactaceae"'
-
-                data:
-                    type: array
-                    description: The result of the query.
-
-                    items:
-                        $ref: "#/components/schemas/Plant"
+                        $ref: "#/components/schemas/SensorType"

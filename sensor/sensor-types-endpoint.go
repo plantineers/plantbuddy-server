@@ -23,19 +23,20 @@ func handleSensorTypesGet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 	} else {
-		b, err := json.Marshal(&model.SensorTypes{SensorTypes: sensorTypes})
+		b, err := json.Marshal(&model.SensorTypes{Types: sensorTypes})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting sensors to JSON: %s", err.Error())))
 			return
 		}
 
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
 	}
 }
 
-func getSensorTypes() ([]int64, error) {
+func getSensorTypes() ([]*model.SensorType, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -49,5 +50,5 @@ func getSensorTypes() ([]int64, error) {
 		return nil, err
 	}
 
-	return repository.GetAllIds()
+	return repository.GetAll()
 }

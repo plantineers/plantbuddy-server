@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/plantineers/plantbuddy-server/db"
@@ -20,7 +21,6 @@ func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		handleSensorDataPost(w, r)
 	}
-
 }
 
 func handleSensorDataGet(w http.ResponseWriter, r *http.Request) {
@@ -38,30 +38,29 @@ func handleSensorDataGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b, err := json.Marshal(&sensorDataSets{SensorData: allSensorData})
+	b, err := json.Marshal(&sensorDataSet{SensorData: allSensorData})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("Error converting sensor data to JSON: %s", err.Error())))
 		return
 	}
 
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 }
 
 func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
-	sensorStr := r.URL.Query().Get("sensor")
+	sensor := r.URL.Query().Get("sensor")
 	plantStr := r.URL.Query().Get("plant")
 
-	if sensorStr == "" || plantStr == "" {
-		return nil, errors.New("sensor ID and plant ID must be set")
+	if sensor == "" || plantStr == "" {
+		return nil, errors.New("sensor type and plant ID must be set")
 	}
 
-	sensor, e1 := strconv.ParseInt(sensorStr, 10, 64)
-	plant, e2 := strconv.ParseInt(plantStr, 10, 64)
-
-	if e1 != nil || e2 != nil {
-		return nil, errors.New("sensor and plant ID must be integers")
+	plant, e := strconv.ParseInt(plantStr, 10, 64)
+	if e != nil {
+		return nil, errors.New("plant ID must be an integer")
 	}
 
 	from := r.URL.Query().Get("from")
@@ -83,7 +82,7 @@ func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
 }
 
 func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
-	var data model.SensorData
+	var data sensorDataPost
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
@@ -91,20 +90,28 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch saveSensorData(&data) {
+	errs := saveSensorData(data.Data)
+	switch errs {
 	case nil:
 		b, err := json.Marshal(data)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error converting sensor data %d to JSON: %s", data.ID, err.Error())))
+			w.Write([]byte(fmt.Sprintf("Error converting sensor data to JSON: %s", err.Error())))
 			return
 		}
 
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		w.Write(b)
 	default:
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+
+		var errStrings []string
+		for _, err := range errs {
+			errStrings = append(errStrings, err.Error())
+		}
+
+		w.Write([]byte(strings.Join(errStrings, "; ")))
 	}
 }
 
@@ -125,23 +132,32 @@ func getAllSensorData(filter *SensorDataFilter) ([]*model.SensorData, error) {
 	return repository.GetAll(filter)
 }
 
-func saveSensorData(data *model.SensorData) error {
+func saveSensorData(data []*model.SensorData) []error {
 	var session = db.NewSession()
 	defer session.Close()
 
+	errors := make([]error, 0)
 	err := session.Open()
 	if err != nil {
-		return err
+		return append(errors, err)
 	}
 
 	repository, err := NewSensorDataRepository(session)
 	if err != nil {
-		return err
+		return append(errors, err)
 	}
 
-	return repository.Save(data)
+	for _, d := range data {
+		d.Timestamp = time.Now().UTC().String()
+	}
+
+	return repository.SaveAll(data)
 }
 
-type sensorDataSets struct {
-	SensorData []*model.SensorData `json:"sensorData"`
+type sensorDataSet struct {
+	SensorData []*model.SensorData `json:"data"`
+}
+
+type sensorDataPost struct {
+	Data []*model.SensorData `json:"data"`
 }

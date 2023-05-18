@@ -11,8 +11,7 @@ import (
 )
 
 type SensorDataSqliteRepository struct {
-	db               *sql.DB
-	sensorRepository SensorRepository
+	db *sql.DB
 }
 
 // SensorDataSqliteRepository creates a new repository for sensor data.
@@ -22,46 +21,42 @@ func NewSensorDataRepository(session *db.Session) (SensorDataRepository, error) 
 		return nil, errors.New("session is not open")
 	}
 
-	sensorRepository, err := NewSensorRepository(session)
-	if err != nil {
-		return nil, err
-	}
-
-	return &SensorDataSqliteRepository{
-		db:               session.DB,
-		sensorRepository: sensorRepository,
-	}, nil
+	return &SensorDataSqliteRepository{db: session.DB}, nil
 }
 
 func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.SensorData, error) {
 	rows, err := r.db.Query(`
-    SELECT SD.ID, S.ID, SD.VALUE, SD.TIMESTAMP
+    SELECT SD.CONTROLLER,
+       SD.SENSOR,
+       SD.VALUE,
+       SD.TIMESTAMP
     FROM SENSOR_DATA SD
-    JOIN SENSOR S ON SD.SENSOR = S.ID
-    WHERE S.ID = 1
-        AND S.PLANT = 1
-        AND SD.TIMESTAMP BETWEEN DATETIME(?) AND DATETIME(?);`, filter.From, filter.To)
+    LEFT JOIN CONTROLLER C on SD.CONTROLLER = C.UUID
+    WHERE C.PLANT = ?
+        AND SD.SENSOR = ?
+        AND SD.TIMESTAMP BETWEEN DATETIME(?) AND DATETIME(?);`,
+		filter.Plant, filter.Sensor, filter.From, filter.To)
 	if err != nil {
 		return nil, err
 	}
 
 	var data []*model.SensorData
 	for rows.Next() {
-		var id int64
-		var sensor int64
+		var controller string
+		var sensor string
 		var value float64
 		var timestamp string
 
-		err = rows.Scan(&id, &sensor, &value, &timestamp)
+		err = rows.Scan(&controller, &sensor, &value, &timestamp)
 		if err != nil {
 			return nil, err
 		}
 
 		data = append(data, &model.SensorData{
-			ID:        id,
-			Sensor:    sensor,
-			Value:     value,
-			Timestamp: timestamp,
+			Controller: controller,
+			Sensor:     sensor,
+			Value:      value,
+			Timestamp:  timestamp,
 		})
 	}
 
@@ -71,31 +66,34 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.
 func (r *SensorDataSqliteRepository) Save(data *model.SensorData) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	sensor, err := r.sensorRepository.GetById(data.Sensor)
-	if err == sql.ErrNoRows {
-		return errors.New("sensor does not exist")
-	} else if err != nil {
-		return err
-	}
-
-	statement, err := r.db.Prepare("INSERT INTO SENSOR_DATA (SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?)")
+	statement, err := r.db.Prepare("INSERT INTO SENSOR_DATA (CONTROLLER, SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
 	defer statement.Close()
 
-	res, err := statement.Exec(sensor.ID, data.Value, data.Timestamp)
+	_, err = statement.Exec(data.Controller, data.Sensor, data.Value, data.Timestamp)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	id, _ := res.LastInsertId()
 	err = tx.Commit()
 	if err != nil {
 		return err
 	}
-	data.ID = id
 
 	return nil
+}
+
+func (r *SensorDataSqliteRepository) SaveAll(data []*model.SensorData) []error {
+	var errors []error
+	for _, d := range data {
+		err := r.Save(d)
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	return errors
 }

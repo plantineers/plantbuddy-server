@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/config"
+	"github.com/plantineers/plantbuddy-server/controller"
 	"github.com/plantineers/plantbuddy-server/plant"
 	"github.com/plantineers/plantbuddy-server/sensor"
 )
@@ -21,12 +22,10 @@ func main() {
 
 	http.HandleFunc("/v1/sensor-data", sensor.SensorDataHandler)
 
-	http.HandleFunc("/v1/sensors", sensor.SensorsHandler)
-	http.HandleFunc("/v1/sensor", sensor.SensorCreateHandler)
-	http.HandleFunc("/v1/sensor/", sensor.SensorHandler)
-
 	http.HandleFunc("/v1/sensor-types", sensor.SensorTypesHandler)
-	http.HandleFunc("/v1/sensor-type/", sensor.SensorTypeHandler)
+
+	http.HandleFunc("/v1/controllers", controller.ControllersHandler)
+	http.HandleFunc("/v1/controller/", controller.ControllerHandler)
 
 	http.HandleFunc("/v1/plants", plant.PlantsHandler)
 	http.HandleFunc("/v1/plant/", plant.PlantHandler)
