@@ -5,6 +5,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/user-management"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/config"
@@ -20,18 +22,19 @@ func main() {
 		panic(err)
 	}
 
-	http.HandleFunc("/v1/sensor-data", sensor.SensorDataHandler)
+	// The POST method is not subject to user authentication as it is used by aggregators to send data
+	http.Handle("/v1/sensor-data", user_management.UserAuthMiddleware(sensor.SensorDataHandler, model.Gardener, []string{"POST"}))
 
-	http.HandleFunc("/v1/sensor-types", sensor.SensorTypesHandler)
+	http.Handle("/v1/sensor-types", user_management.UserAuthMiddleware(sensor.SensorTypesHandler, model.Gardener, []string{}))
 
-	http.HandleFunc("/v1/controllers", controller.ControllersHandler)
-	http.HandleFunc("/v1/controller/", controller.ControllerHandler)
+	http.Handle("/v1/controllers", user_management.UserAuthMiddleware(controller.ControllersHandler, model.Gardener, []string{}))
+	http.Handle("/v1/controller/", user_management.UserAuthMiddleware(controller.ControllerHandler, model.Gardener, []string{}))
 
-	http.HandleFunc("/v1/plants", plant.PlantsHandler)
-	http.HandleFunc("/v1/plant/", plant.PlantHandler)
+	http.Handle("/v1/plants", user_management.UserAuthMiddleware(plant.PlantsHandler, model.Gardener, []string{}))
+	http.Handle("/v1/plant/", user_management.UserAuthMiddleware(plant.PlantHandler, model.Gardener, []string{}))
 
-	http.HandleFunc("/v1/plant-groups", plant.PlantGroupsHandler)
-	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
+	http.Handle("/v1/plant-groups", user_management.UserAuthMiddleware(plant.PlantGroupsHandler, model.Gardener, []string{}))
+	http.Handle("/v1/plant-group/", user_management.UserAuthMiddleware(plant.PlantGroupHandler, model.Gardener, []string{}))
 
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }
