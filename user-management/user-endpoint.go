@@ -18,6 +18,8 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		handleUserPost(w, r)
 	case http.MethodDelete:
 		handleUserDelete(w, r)
+	case http.MethodPut:
+		handleUserPut(w, r)
 	}
 }
 
@@ -179,3 +181,54 @@ func deleteUserByName(name string) error {
 
 // TODO: Move to errors.go
 var ErrCannotDeleteAdmin = errors.New("Cannot delete admin user")
+
+func handleUserPut(w http.ResponseWriter, r *http.Request) {
+	var user model.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user.Password = utils.HashPassword(user.Password)
+
+	err = updateUser(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	safeUser := &model.SafeUser{
+		Name: user.Name,
+		Role: user.Role,
+	}
+
+	b, err := json.Marshal(safeUser)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(b)
+}
+
+func updateUser(user *model.User) error {
+	session := db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return err
+	}
+
+	return repo.Update(user)
+}

@@ -89,3 +89,15 @@ func (r *UserSqliteRepository) DeleteByName(name string) error {
 
 	return err
 }
+
+func (r *UserSqliteRepository) Update(user *model.User) error {
+	_, err := r.db.Exec(`
+    UPDATE USERS
+    SET PASSWORD_HASH = ?, ROLE = ?
+    WHERE NAME = ?;`,
+		user.Password,
+		user.Role,
+		user.Name)
+
+	return err
+}

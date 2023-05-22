@@ -80,6 +80,18 @@ Content-Type: application/json
     "role": 1
 }
 
+### Update a user.
+PUT http://localhost:3333/v1/user/
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testuser42",
+    "password": "123456",
+    "role": 1
+}
+
 ### Delete a user.
 DELETE http://localhost:3333/v1/user/testuser42
 X-User-Name: root
