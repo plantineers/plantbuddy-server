@@ -3,7 +3,7 @@ package user_management
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
@@ -16,6 +16,8 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		handleUserGet(w, r)
 	case http.MethodPost:
 		handleUserPost(w, r)
+	case http.MethodDelete:
+		handleUserDelete(w, r)
 	}
 }
 
@@ -27,12 +29,12 @@ func handleUserGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user, err := getUserByName(name)
-	safeUser := &model.SafeUser{
-		Name: user.Name,
-		Role: user.Role,
-	}
 	switch err {
 	case nil:
+		safeUser := &model.SafeUser{
+			Name: user.Name,
+			Role: user.Role,
+		}
 		b, err := json.Marshal(safeUser)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -69,12 +71,9 @@ func getUserByName(name string) (*model.User, error) {
 }
 
 func handleUserPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Handling user post")
 	var user model.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		fmt.Println("Error decoding user: ", err.Error())
-		fmt.Println("Request body: ", r.Body)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -121,3 +120,62 @@ func createUser(user *model.User) error {
 
 	return repo.Create(user)
 }
+
+func handleUserDelete(w http.ResponseWriter, r *http.Request) {
+	name, err := utils.PathParameterFilterStr(r.URL.Path, "/v1/user/")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	err = deleteUserByName(name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	switch err {
+	case nil:
+		w.WriteHeader(http.StatusOK)
+	case ErrCannotDeleteAdmin:
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte(err.Error()))
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func deleteUserByName(name string) error {
+	session := db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return err
+	}
+
+	user, err := getUserByName(name)
+	if err != nil {
+		return err
+	}
+
+	// Prevent admins from deleting other admins
+	if user.Role == model.Admin {
+		return ErrCannotDeleteAdmin
+	}
+
+	return repo.DeleteByName(name)
+}
+
+// TODO: Move to errors.go
+var ErrCannotDeleteAdmin = errors.New("Cannot delete admin user")

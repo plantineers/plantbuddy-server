@@ -81,3 +81,11 @@ func (r *UserSqliteRepository) Create(user *model.User) error {
 
 	return err
 }
+
+func (r *UserSqliteRepository) DeleteByName(name string) error {
+	_, err := r.db.Exec(`
+    DELETE FROM USERS
+    WHERE NAME = ?;`, name)
+
+	return err
+}

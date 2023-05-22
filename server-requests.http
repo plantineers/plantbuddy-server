@@ -59,7 +59,7 @@ X-User-Name: root
 X-User-Password: 1234
 
 ### Get a single user.
-GET http://localhost:3333/v1/user/testuser42
+GET http://localhost:3333/v1/user/testuser
 X-User-Name: root
 X-User-Password: 1234
 
@@ -79,3 +79,8 @@ Content-Type: application/json
     "password": "1234",
     "role": 1
 }
+
+### Delete a user.
+DELETE http://localhost:3333/v1/user/testuser42
+X-User-Name: root
+X-User-Password: 1234

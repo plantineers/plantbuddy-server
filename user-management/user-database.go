@@ -7,4 +7,5 @@ type UserRepository interface {
 	GetByName(name string) (*model.User, error)
 	GetAll() ([]string, error)
 	Create(user *model.User) error
+	DeleteByName(name string) error
 }
