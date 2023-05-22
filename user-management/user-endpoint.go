@@ -83,27 +83,30 @@ func handleUserPost(w http.ResponseWriter, r *http.Request) {
 	user.Password = utils.HashPassword(user.Password)
 
 	err = createUser(&user)
-	if err != nil {
+	switch err {
+	case nil:
+		safeUser := &model.SafeUser{
+			Name: user.Name,
+			Role: user.Role,
+		}
+
+		b, err := json.Marshal(safeUser)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		w.Write(b)
+	case ErrUserAlreadyExists:
+		w.WriteHeader(http.StatusConflict)
+		w.Write([]byte(err.Error()))
+	default:
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
-		return
 	}
-
-	safeUser := &model.SafeUser{
-		Name: user.Name,
-		Role: user.Role,
-	}
-
-	b, err := json.Marshal(safeUser)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(b)
 }
 
 func createUser(user *model.User) error {
@@ -120,8 +123,16 @@ func createUser(user *model.User) error {
 		return err
 	}
 
+	_, err = repo.GetByName(user.Name)
+	if err == nil {
+		return ErrUserAlreadyExists
+	}
+
 	return repo.Create(user)
 }
+
+// TODO: Move to errors.go
+var ErrUserAlreadyExists = errors.New("User already exists")
 
 func handleUserDelete(w http.ResponseWriter, r *http.Request) {
 	name, err := utils.PathParameterFilterStr(r.URL.Path, "/v1/user/")
