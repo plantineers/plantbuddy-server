@@ -1,11 +1,10 @@
 package user_management
 
 import (
-	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/utils"
 	"net/http"
 )
 
@@ -45,7 +44,7 @@ func handleLoginGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check password
-	password = fmt.Sprintf("%x", sha256.Sum256([]byte(password+"plantbuddy_salt")))
+	password = utils.HashPassword(password)
 	if password != user.Password {
 		w.WriteHeader(http.StatusForbidden)
 		w.Write([]byte("Invalid password"))

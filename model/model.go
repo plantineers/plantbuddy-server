@@ -55,18 +55,18 @@ type PlantGroups struct {
 }
 
 type User struct {
-	Name     string
-	Password string
-	Role     Role
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Role     Role   `json:"role"`
 }
 
 type SafeUser struct {
-	Name string
-	Role Role
+	Name string `json:"name"`
+	Role Role   `json:"role"`
 }
 
 type Users struct {
-	Users []string
+	Users []string `json:"users"`
 }
 
 type Role int8

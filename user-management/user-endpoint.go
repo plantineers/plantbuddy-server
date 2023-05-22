@@ -3,6 +3,7 @@ package user_management
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
@@ -13,6 +14,8 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handleUserGet(w, r)
+	case http.MethodPost:
+		handleUserPost(w, r)
 	}
 }
 
@@ -63,4 +66,58 @@ func getUserByName(name string) (*model.User, error) {
 	}
 
 	return repo.GetByName(name)
+}
+
+func handleUserPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Handling user post")
+	var user model.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		fmt.Println("Error decoding user: ", err.Error())
+		fmt.Println("Request body: ", r.Body)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user.Password = utils.HashPassword(user.Password)
+
+	err = createUser(&user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	safeUser := &model.SafeUser{
+		Name: user.Name,
+		Role: user.Role,
+	}
+
+	b, err := json.Marshal(safeUser)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(b)
+}
+
+func createUser(user *model.User) error {
+	session := db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return err
+	}
+
+	return repo.Create(user)
 }

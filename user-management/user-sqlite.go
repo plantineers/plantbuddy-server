@@ -70,3 +70,14 @@ func (r *UserSqliteRepository) GetAll() ([]string, error) {
 
 	return users, nil
 }
+
+func (r *UserSqliteRepository) Create(user *model.User) error {
+	_, err := r.db.Exec(`
+    INSERT INTO USERS (NAME, PASSWORD_HASH, ROLE)
+    VALUES (?, ?, ?);`,
+		user.Name,
+		user.Password,
+		user.Role)
+
+	return err
+}

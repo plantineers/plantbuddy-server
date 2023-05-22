@@ -59,7 +59,7 @@ X-User-Name: root
 X-User-Password: 1234
 
 ### Get a single user.
-GET http://localhost:3333/v1/user/testuser
+GET http://localhost:3333/v1/user/testuser42
 X-User-Name: root
 X-User-Password: 1234
 
@@ -67,3 +67,15 @@ X-User-Password: 1234
 GET http://localhost:3333/v1/user/login
 X-User-Name: testuser
 X-User-Password: 1234
+
+### Create a new user.
+POST http://localhost:3333/v1/user/
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testuser42",
+    "password": "1234",
+    "role": 1
+}
