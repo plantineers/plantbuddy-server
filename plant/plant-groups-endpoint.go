@@ -30,6 +30,8 @@ func handlePlantGroupsGet(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("Error converting plant groups to JSON: %s", err.Error())))
 		return
 	}
+
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
 }

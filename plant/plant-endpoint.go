@@ -40,6 +40,8 @@ func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting plant %d to JSON: %s", plant.ID, err.Error())))
 		}
+
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
 	default:

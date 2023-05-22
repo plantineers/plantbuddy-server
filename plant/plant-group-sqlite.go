@@ -4,33 +4,50 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/plantineers/plantbuddy-server/care_tips"
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/sensor_range"
 )
 
 type PlantGroupSqliteRepository struct {
-	db *sql.DB
+	db                    *sql.DB
+	careTipsRepository    care_tips.CareTipsRepository
+	sensorRangeRepository sensor_range.SensorRangeRepository
 }
 
-// NewRepository creates a new repository for plant-groups.
+// NewPlantGroupRepository creates a new repository for plant-groups.
 // It will use the configured driver and data source from `buddy.json`
 func NewPlantGroupRepository(session *db.Session) (PlantGroupRepository, error) {
 	if !session.IsOpen() {
 		return nil, errors.New("session is not open")
 	}
 
-	return &PlantGroupSqliteRepository{db: session.DB}, nil
+	careTipsRepository, err := care_tips.NewCareTipsRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	sensorRangeRepository, err := sensor_range.NewSensorRangeRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PlantGroupSqliteRepository{
+		db:                    session.DB,
+		careTipsRepository:    careTipsRepository,
+		sensorRangeRepository: sensorRangeRepository,
+	}, nil
 }
 
-// GetPlantGroupById returns a plant group by its ID.
 func (r *PlantGroupSqliteRepository) GetById(id int64) (*model.PlantGroup, error) {
 	var plantGroupId int64
 	var plantGroupName string
 	var plantGroupDescription *string
 	err := r.db.QueryRow(`
-    SELECT PG.ID AS PLANT_GROUP_ID,
-        PG.NAME AS PLANT_GROUP_NAME,
-        PG.DESCRIPTION AS PLANT_GROUP_DESCRIPTION
+    SELECT PG.ID,
+        PG.NAME,
+        PG.DESCRIPTION
         FROM PLANT_GROUP PG
     WHERE PG.ID = ?;`, id).Scan(&plantGroupId, &plantGroupName, &plantGroupDescription)
 
@@ -42,16 +59,27 @@ func (r *PlantGroupSqliteRepository) GetById(id int64) (*model.PlantGroup, error
 		plantGroupDescription = new(string)
 	}
 
+	careTips, err := r.careTipsRepository.GetByPlantGroupId(plantGroupId)
+	if err != nil {
+		return nil, err
+	}
+
+	sensor_ranges, err := r.sensorRangeRepository.GetAllByPlantGroupId(plantGroupId)
+	if err != nil {
+		return nil, err
+	}
+
 	var plantGroup = model.PlantGroup{
-		ID:          plantGroupId,
-		Name:        plantGroupName,
-		Description: *plantGroupDescription,
+		ID:           plantGroupId,
+		Name:         plantGroupName,
+		Description:  *plantGroupDescription,
+		CareTips:     careTips,
+		SensorRanges: sensor_ranges,
 	}
 
 	return &plantGroup, nil
 }
 
-// Reads all plantGroupIds from the database and returns them as a slice of plant groups.
 func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 	var plantGroupIds []int64
 	rows, err := r.db.Query(`SELECT ID FROM PLANT_GROUP;`)
