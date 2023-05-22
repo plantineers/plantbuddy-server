@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
-	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 	"net/http"
 )
@@ -65,21 +64,4 @@ func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role model.R
 
 		handler.ServeHTTP(w, r)
 	})
-}
-
-func getUserByName(name string) (*model.User, error) {
-	var session = db.NewSession()
-	defer session.Close()
-
-	err := session.Open()
-	if err != nil {
-		return nil, err
-	}
-
-	repo, err := NewUserRepository(session)
-	if err != nil {
-		return nil, err
-	}
-
-	return repo.GetByName(name)
 }

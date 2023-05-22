@@ -55,10 +55,18 @@ type PlantGroups struct {
 }
 
 type User struct {
-	ID       int64
 	Name     string
 	Password string
 	Role     Role
+}
+
+type SafeUser struct {
+	Name string
+	Role Role
+}
+
+type Users struct {
+	Users []string
 }
 
 type Role int8

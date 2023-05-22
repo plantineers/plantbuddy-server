@@ -52,3 +52,18 @@ X-User-Password: 1234
 GET http://localhost:3333/v1/controller/fbf30c62-ce17-45fc-a596-42bc33d11758
 X-User-Name: testuser
 X-User-Password: 1234
+
+### Get all users.
+GET http://localhost:3333/v1/users
+X-User-Name: root
+X-User-Password: 1234
+
+### Get a single user.
+GET http://localhost:3333/v1/user/testuser
+X-User-Name: root
+X-User-Password: 1234
+
+### Login a user. Returns the corresponding user.
+GET http://localhost:3333/v1/user/login
+X-User-Name: testuser
+X-User-Password: 1234

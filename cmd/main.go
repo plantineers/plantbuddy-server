@@ -36,5 +36,9 @@ func main() {
 	http.Handle("/v1/plant-groups", user_management.UserAuthMiddleware(plant.PlantGroupsHandler, model.Gardener, []string{}))
 	http.Handle("/v1/plant-group/", user_management.UserAuthMiddleware(plant.PlantGroupHandler, model.Gardener, []string{}))
 
+	http.Handle("/v1/users", user_management.UserAuthMiddleware(user_management.UsersHandler, model.Admin, []string{}))
+	http.Handle("/v1/user/", user_management.UserAuthMiddleware(user_management.UserHandler, model.Admin, []string{}))
+	http.HandleFunc("/v1/user/login", user_management.LoginHandler)
+
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }

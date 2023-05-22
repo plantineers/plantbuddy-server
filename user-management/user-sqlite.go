@@ -44,3 +44,29 @@ func (r *UserSqliteRepository) GetByName(name string) (*model.User, error) {
 		Role:     userRole,
 	}, nil
 }
+
+func (r *UserSqliteRepository) GetAll() ([]string, error) {
+	var users []string
+
+	rows, err := r.db.Query(`
+    SELECT
+        U.NAME
+    FROM USERS U;`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var userName string
+
+		err := rows.Scan(&userName)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, userName)
+	}
+
+	return users, nil
+}
