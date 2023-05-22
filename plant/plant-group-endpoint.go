@@ -40,6 +40,8 @@ func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprintf("Error converting plant group %d to JSON: %s", plantGroup.ID, err.Error())))
 		}
+
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
 	default:

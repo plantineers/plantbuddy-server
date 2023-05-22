@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/config"
+	"github.com/plantineers/plantbuddy-server/controller"
 	"github.com/plantineers/plantbuddy-server/plant"
 	"github.com/plantineers/plantbuddy-server/sensor"
 )
@@ -23,18 +24,16 @@ func main() {
 
 	http.HandleFunc("/v1/sensor-data", sensor.SensorDataHandler)
 
-	http.Handle("/v1/sensors", user_management.UserAuthMiddleware(sensor.SensorsHandler, model.Gardener))
-	http.Handle("/v1/sensor", user_management.UserAuthMiddleware(sensor.SensorCreateHandler, model.Admin))
-	http.HandleFunc("/v1/sensor/", sensor.SensorHandler)
-
 	http.HandleFunc("/v1/sensor-types", sensor.SensorTypesHandler)
-	http.HandleFunc("/v1/sensor-type/", sensor.SensorTypeHandler)
 
-	http.Handle("/v1/plants", user_management.UserAuthMiddleware(plant.PlantsHandler, model.Gardener))
-	http.Handle("/v1/plant/", user_management.UserAuthMiddleware(plant.PlantHandler, model.Gardener))
+	http.HandleFunc("/v1/controllers", controller.ControllersHandler)
+	http.HandleFunc("/v1/controller/", controller.ControllerHandler)
 
-	http.Handle("/v1/plant-groups", user_management.UserAuthMiddleware(plant.PlantGroupsHandler, model.Gardener))
-	http.Handle("/v1/plant-group/", user_management.UserAuthMiddleware(plant.PlantGroupHandler, model.Gardener))
+	http.HandleFunc("/v1/plants", plant.PlantsHandler)
+	http.HandleFunc("/v1/plant/", plant.PlantHandler)
+
+	http.HandleFunc("/v1/plant-groups", plant.PlantGroupsHandler)
+	http.HandleFunc("/v1/plant-group/", plant.PlantGroupHandler)
 
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }

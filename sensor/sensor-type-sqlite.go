@@ -24,38 +24,25 @@ func NewSensorTypeRepository(session *db.Session) (SensorTypeRepository, error) 
 	return &SensorTypeSqliteRepository{db: session.DB}, nil
 }
 
-func (r *SensorTypeSqliteRepository) GetById(id int64) (*model.SensorType, error) {
-	var name string
-	var unit string
-	var err = r.db.QueryRow(`
-    SELECT NAME, UNIT
-    FROM SENSOR_TYPE
-    WHERE ID = ?;`, id).Scan(&name, &unit)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.SensorType{Name: name, Unit: unit}, nil
-}
-
-func (r *SensorTypeSqliteRepository) GetAllIds() ([]int64, error) {
-	var rows, err = r.db.Query(`SELECT ID FROM SENSOR_TYPE;`)
+func (r *SensorTypeSqliteRepository) GetAll() ([]*model.SensorType, error) {
+	var rows, err = r.db.Query(`SELECT NAME, UNIT FROM SENSOR_TYPE;`)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var ids []int64
+	var types []*model.SensorType
 	for rows.Next() {
-		var id int64
-		err = rows.Scan(&id)
+		var name string
+		var unit string
+
+		err = rows.Scan(&name, &unit)
 		if err != nil {
 			rows.Close()
 			return nil, err
 		}
-		ids = append(ids, id)
+		types = append(types, &model.SensorType{Name: name, Unit: unit})
 	}
 
-	return ids, nil
+	return types, nil
 }

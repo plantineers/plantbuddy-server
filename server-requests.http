@@ -1,14 +1,18 @@
 ### Get sensor data sets.
-GET http://localhost:3333/v1/sensor-data?sensor=1&plant=1&from=2019-01-01T00:00:00.000Z&to=2020-01-01T00:00:00.000Z
+GET http://localhost:3333/v1/sensor-data?sensor=humidity&plant=1&from=2019-01-01T00:00:00.000Z&to=2023-05-20T00:00:00.000Z
 
 ### Save a new sensor data set.
 POST http://localhost:3333/v1/sensor-data
 Content-Type: application/json
 
 {
-    "sensor": 1,
-    "value": 1.0,
-    "timestamp": "2019-01-01T00:00:00.000Z"
+    "data": [
+        {
+            "controller": "fbf30c62-ce17-45fc-a596-42bc33d11758",
+            "sensor": "temperature",
+            "value": 20.7
+        }
+    ]
 }
 
 ### Get a single plant.
@@ -26,37 +30,5 @@ GET http://localhost:3333/v1/plant-group/1
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
 
-### Get a single sensor.
-GET http://localhost:3333/v1/sensor/2
-
-### Get all sensor IDs.
-GET http://localhost:3333/v1/sensors
-
-### Get a single sensor type.
-GET http://localhost:3333/v1/sensor-type/1
-
 ### Get all sensor type IDs.
 GET http://localhost:3333/v1/sensor-types
-
-### Create a new sensor
-POST http://localhost:3333/v1/sensor
-Content-Type: application/json
-
-{
-  "interval": 1337,
-  "sensorType": 1,
-  "plant": 1
-}
-
-### Update a sensor
-PUT http://localhost:3333/v1/sensor/1
-Content-Type: application/json
-
-{
-  "interval": 1338,
-  "sensorType": 2,
-  "plant": 1
-}
-
-### Delete a sensor
-DELETE http://localhost:3333/v1/sensor/2

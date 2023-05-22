@@ -4,17 +4,16 @@
 package model
 
 type SensorData struct {
-	ID        int64   `json:"id"`
-	Sensor    int64   `json:"sensor"`
-	Value     float64 `json:"value"`
-	Timestamp string  `json:"timestamp"`
+	Controller string  `json:"controller"`
+	Sensor     string  `json:"sensor"`
+	Value      float64 `json:"value"`
+	Timestamp  string  `json:"timestamp"`
 }
 
-type Sensor struct {
-	ID         int64       `json:"id"`
-	Plant      int64       `json:"plant"`
-	SensorType *SensorType `json:"sensorType"`
-	Interval   int64       `json:"interval"`
+type Controller struct {
+	UUID    string   `json:"uuid"`
+	Plant   int64    `json:"plant"`
+	Sensors []string `json:"sensors"`
 }
 
 type SensorRange struct {
@@ -28,12 +27,8 @@ type SensorType struct {
 	Unit string `json:"unit"`
 }
 
-type Sensors struct {
-	Sensors []int64 `json:"sensors"`
-}
-
 type SensorTypes struct {
-	SensorTypes []int64 `json:"sensorTypes"`
+	Types []*SensorType `json:"types"`
 }
 
 type Plant struct {
@@ -48,11 +43,11 @@ type Plants struct {
 }
 
 type PlantGroup struct {
-	ID          int64        `json:"id"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	CareTips    []string     `json:"careTips"`
-	SensorRange *SensorRange `json:"sensorRange"`
+	ID           int64          `json:"id"`
+	Name         string         `json:"name"`
+	Description  string         `json:"description"`
+	CareTips     []string       `json:"careTips"`
+	SensorRanges []*SensorRange `json:"sensorRanges"`
 }
 
 type PlantGroups struct {
