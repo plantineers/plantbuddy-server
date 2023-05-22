@@ -5,8 +5,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/plantineers/plantbuddy-server/model"
-	user_management "github.com/plantineers/plantbuddy-server/user-management"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/config"
