@@ -32,7 +32,7 @@ func handleUsersGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getAllUsers() ([]string, error) {
+func getAllUsers() ([]int64, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

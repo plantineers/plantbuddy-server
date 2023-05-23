@@ -21,51 +21,82 @@ func NewUserRepository(session *db.Session) (UserRepository, error) {
 	}, nil
 }
 
-func (r *UserSqliteRepository) GetByName(name string) (*model.User, error) {
+func (r *UserSqliteRepository) GetById(id int64) (*model.User, error) {
+	var userId int64
 	var userName string
 	var userPassword string
 	var userRole model.Role
 
 	err := r.db.QueryRow(`
     SELECT
+        U.ID,
         U.NAME,
-        U.PASSWORD_HASH,
+        U.PASSWORD,
         U.ROLE
     FROM USERS U
-    WHERE U.NAME = ?;`, name).Scan(&userName, &userPassword, &userRole)
+    WHERE U.ID = ?;`, id).Scan(&userId, &userName, &userPassword, &userRole)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &model.User{
+		Id:       userId,
 		Name:     userName,
 		Password: userPassword,
 		Role:     userRole,
 	}, nil
 }
 
-func (r *UserSqliteRepository) GetAll() ([]string, error) {
-	var users []string
+func (r *UserSqliteRepository) GetByName(name string) (*model.User, error) {
+	var userId int64
+	var userName string
+	var userPassword string
+	var userRole model.Role
+
+	err := r.db.QueryRow(`
+    SELECT
+        U.ID,
+        U.NAME,
+        U.PASSWORD,
+        U.ROLE
+    FROM USERS U
+    WHERE U.NAME = ?;`, name).Scan(&userId, &userName, &userPassword, &userRole)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.User{
+		Id:       userId,
+		Name:     userName,
+		Password: userPassword,
+		Role:     userRole,
+	}, nil
+}
+
+func (r *UserSqliteRepository) GetAll() ([]int64, error) {
+	var users []int64
 
 	rows, err := r.db.Query(`
     SELECT
-        U.NAME
-    FROM USERS U;`)
+        U.ID
+    FROM USERS U
+    ORDER BY ID;`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var userName string
+		var userId int64
 
-		err := rows.Scan(&userName)
+		err := rows.Scan(&userId)
 		if err != nil {
 			return nil, err
 		}
 
-		users = append(users, userName)
+		users = append(users, userId)
 	}
 
 	return users, nil
@@ -73,7 +104,7 @@ func (r *UserSqliteRepository) GetAll() ([]string, error) {
 
 func (r *UserSqliteRepository) Create(user *model.User) error {
 	_, err := r.db.Exec(`
-    INSERT INTO USERS (NAME, PASSWORD_HASH, ROLE)
+    INSERT INTO USERS (NAME, PASSWORD, ROLE)
     VALUES (?, ?, ?);`,
 		user.Name,
 		user.Password,
@@ -82,10 +113,10 @@ func (r *UserSqliteRepository) Create(user *model.User) error {
 	return err
 }
 
-func (r *UserSqliteRepository) DeleteByName(name string) error {
+func (r *UserSqliteRepository) DeleteById(id int64) error {
 	_, err := r.db.Exec(`
     DELETE FROM USERS
-    WHERE NAME = ?;`, name)
+    WHERE ID = ?;`, id)
 
 	return err
 }
@@ -93,11 +124,12 @@ func (r *UserSqliteRepository) DeleteByName(name string) error {
 func (r *UserSqliteRepository) Update(user *model.User) error {
 	_, err := r.db.Exec(`
     UPDATE USERS
-    SET PASSWORD_HASH = ?, ROLE = ?
-    WHERE NAME = ?;`,
+    SET PASSWORD = ?, ROLE = ?, NAME = ?
+    WHERE ID = ?;`,
 		user.Password,
 		user.Role,
-		user.Name)
+		user.Name,
+		user.Id)
 
 	return err
 }

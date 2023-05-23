@@ -3,6 +3,7 @@ package user_management
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 	"net/http"
@@ -52,6 +53,7 @@ func handleLoginGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	safeUser := &model.SafeUser{
+		Id:   user.Id,
 		Name: user.Name,
 		Role: user.Role,
 	}
@@ -66,4 +68,21 @@ func handleLoginGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
+}
+
+func getUserByName(name string) (*model.User, error) {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return repo.GetByName(name)
 }
