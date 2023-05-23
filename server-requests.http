@@ -1,5 +1,7 @@
 ### Get sensor data sets.
 GET http://localhost:3333/v1/sensor-data?sensor=humidity&plant=1&from=2019-01-01T00:00:00.000Z&to=2023-05-20T00:00:00.000Z
+X-User-Name: testuser
+X-User-Password: 1234
 
 ### Save a new sensor data set.
 POST http://localhost:3333/v1/sensor-data
@@ -17,18 +19,80 @@ Content-Type: application/json
 
 ### Get a single plant.
 GET http://localhost:3333/v1/plant/1
+X-User-Name: testuser
+X-User-Password: 1234
 
 ### Get all plant IDs.
 GET http://localhost:3333/v1/plants
+X-User-Name: testuser
+X-User-Password: 1234
 
-###
+### Get all plants in a plant group.
 GET http://localhost:3333/v1/plants?plantGroupId=1
+X-User-Name: testuser
+X-User-Password: 1234
 
 ### Get a single plant group.
 GET http://localhost:3333/v1/plant-group/1
+X-User-Name: testuser
+X-User-Password: 1234
 
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
+X-User-Name: testuser
+X-User-Password: 1234
 
 ### Get all sensor type IDs.
 GET http://localhost:3333/v1/sensor-types
+X-User-Name: testuser
+X-User-Password: 1234
+
+
+### Get a single controller.
+GET http://localhost:3333/v1/controller/fbf30c62-ce17-45fc-a596-42bc33d11758
+X-User-Name: testuser
+X-User-Password: 1234
+
+### Get all users.
+GET http://localhost:3333/v1/users
+X-User-Name: root
+X-User-Password: 1234
+
+### Get a single user.
+GET http://localhost:3333/v1/user/7
+X-User-Name: root
+X-User-Password: 1234
+
+### Login a user. Returns the corresponding user.
+GET http://localhost:3333/v1/user/login
+X-User-Name: testuser42
+X-User-Password: 1234
+
+### Create a new user.
+POST http://localhost:3333/v1/user/
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testuser42",
+    "password": "1234",
+    "role": 1
+}
+
+### Update a user.
+PUT http://localhost:3333/v1/user/7
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testuser42",
+    "password": "123456",
+    "role": 1
+}
+
+### Delete a user.
+DELETE http://localhost:3333/v1/user/7
+X-User-Name: root
+X-User-Password: 1234
