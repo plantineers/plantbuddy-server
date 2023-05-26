@@ -1,7 +1,4 @@
-// Package model contains the data model for the application`s REST interface.
-//
-// Author: Maximilian Floto, Yannick Kirschen
-package model
+package auth
 
 type User struct {
 	Id       int64  `json:"id"`

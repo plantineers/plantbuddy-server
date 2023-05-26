@@ -252,6 +252,157 @@ paths:
                                         type: string
                                         example: "Plant group not found"
 
+    /users:
+        get:
+            summary: Returns all users
+            description: Returns all users.
+            operationId: getUsers
+
+            responses:
+                "200":
+                    description: An array of users
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Users"
+
+    /user/{id}:
+        get:
+            summary: Returns a user
+            description: Returns a user.
+            operationId: getUser
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the user
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: A user
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserPost"
+
+                "404":
+                    description: User not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "User not found"
+
+        post:
+            summary: Adds a user
+            description: Adds a user.
+            operationId: addUser
+
+            requestBody:
+                description: User to add
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UserPost"
+
+            responses:
+                "200":
+                    description: User added
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SafeUser"
+
+                "400":
+                    description: Invalid user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid user"
+
+        put:
+            summary: Updates a user
+            description: Updates a user.
+            operationId: updateUser
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the user
+                  required: true
+                  schema:
+                      type: integer
+
+            requestBody:
+                description: User to update
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UserPost"
+
+            responses:
+                "200":
+                    description: User updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SafeUser"
+
+                "400":
+                    description: Invalid user
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid user"
+
+                "404":
+                    description: User not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "User not found"
+
+        delete:
+            summary: Deletes a user
+            description: Deletes a user.
+            operationId: deleteUser
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the user
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: User deleted
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SafeUser"
+
 components:
     schemas:
         SensorData:
@@ -514,3 +665,58 @@ components:
                     description: An array of sensor types.
                     items:
                         $ref: "#/components/schemas/SensorType"
+        UserPost:
+            type: object
+            description: A user.
+            required:
+                - "id"
+                - "name"
+                - "password"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the user.
+                    example: 1
+
+                username:
+                    type: string
+                    description: Username of the user.
+                    example: "john"
+
+                password:
+                    type: string
+                    description: Password of the user.
+                    example: "password"
+
+        SafeUser:
+            type: object
+            description: A user without password.
+            required:
+                - "id"
+                - "name"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the user.
+                    example: 1
+
+                username:
+                    type: string
+                    description: Username of the user.
+                    example: "john"
+
+        Users:
+            type: object
+            description: An array of user ids.
+            required:
+                - "users"
+
+            properties:
+                users:
+                    type: array
+                    description: An array of user ids.
+                    items:
+                        type: integer
+                        example: [1]

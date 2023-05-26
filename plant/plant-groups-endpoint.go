@@ -12,7 +12,7 @@ import (
 
 func PlantGroupsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
 		return
 	}
 	handlePlantGroupsGet(w, r)

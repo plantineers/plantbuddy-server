@@ -8,9 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/plantineers/plantbuddy-server/model"
-	user_management "github.com/plantineers/plantbuddy-server/user-management"
-
+	"github.com/plantineers/plantbuddy-server/auth"
 	"github.com/plantineers/plantbuddy-server/config"
 	"github.com/plantineers/plantbuddy-server/controller"
 	"github.com/plantineers/plantbuddy-server/plant"
@@ -25,24 +23,25 @@ func main() {
 	}
 
 	// The POST method is not subject to user authentication as it is used by aggregators to send data
-	http.Handle("/v1/sensor-data", user_management.UserAuthMiddleware(sensor.SensorDataHandler, model.Gardener, []string{"POST"}))
+	http.Handle("/v1/sensor-data", auth.UserAuthMiddleware(sensor.SensorDataHandler, auth.Gardener, []string{"POST"}))
 
-	http.Handle("/v1/sensor-types", user_management.UserAuthMiddleware(sensor.SensorTypesHandler, model.Gardener, []string{}))
+	http.Handle("/v1/sensor-types", auth.UserAuthMiddleware(sensor.SensorTypesHandler, auth.Gardener, []string{}))
 
-	http.Handle("/v1/controllers", user_management.UserAuthMiddleware(controller.ControllersHandler, model.Gardener, []string{}))
-	http.Handle("/v1/controller/", user_management.UserAuthMiddleware(controller.ControllerHandler, model.Gardener, []string{}))
+	http.Handle("/v1/controllers", auth.UserAuthMiddleware(controller.ControllersHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/controller/", auth.UserAuthMiddleware(controller.ControllerHandler, auth.Gardener, []string{}))
 
-	http.Handle("/v1/plants", user_management.UserAuthMiddleware(plant.PlantsHandler, model.Gardener, []string{}))
-	http.Handle("/v1/plant", user_management.UserAuthMiddleware(plant.PlantCreateHandler, model.Gardener, []string{}))
-	http.Handle("/v1/plant/", user_management.UserAuthMiddleware(plant.PlantHandler, model.Gardener, []string{}))
+	http.Handle("/v1/plants", auth.UserAuthMiddleware(plant.PlantsHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plant", auth.UserAuthMiddleware(plant.PlantCreateHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plant/", auth.UserAuthMiddleware(plant.PlantHandler, auth.Gardener, []string{}))
 
-	http.Handle("/v1/plant-groups", user_management.UserAuthMiddleware(plant.PlantGroupsHandler, model.Gardener, []string{}))
-	http.Handle("/v1/plant-group", user_management.UserAuthMiddleware(plant.PlantGroupCreateHandler, model.Gardener, []string{}))
-	http.Handle("/v1/plant-group/", user_management.UserAuthMiddleware(plant.PlantGroupHandler, model.Gardener, []string{}))
+	http.Handle("/v1/plant-groups", auth.UserAuthMiddleware(plant.PlantGroupsHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plant-group", auth.UserAuthMiddleware(plant.PlantGroupCreateHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plant-group/", auth.UserAuthMiddleware(plant.PlantGroupHandler, auth.Gardener, []string{}))
 
-	http.Handle("/v1/users", user_management.UserAuthMiddleware(user_management.UsersHandler, model.Admin, []string{}))
-	http.Handle("/v1/user/", user_management.UserAuthMiddleware(user_management.UserHandler, model.Admin, []string{}))
-	http.HandleFunc("/v1/user/login", user_management.LoginHandler)
+	http.Handle("/v1/users", auth.UserAuthMiddleware(auth.UsersHandler, auth.Admin, []string{}))
+	http.Handle("/v1/user", auth.UserAuthMiddleware(auth.UserCreateHandler, auth.Admin, []string{}))
+	http.Handle("/v1/user/", auth.UserAuthMiddleware(auth.UserHandler, auth.Admin, []string{}))
+	http.HandleFunc("/v1/user/login", auth.LoginHandler)
 
 	log.Printf("Server running on port %d", config.PlantBuddyConfig.Port)
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))

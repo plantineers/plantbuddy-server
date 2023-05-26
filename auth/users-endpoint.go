@@ -1,9 +1,13 @@
 // Author: Maximilian Floto
-package user_management
+package auth
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/plantineers/plantbuddy-server/utils"
 
 	"github.com/plantineers/plantbuddy-server/db"
 )
@@ -12,6 +16,8 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handleUsersGet(w, r)
+	default:
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
 	}
 }
 
@@ -21,16 +27,15 @@ func handleUsersGet(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		b, err := json.Marshal(users)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			msg := fmt.Sprintf("Error converting users to JSON: %s", err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
 			return
 		}
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		log.Printf("Loaded %d users", len(users))
+		utils.HttpOkResponse(w, b)
 	default:
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		msg := fmt.Sprintf("Error while loading users: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 	}
 }
 

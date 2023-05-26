@@ -1,12 +1,11 @@
 // Author: Maximilian Floto
-package user_management
+package auth
 
 import (
 	"database/sql"
 	"errors"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 type UserSqliteRepository struct {
@@ -23,11 +22,11 @@ func NewUserRepository(session *db.Session) (UserRepository, error) {
 	}, nil
 }
 
-func (r *UserSqliteRepository) GetById(id int64) (*model.User, error) {
+func (r *UserSqliteRepository) GetById(id int64) (*User, error) {
 	var userId int64
 	var userName string
 	var userPassword string
-	var userRole model.Role
+	var userRole Role
 
 	err := r.db.QueryRow(`
     SELECT
@@ -42,7 +41,7 @@ func (r *UserSqliteRepository) GetById(id int64) (*model.User, error) {
 		return nil, err
 	}
 
-	return &model.User{
+	return &User{
 		Id:       userId,
 		Name:     userName,
 		Password: userPassword,
@@ -50,11 +49,11 @@ func (r *UserSqliteRepository) GetById(id int64) (*model.User, error) {
 	}, nil
 }
 
-func (r *UserSqliteRepository) GetByName(name string) (*model.User, error) {
+func (r *UserSqliteRepository) GetByName(name string) (*User, error) {
 	var userId int64
 	var userName string
 	var userPassword string
-	var userRole model.Role
+	var userRole Role
 
 	err := r.db.QueryRow(`
     SELECT
@@ -69,7 +68,7 @@ func (r *UserSqliteRepository) GetByName(name string) (*model.User, error) {
 		return nil, err
 	}
 
-	return &model.User{
+	return &User{
 		Id:       userId,
 		Name:     userName,
 		Password: userPassword,
@@ -104,7 +103,7 @@ func (r *UserSqliteRepository) GetAll() ([]int64, error) {
 	return users, nil
 }
 
-func (r *UserSqliteRepository) Create(user *model.User) error {
+func (r *UserSqliteRepository) Create(user *User) error {
 	_, err := r.db.Exec(`
     INSERT INTO USERS (NAME, PASSWORD, ROLE)
     VALUES (?, ?, ?);`,
@@ -123,7 +122,7 @@ func (r *UserSqliteRepository) DeleteById(id int64) error {
 	return err
 }
 
-func (r *UserSqliteRepository) Update(user *model.User) error {
+func (r *UserSqliteRepository) Update(user *User) error {
 	_, err := r.db.Exec(`
     UPDATE USERS
     SET PASSWORD = ?, ROLE = ?, NAME = ?
