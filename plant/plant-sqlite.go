@@ -77,6 +77,10 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 		return nil, err
 	}
 
+	if careTips == nil {
+		careTips = make([]string, 0)
+	}
+
 	return &model.Plant{
 		ID:                 plantId,
 		Description:        *plantDescription,
