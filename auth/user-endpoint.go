@@ -4,11 +4,9 @@ package auth
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
@@ -35,7 +33,7 @@ func handleUserGet(w http.ResponseWriter, r *http.Request) {
 	user, err := getUserById(id)
 	switch err {
 	case nil:
-		safeUser := &model.SafeUser{
+		safeUser := &SafeUser{
 			Id:   user.Id,
 			Name: user.Name,
 			Role: user.Role,
@@ -58,7 +56,7 @@ func handleUserGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getUserById(id int64) (*model.User, error) {
+func getUserById(id int64) (*User, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -76,7 +74,7 @@ func getUserById(id int64) (*model.User, error) {
 }
 
 func handleUserPost(w http.ResponseWriter, r *http.Request) {
-	var user model.User
+	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -88,7 +86,7 @@ func handleUserPost(w http.ResponseWriter, r *http.Request) {
 	createdUser, err := createUser(&user)
 	switch err {
 	case nil:
-		safeUser := &model.SafeUser{
+		safeUser := &SafeUser{
 			Id:   createdUser.Id,
 			Name: createdUser.Name,
 			Role: createdUser.Role,
@@ -113,7 +111,7 @@ func handleUserPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createUser(user *model.User) (*model.User, error) {
+func createUser(user *User) (*User, error) {
 	session := db.NewSession()
 	defer session.Close()
 
@@ -145,9 +143,6 @@ func createUser(user *model.User) (*model.User, error) {
 	return createdUser, nil
 }
 
-// TODO: Move to errors.go
-var ErrUserAlreadyExists = errors.New("User already exists")
-
 func handleUserDelete(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/user/")
 	if err != nil {
@@ -157,16 +152,11 @@ func handleUserDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = deleteUserById(id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
-	}
 
 	switch err {
 	case nil:
 		w.WriteHeader(http.StatusOK)
-	case ErrCannotDeleteAdmin:
+	case ErrCannotDeleteRoot:
 		w.WriteHeader(http.StatusForbidden)
 		w.Write([]byte(err.Error()))
 	default:
@@ -196,20 +186,17 @@ func deleteUserById(id int64) error {
 		return err
 	}
 
-	// Prevent admins from deleting other admins
-	if user.Role == model.Admin {
-		return ErrCannotDeleteAdmin
+	// Prevent admins from deleting the root user
+	if user.Name == "root" {
+		return ErrCannotDeleteRoot
 	}
 
 	return repo.DeleteById(id)
 }
 
-// TODO: Move to errors.go
-var ErrCannotDeleteAdmin = errors.New("Cannot delete admin user")
-
 func handleUserPut(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/user/")
-	var user model.User
+	var user User
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -226,7 +213,7 @@ func handleUserPut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	safeUser := &model.SafeUser{
+	safeUser := &SafeUser{
 		Id:   user.Id,
 		Name: user.Name,
 		Role: user.Role,
@@ -244,7 +231,7 @@ func handleUserPut(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func updateUser(user *model.User) error {
+func updateUser(user *User) error {
 	session := db.NewSession()
 	defer session.Close()
 

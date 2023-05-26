@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
@@ -48,7 +47,7 @@ func handleLoginGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getUserByName(name string) (*model.User, error) {
+func getUserByName(name string) (*User, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -65,7 +64,7 @@ func getUserByName(name string) (*model.User, error) {
 	return repo.GetByName(name)
 }
 
-func authUser(r *http.Request) (*model.SafeUser, error) {
+func authUser(r *http.Request) (*SafeUser, error) {
 	authHeader := r.Header.Get("Authorization")
 	disasembledAuthHeader := strings.Split(authHeader, " ")
 	if len(disasembledAuthHeader) != 2 || disasembledAuthHeader[0] != "Basic" {
@@ -96,7 +95,7 @@ func authUser(r *http.Request) (*model.SafeUser, error) {
 		return nil, ErrWrongCredentials
 	}
 
-	return &model.SafeUser{
+	return &SafeUser{
 		Id:   user.Id,
 		Name: user.Name,
 		Role: user.Role,

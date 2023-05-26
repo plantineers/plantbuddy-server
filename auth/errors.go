@@ -13,3 +13,9 @@ var ErrInsufficientPermissions = errors.New("insufficient permissions!")
 
 // The authorization header is invalid.
 var ErrInvalidAuthHeader = errors.New("invalid authorization header!")
+
+// The root user cannot be deleted.
+var ErrCannotDeleteRoot = errors.New("Cannot delete root user")
+
+// The user already exists.
+var ErrUserAlreadyExists = errors.New("User already exists")

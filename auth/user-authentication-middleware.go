@@ -3,12 +3,10 @@ package auth
 
 import (
 	"net/http"
-
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 // Takes as parameters the function serving the endpoint, the minimum role, an array of functions that are not subject to authentication
-func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role model.Role, unrestrictedMethods []string) http.Handler {
+func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role Role, unrestrictedMethods []string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handler := http.HandlerFunc(f)
 
