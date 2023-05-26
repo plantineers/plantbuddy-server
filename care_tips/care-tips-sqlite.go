@@ -64,3 +64,27 @@ func (r *CareTipsSqliteRepository) GetAdditionalByPlantId(id int64) ([]string, e
 
 	return careTips, nil
 }
+
+func (r *CareTipsSqliteRepository) Create(plantGroupId int64, careTips []string) error {
+	statement, err := r.db.Prepare(`
+        INSERT INTO CARE_TIPS (PLANT_GROUP, TIP)
+        VALUES (?, ?);`)
+
+	if err != nil {
+		return err
+	}
+
+	for _, careTip := range careTips {
+		_, err = statement.Exec(plantGroupId, careTip)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *CareTipsSqliteRepository) DeleteAllByPlantGroupId(id int64) error {
+	_, err := r.db.Exec(`DELETE FROM CARE_TIPS WHERE PLANT_GROUP = ?;`, id)
+	return err
+}

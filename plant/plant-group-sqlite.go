@@ -1,6 +1,7 @@
 package plant
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -98,4 +99,119 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 	}
 
 	return plantGroupIds, nil
+}
+
+func (r *PlantGroupSqliteRepository) Create(plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	statement, err := r.db.Prepare(`
+        INSERT INTO PLANT_GROUP (NAME, DESCRIPTION)
+        VALUES (?, ?);`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := statement.Exec(plantGroup.Name, plantGroup.Description)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	id, _ := result.LastInsertId()
+	err = r.careTipsRepository.Create(id, plantGroup.CareTips)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.sensorRangeRepository.CreateAll(id, plantGroup.SensorRanges)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+	return r.GetById(id)
+}
+
+func (r *PlantGroupSqliteRepository) Update(id int64, plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	var statement, err = r.db.Prepare(`
+        UPDATE PLANT_GROUP
+        SET NAME = ?,
+            DESCRIPTION = ?
+        WHERE ID = ?;`,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	_, err = statement.Exec(
+		plantGroup.Name,
+		plantGroup.Description,
+		id,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.careTipsRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.careTipsRepository.Create(id, plantGroup.CareTips)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.sensorRangeRepository.UpdateAll(id, plantGroup.SensorRanges)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+	return r.GetById(id)
+}
+
+func (r *PlantGroupSqliteRepository) Delete(id int64) error {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	var statement, err = r.db.Prepare(`DELETE FROM PLANT_GROUP WHERE ID = ?;`)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = statement.Exec(id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.careTipsRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.sensorRangeRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
 }
