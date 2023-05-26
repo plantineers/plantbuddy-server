@@ -2,11 +2,9 @@
 package auth
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/model"
-	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 // Takes as parameters the function serving the endpoint, the minimum role, an array of functions that are not subject to authentication
@@ -23,46 +21,27 @@ func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role model.R
 			}
 		}
 
-		userName := r.Header.Get("X-User-Name")
-		password := r.Header.Get("X-User-Password")
-
-		// Check if credentials were supplied
-		if userName == "" || password == "" {
+		user, err := authUser(r)
+		switch err {
+		case ErrWrongCredentials:
 			w.WriteHeader(http.StatusForbidden)
-			_, err := w.Write([]byte("No credentials supplied!"))
-			if err != nil {
+			w.Write([]byte("Wrong credentials"))
+		case ErrNoCredentials:
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("No credentials supplied"))
+		case nil:
+			// Check role
+			if user.Role > role {
+				w.WriteHeader(http.StatusForbidden)
+				w.Write([]byte("Insufficient permissions"))
 				return
 			}
-			return
-		}
 
-		// Get user from db
-		user, err := getUserByName(userName)
-		if err == sql.ErrNoRows { // User not found
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("User not found"))
-			return
-		} else if err != nil { // Database error
+			handler.ServeHTTP(w, r)
+		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
-			return
 		}
 
-		// Check password
-		password = utils.HashPassword(password)
-		if password != user.Password {
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("Invalid password"))
-			return
-		}
-
-		// Check role
-		if user.Role > role {
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("Insufficient permissions"))
-			return
-		}
-
-		handler.ServeHTTP(w, r)
 	})
 }

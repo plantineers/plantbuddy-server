@@ -3,8 +3,10 @@ package auth
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
@@ -21,55 +23,29 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleLoginGet(w http.ResponseWriter, r *http.Request) {
-	userName := r.Header.Get("X-User-Name")
-	password := r.Header.Get("X-User-Password")
-
-	// Check if credentials were supplied
-	if userName == "" || password == "" {
+	safeUser, err := authUser(r)
+	switch err {
+	case ErrWrongCredentials:
 		w.WriteHeader(http.StatusForbidden)
-		_, err := w.Write([]byte("No credentials supplied!"))
+		w.Write([]byte("Wrong credentials"))
+	case ErrNoCredentials:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("No credentials supplied"))
+	case nil:
+		b, err := json.Marshal(safeUser)
 		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
 			return
 		}
-		return
-	}
 
-	// Get user from db
-	user, err := getUserByName(userName)
-	if err == sql.ErrNoRows { // User not found
-		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("User not found"))
-		return
-	} else if err != nil { // Database error
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(b)
+	default:
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
-		return
 	}
-
-	// Check password
-	password = utils.HashPassword(password)
-	if password != user.Password {
-		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("Invalid password"))
-		return
-	}
-
-	safeUser := &model.SafeUser{
-		Id:   user.Id,
-		Name: user.Name,
-		Role: user.Role,
-	}
-
-	b, err := json.Marshal(safeUser)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
 }
 
 func getUserByName(name string) (*model.User, error) {
@@ -87,4 +63,42 @@ func getUserByName(name string) (*model.User, error) {
 	}
 
 	return repo.GetByName(name)
+}
+
+func authUser(r *http.Request) (*model.SafeUser, error) {
+	authHeader := r.Header.Get("Authorization")
+	disasembledAuthHeader := strings.Split(authHeader, " ")
+	if len(disasembledAuthHeader) != 2 || disasembledAuthHeader[0] != "Basic" {
+		return nil, ErrInvalidAuthHeader
+	}
+
+	decodedAuthHeaderDigest := make([]byte, base64.StdEncoding.DecodedLen(len(disasembledAuthHeader[1])))
+	n, err := base64.StdEncoding.Decode(decodedAuthHeaderDigest, []byte(disasembledAuthHeader[1]))
+	if err != nil {
+		return nil, ErrInvalidAuthHeader
+	}
+
+	decodedAuthHeader := strings.Split(string(decodedAuthHeaderDigest[:n]), ":")
+	userName := decodedAuthHeader[0]
+	password := decodedAuthHeader[1]
+
+	// Get user from db
+	user, err := getUserByName(userName)
+	if err == sql.ErrNoRows { // User not found
+		return nil, ErrWrongCredentials
+	} else if err != nil { // Database error
+		return nil, err
+	}
+
+	// Check password
+	password = utils.HashPassword(password)
+	if password != user.Password {
+		return nil, ErrWrongCredentials
+	}
+
+	return &model.SafeUser{
+		Id:   user.Id,
+		Name: user.Name,
+		Role: user.Role,
+	}, nil
 }

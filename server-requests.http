@@ -1,7 +1,6 @@
 ### Get sensor data sets.
 GET http://localhost:3333/v1/sensor-data?sensor=humidity&plant=1&from=2019-01-01T00:00:00.000Z&to=2023-05-20T00:00:00.000Z
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Save a new sensor data set.
 POST http://localhost:3333/v1/sensor-data
@@ -19,8 +18,7 @@ Content-Type: application/json
 
 ### Get a single plant.
 GET http://localhost:3333/v1/plant/3
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Update a plant.
 PUT http://localhost:3333/v1/plant/3
@@ -59,23 +57,19 @@ X-User-Password: 1234
 
 ### Get all plant IDs.
 GET http://localhost:3333/v1/plants
-X-User-Name: testuser
-X-User-Password: 1234
+
 
 ### Get all plants in a plant group.
 GET http://localhost:3333/v1/plants?plantGroupId=1
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Get a single plant group.
 GET http://localhost:3333/v1/plant-group/1
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Create a plant group.
 POST http://localhost:3333/v1/plant-group
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 {
     "name": "Cactaceae",
@@ -95,8 +89,7 @@ X-User-Password: 1234
 
 ### Update a plant group.
 PUT http://localhost:3333/v1/plant-group/1
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 {
     "name": "Cactaceae",
@@ -116,24 +109,20 @@ X-User-Password: 1234
 
 ### Delete a plant group.
 DELETE http://localhost:3333/v1/plant-group/1
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Get all sensor type IDs.
 GET http://localhost:3333/v1/sensor-types
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 
 ### Get a single controller.
 GET http://localhost:3333/v1/controller/fbf30c62-ce17-45fc-a596-42bc33d11758
-X-User-Name: testuser
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Get all users.
 GET http://localhost:3333/v1/users
@@ -147,8 +136,7 @@ X-User-Password: 1234
 
 ### Login a user. Returns the corresponding user.
 GET http://localhost:3333/v1/user/login
-X-User-Name: testuser42
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Create a new user.
 POST http://localhost:3333/v1/user/
