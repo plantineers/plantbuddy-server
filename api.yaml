@@ -205,6 +205,117 @@ paths:
                                         type: string
                                         example: "Plant not found"
 
+        post:
+            summary: Adds a plant
+            description: Adds a plant.
+            operationId: addPlant
+
+            requestBody:
+                description: Plant to add
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/PlantChange"
+
+            responses:
+                "200":
+                    description: Plant added
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Plant"
+
+                "400":
+                    description: Invalid plant
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid plant"
+
+        put:
+            summary: Updates a plant
+            description: Updates a plant.
+            operationId: updatePlant
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the plant
+                  required: true
+                  schema:
+                      type: integer
+
+            requestBody:
+                description: Plant to update
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/PlantChange"
+
+            responses:
+                "200":
+                    description: Plant updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Plant"
+
+                "400":
+                    description: Invalid plant
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Invalid plant"
+
+                "404":
+                    description: Plant not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Plant not found"
+
+        delete:
+            summary: Deletes a plant
+            description: Deletes a plant.
+            operationId: deletePlant
+
+            parameters:
+                - name: id
+                  in: path
+                  description: ID of the plant
+                  required: true
+                  schema:
+                      type: integer
+
+            responses:
+                "200":
+                    description: Plant deleted
+
+                "404":
+                    description: Plant not found
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    message:
+                                        type: string
+                                        example: "Plant not found"
+
     /plant-groups:
         get:
             summary: Returns all plant groups
@@ -525,6 +636,21 @@ components:
                     description: An optional description.
                     example: "The big one behind the door"
 
+                name:
+                    type: string
+                    description: Name of the plant.
+                    example: "Cactus"
+
+                species:
+                    type: string
+                    description: Species of the plant.
+                    example: "Cactaceae"
+
+                location:
+                    type: string
+                    description: Location of the plant.
+                    example: "Window"
+
                 group:
                     description: Plant group of the plant.
                     $ref: "#/components/schemas/PlantGroup"
@@ -536,6 +662,47 @@ components:
                     items:
                         type: string
                         example: ["Massage every morning"]
+
+        PlantChange:
+            type: object
+            description: A plant.
+
+            required:
+                - "group"
+
+            properties:
+                description:
+                    type: string
+                    description: An optional description.
+                    example: "The big one behind the door"
+
+                name:
+                    type: string
+                    description: Name of the plant.
+                    example: "Cactus"
+
+                species:
+                    type: string
+                    description: Species of the plant.
+                    example: "Cactaceae"
+
+                location:
+                    type: string
+                    description: Location of the plant.
+                    example: "Window"
+
+                plantGroupId:
+                    type: integer
+                    description: Plant group id of the plant.
+                    example: 1
+
+                additionalCareTips:
+                    type: array
+                    description: Optional additional care tips.
+
+                    items:
+                        type: string
+                        example: [ "Massage every morning" ]
 
         PlantIds:
             type: object
