@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -14,8 +16,7 @@ import (
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		w.Write([]byte("Method not allowed. Login only supports GET requests."))
+		utils.HttpMethodNotAllowedResponse(w, "Method not allowed. Login only supports GET requests.")
 		return
 	}
 	handleLoginGet(w, r)
@@ -25,25 +26,22 @@ func handleLoginGet(w http.ResponseWriter, r *http.Request) {
 	safeUser, err := authUser(r)
 	switch err {
 	case ErrWrongCredentials:
-		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("Wrong credentials"))
+		utils.HttpForbiddenResponse(w, "Wrong credentials")
 	case ErrNoCredentials:
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("No credentials supplied"))
+		utils.HttpBadRequestResponse(w, "No credentials supplied")
 	case nil:
 		b, err := json.Marshal(safeUser)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			msg := fmt.Sprintf("Error converting user %s to JSON: %s", safeUser.Name, err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		log.Printf("User %s logged in", safeUser.Name)
+		utils.HttpOkResponse(w, b)
 	default:
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		msg := fmt.Sprintf("Error while authenticating user: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 	}
 }
 

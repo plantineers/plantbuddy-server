@@ -29,7 +29,25 @@ func HttpCreatedResponse(w http.ResponseWriter, b []byte, location string, msg s
 	w.Write(b)
 }
 
-// HttpNoContentResponse writes a 404 Not Found response with the given message as the body.
+// HttpBadRequestResponse writes a 400 Bad Request response with the given message as the body.
+// The Content-Type header is set to plain/text. It logs the given message.
+func HttpBadRequestResponse(w http.ResponseWriter, msg string) {
+	log.Print(msg)
+	w.Header().Add(headerContentType, mimeText)
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write([]byte(msg))
+}
+
+// HttpForbiddenResponse writes a 403 Forbidden response with the given message as the body.
+// The Content-Type header is set to plain/text. It logs the given message.
+func HttpForbiddenResponse(w http.ResponseWriter, msg string) {
+	log.Print(msg)
+	w.Header().Add(headerContentType, mimeText)
+	w.WriteHeader(http.StatusForbidden)
+	w.Write([]byte(msg))
+}
+
+// HttpNotFoundResponse writes a 404 Not Found response with the given message as the body.
 // The Content-Type header is set to plain/text. It logs the given message.
 func HttpNotFoundResponse(w http.ResponseWriter, msg string) {
 	log.Print(msg)
@@ -38,12 +56,21 @@ func HttpNotFoundResponse(w http.ResponseWriter, msg string) {
 	w.Write([]byte(msg))
 }
 
-// HttpBadRequestResponse writes a 400 Bad Request response with the given message as the body.
+// HttpMethodNotAllowedResponse writes a 405 Method Not Allowed response with the given message as the body.
 // The Content-Type header is set to plain/text. It logs the given message.
-func HttpBadRequestResponse(w http.ResponseWriter, msg string) {
+func HttpMethodNotAllowedResponse(w http.ResponseWriter, msg string) {
 	log.Print(msg)
 	w.Header().Add(headerContentType, mimeText)
-	w.WriteHeader(http.StatusBadRequest)
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	w.Write([]byte(msg))
+}
+
+// HttpConflictResponse writes a 409 Conflict response with the given message as the body.
+// The Content-Type header is set to plain/text. It logs the given message.
+func HttpConflictResponse(w http.ResponseWriter, msg string) {
+	log.Print(msg)
+	w.Header().Add(headerContentType, mimeText)
+	w.WriteHeader(http.StatusConflict)
 	w.Write([]byte(msg))
 }
 
