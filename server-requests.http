@@ -16,24 +16,10 @@ Content-Type: application/json
     ]
 }
 
+
 ### Get a single plant.
 GET http://localhost:3333/v1/plant/3
 Authorization: Basic dGVzdHVzZXI6MTIzNA==
-
-### Update a plant.
-PUT http://localhost:3333/v1/plant/3
-X-User-Name: root
-X-User-Password: 1234
-Content-Type: application/json
-
-{
-    "name": "testplant-3",
-    "description": "testplant that has been modified",
-    "plantGroupId": 1,
-    "Species": "Test Plant",
-    "Location": "Das andere Fenster",
-    "additionalCareTips": ["Wasser geben", "Düngen", "Liebe geben"]
-}
 
 ### Create a new plant.
 POST http://localhost:3333/v1/plant
@@ -50,10 +36,26 @@ Content-Type: application/json
     "additionalCareTips": ["Wasser geben", "Düngen"]
 }
 
+### Update a plant.
+PUT http://localhost:3333/v1/plant/3
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testplant-3",
+    "description": "testplant that has been modified",
+    "plantGroupId": 1,
+    "Species": "Test Plant",
+    "Location": "Das andere Fenster",
+    "additionalCareTips": ["Wasser geben", "Düngen", "Liebe geben"]
+}
+
 ### Delete a plant.
 DELETE http://localhost:3333/v1/plant/4
 X-User-Name: root
 X-User-Password: 1234
+
 
 ### Get all plant IDs.
 GET http://localhost:3333/v1/plants
@@ -111,11 +113,13 @@ Authorization: Basic dGVzdHVzZXI6MTIzNA==
 DELETE http://localhost:3333/v1/plant-group/1
 Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
+
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
 Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
-### Get all sensor type IDs.
+
+### Get all sensor types.
 GET http://localhost:3333/v1/sensor-types
 Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
@@ -124,24 +128,24 @@ Authorization: Basic dGVzdHVzZXI6MTIzNA==
 GET http://localhost:3333/v1/controller/fbf30c62-ce17-45fc-a596-42bc33d11758
 Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
-### Get all users.
-GET http://localhost:3333/v1/users
-X-User-Name: root
-X-User-Password: 1234
-
-### Get a single user.
-GET http://localhost:3333/v1/user/7
-X-User-Name: root
-X-User-Password: 1234
 
 ### Login a user. Returns the corresponding user.
 GET http://localhost:3333/v1/user/login
 Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
+
+### Get all users.
+GET http://localhost:3333/v1/users
+Authorization: Basic cm9vdDoxMjM0
+
+
+### Get a single user.
+GET http://localhost:3333/v1/user/7
+Authorization: Basic cm9vdDoxMjM0
+
 ### Create a new user.
 POST http://localhost:3333/v1/user/
-X-User-Name: root
-X-User-Password: 1234
+Authorization: Basic cm9vdDoxMjM0
 Content-Type: application/json
 
 {
@@ -152,8 +156,7 @@ Content-Type: application/json
 
 ### Update a user.
 PUT http://localhost:3333/v1/user/7
-X-User-Name: root
-X-User-Password: 1234
+Authorization: Basic cm9vdDoxMjM0
 Content-Type: application/json
 
 {
@@ -164,5 +167,4 @@ Content-Type: application/json
 
 ### Delete a user.
 DELETE http://localhost:3333/v1/user/7
-X-User-Name: root
-X-User-Password: 1234
+Authorization: Basic cm9vdDoxMjM0
