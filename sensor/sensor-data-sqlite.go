@@ -66,13 +66,8 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.
 func (r *SensorDataSqliteRepository) Save(data *model.SensorData) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	statement, err := r.db.Prepare("INSERT INTO SENSOR_DATA (CONTROLLER, SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?, ?)")
-	if err != nil {
-		return err
-	}
-	defer statement.Close()
-
-	_, err = statement.Exec(data.Controller, data.Sensor, data.Value, data.Timestamp)
+	_, err := r.db.Exec("INSERT INTO SENSOR_DATA (CONTROLLER, SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?, ?)",
+		data.Controller, data.Sensor, data.Value, data.Timestamp)
 	if err != nil {
 		tx.Rollback()
 		return err
