@@ -1,6 +1,6 @@
 ### Get sensor data sets.
 GET http://localhost:3333/v1/sensor-data?sensor=humidity&plant=1&from=2019-01-01T00:00:00.000Z&to=2023-05-20T00:00:00.000Z
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Save a new sensor data set.
 POST http://localhost:3333/v1/sensor-data
@@ -19,11 +19,11 @@ Content-Type: application/json
 
 ### Get a single plant.
 GET http://localhost:3333/v1/plant/3
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Create a new plant.
 POST http://localhost:3333/v1/plant
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 Content-Type: application/json
 
 {
@@ -37,7 +37,7 @@ Content-Type: application/json
 
 ### Update a plant.
 PUT http://localhost:3333/v1/plant/3
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 Content-Type: application/json
 
 {
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 ### Delete a plant.
 DELETE http://localhost:3333/v1/plant/4
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get all plant IDs.
@@ -60,15 +60,15 @@ GET http://localhost:3333/v1/plants
 
 ### Get all plants in a plant group.
 GET http://localhost:3333/v1/plants?plantGroupId=1
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Get a single plant group.
 GET http://localhost:3333/v1/plant-group/1
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Create a plant group.
 POST http://localhost:3333/v1/plant-group
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 {
     "name": "Cactaceae",
@@ -88,7 +88,7 @@ Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Update a plant group.
 PUT http://localhost:3333/v1/plant-group/1
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 {
     "name": "Cactaceae",
@@ -108,41 +108,41 @@ Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Delete a plant group.
 DELETE http://localhost:3333/v1/plant-group/1
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get all sensor types.
 GET http://localhost:3333/v1/sensor-types
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get a single controller.
 GET http://localhost:3333/v1/controller/fbf30c62-ce17-45fc-a596-42bc33d11758
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Login a user. Returns the corresponding user.
 GET http://localhost:3333/v1/user/login
-Authorization: Basic dGVzdHVzZXI6MTIzNA==
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get all users.
 GET http://localhost:3333/v1/users
-Authorization: Basic cm9vdDoxMjM0
+Authorization: Basic cm9vdDpyb290
 
 
 ### Get a single user.
 GET http://localhost:3333/v1/user/7
-Authorization: Basic cm9vdDoxMjM0
+Authorization: Basic cm9vdDpyb290
 
 ### Create a new user.
 POST http://localhost:3333/v1/user/
-Authorization: Basic cm9vdDoxMjM0
+Authorization: Basic cm9vdDpyb290
 Content-Type: application/json
 
 {
@@ -153,7 +153,7 @@ Content-Type: application/json
 
 ### Update a user.
 PUT http://localhost:3333/v1/user/7
-Authorization: Basic cm9vdDoxMjM0
+Authorization: Basic cm9vdDpyb290
 Content-Type: application/json
 
 {
@@ -164,4 +164,4 @@ Content-Type: application/json
 
 ### Delete a user.
 DELETE http://localhost:3333/v1/user/7
-Authorization: Basic cm9vdDoxMjM0
+Authorization: Basic cm9vdDpyb290
