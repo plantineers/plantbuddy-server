@@ -7,7 +7,6 @@ import (
 	"errors"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 type SensorDataSqliteRepository struct {
@@ -24,7 +23,7 @@ func NewSensorDataRepository(session *db.Session) (SensorDataRepository, error) 
 	return &SensorDataSqliteRepository{db: session.DB}, nil
 }
 
-func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.SensorData, error) {
+func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*SensorData, error) {
 	rows, err := r.db.Query(`
     SELECT SD.CONTROLLER,
        SD.SENSOR,
@@ -40,7 +39,7 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.
 		return nil, err
 	}
 
-	var data []*model.SensorData
+	var data []*SensorData
 	for rows.Next() {
 		var controller string
 		var sensor string
@@ -52,7 +51,7 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.
 			return nil, err
 		}
 
-		data = append(data, &model.SensorData{
+		data = append(data, &SensorData{
 			Controller: controller,
 			Sensor:     sensor,
 			Value:      value,
@@ -63,7 +62,7 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*model.
 	return data, nil
 }
 
-func (r *SensorDataSqliteRepository) Save(data *model.SensorData) error {
+func (r *SensorDataSqliteRepository) Save(data *SensorData) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
 	_, err := r.db.Exec("INSERT INTO SENSOR_DATA (CONTROLLER, SENSOR, VALUE, TIMESTAMP) VALUES (?, ?, ?, ?)",
@@ -81,7 +80,7 @@ func (r *SensorDataSqliteRepository) Save(data *model.SensorData) error {
 	return nil
 }
 
-func (r *SensorDataSqliteRepository) SaveAll(data []*model.SensorData) []error {
+func (r *SensorDataSqliteRepository) SaveAll(data []*SensorData) []error {
 	var errors []error
 	for _, d := range data {
 		err := r.Save(d)
