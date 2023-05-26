@@ -1,3 +1,4 @@
+// Author: Maximilian Floto
 package user_management
 
 import "github.com/plantineers/plantbuddy-server/model"

@@ -1,10 +1,12 @@
+// Author: Maximilian Floto
 package user_management
 
 import (
 	"database/sql"
+	"net/http"
+
 	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
-	"net/http"
 )
 
 // Takes as parameters the function serving the endpoint, the minimum role, an array of functions that are not subject to authentication

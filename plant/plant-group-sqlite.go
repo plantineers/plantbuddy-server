@@ -1,6 +1,7 @@
 package plant
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -87,7 +88,6 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 		return nil, err
 	}
 
-	// Iterate over all rows and query the ID of the plant group..
 	for rows.Next() {
 		var plantGroupId int64
 		err = rows.Scan(&plantGroupId)
@@ -98,4 +98,104 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 	}
 
 	return plantGroupIds, nil
+}
+
+func (r *PlantGroupSqliteRepository) Create(plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	result, err := r.db.Exec(`
+        INSERT INTO PLANT_GROUP (NAME, DESCRIPTION)
+        VALUES (?, ?);`, plantGroup.Name, plantGroup.Description)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	id, _ := result.LastInsertId()
+	err = r.careTipsRepository.Create(id, plantGroup.CareTips)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.sensorRangeRepository.CreateAll(id, plantGroup.SensorRanges)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+	return r.GetById(id)
+}
+
+func (r *PlantGroupSqliteRepository) Update(id int64, plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	_, err := r.db.Exec(`
+        UPDATE PLANT_GROUP
+        SET NAME = ?,
+            DESCRIPTION = ?
+        WHERE ID = ?;`,
+		plantGroup.Name,
+		plantGroup.Description,
+		id,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.careTipsRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.careTipsRepository.Create(id, plantGroup.CareTips)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.sensorRangeRepository.UpdateAll(id, plantGroup.SensorRanges)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+	return r.GetById(id)
+}
+
+func (r *PlantGroupSqliteRepository) Delete(id int64) error {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	_, err := r.db.Exec(`DELETE FROM PLANT_GROUP WHERE ID = ?;`, id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.careTipsRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.sensorRangeRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
 }

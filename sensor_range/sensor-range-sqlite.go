@@ -1,3 +1,4 @@
+// Author: Yannick Kirschen
 package sensor_range
 
 import (
@@ -49,4 +50,48 @@ func (r *SensorRangeSqliteRepository) GetAllByPlantGroupId(id int64) ([]*model.S
 	}
 
 	return sensorRanges, nil
+}
+
+func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *model.SensorRange) error {
+	_, err := r.db.Exec(`
+    INSERT INTO SENSOR_RANGE (PLANT_GROUP, SENSOR, MIN, MAX)
+        VALUES (?, ?, ?, ?);`, plantGroupId, sensorRange.SensorType.Name, sensorRange.Min, sensorRange.Max)
+
+	return err
+}
+
+func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges []*model.SensorRange) error {
+	for _, sensorRange := range sensorRanges {
+		err := r.Create(plantGroupId, sensorRange)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *SensorRangeSqliteRepository) Update(plantGroupId int64, sensorRange *model.SensorRange) error {
+	_, err := r.db.Exec(`
+    UPDATE SENSOR_RANGE
+        SET MIN = ?, MAX = ?
+        WHERE PLANT_GROUP = ? AND SENSOR = ?;`, sensorRange.Min, sensorRange.Max, plantGroupId, sensorRange.SensorType.Name)
+
+	return err
+}
+
+func (r *SensorRangeSqliteRepository) UpdateAll(plantGroupId int64, sensorRanges []*model.SensorRange) error {
+	for _, sensorRange := range sensorRanges {
+		err := r.Update(plantGroupId, sensorRange)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *SensorRangeSqliteRepository) DeleteAllByPlantGroupId(id int64) error {
+	_, err := r.db.Exec(`DELETE FROM SENSOR_RANGE WHERE PLANT_GROUP = ?;`, id)
+	return err
 }

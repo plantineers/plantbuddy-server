@@ -5,9 +5,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/plantineers/plantbuddy-server/model"
-	"github.com/plantineers/plantbuddy-server/user-management"
 	"net/http"
+
+	"github.com/plantineers/plantbuddy-server/model"
+	user_management "github.com/plantineers/plantbuddy-server/user-management"
 
 	"github.com/plantineers/plantbuddy-server/config"
 	"github.com/plantineers/plantbuddy-server/controller"
@@ -35,6 +36,7 @@ func main() {
 	http.Handle("/v1/plant/", user_management.UserAuthMiddleware(plant.PlantHandler, model.Gardener, []string{}))
 
 	http.Handle("/v1/plant-groups", user_management.UserAuthMiddleware(plant.PlantGroupsHandler, model.Gardener, []string{}))
+	http.Handle("/v1/plant-group", user_management.UserAuthMiddleware(plant.PlantGroupCreateHandler, model.Gardener, []string{}))
 	http.Handle("/v1/plant-group/", user_management.UserAuthMiddleware(plant.PlantGroupHandler, model.Gardener, []string{}))
 
 	http.Handle("/v1/users", user_management.UserAuthMiddleware(user_management.UsersHandler, model.Admin, []string{}))
