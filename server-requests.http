@@ -23,8 +23,7 @@ Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 ### Create a new plant.
 POST http://localhost:3333/v1/plant
-X-User-Name: root
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 Content-Type: application/json
 
 {
@@ -38,8 +37,7 @@ Content-Type: application/json
 
 ### Update a plant.
 PUT http://localhost:3333/v1/plant/3
-X-User-Name: root
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 Content-Type: application/json
 
 {
@@ -53,8 +51,7 @@ Content-Type: application/json
 
 ### Delete a plant.
 DELETE http://localhost:3333/v1/plant/4
-X-User-Name: root
-X-User-Password: 1234
+Authorization: Basic dGVzdHVzZXI6MTIzNA==
 
 
 ### Get all plant IDs.
