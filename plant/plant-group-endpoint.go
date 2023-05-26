@@ -15,7 +15,7 @@ const convertErrorStr = "Error converting plant group %d to JSON: %s"
 
 func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: POST")
 		return
 	}
 
@@ -38,7 +38,7 @@ func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodDelete:
 		handlePlantGroupDelete(w, r, id)
 	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET, PUT, DELETE")
 	}
 }
 

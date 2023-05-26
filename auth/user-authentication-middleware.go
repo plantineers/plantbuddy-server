@@ -2,7 +2,10 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 // Takes as parameters the function serving the endpoint, the minimum role, an array of functions that are not subject to authentication
@@ -22,24 +25,19 @@ func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role Role, u
 		user, err := authUser(r)
 		switch err {
 		case ErrWrongCredentials:
-			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("Wrong credentials"))
+			utils.HttpForbiddenResponse(w, "Wrong credentials")
 		case ErrNoCredentials:
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("No credentials supplied"))
+			utils.HttpBadRequestResponse(w, "No credentials supplied")
 		case nil:
-			// Check role
 			if user.Role > role {
-				w.WriteHeader(http.StatusForbidden)
-				w.Write([]byte("Insufficient permissions"))
+				utils.HttpForbiddenResponse(w, "Insufficient permissions")
 				return
 			}
 
 			handler.ServeHTTP(w, r)
 		default:
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			msg := fmt.Sprintf("Error authenticating user: %s", err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
 		}
-
 	})
 }

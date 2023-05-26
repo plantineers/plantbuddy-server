@@ -16,7 +16,7 @@ import (
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		utils.HttpMethodNotAllowedResponse(w, "Method not allowed. Login only supports GET requests.")
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
 		return
 	}
 	handleLoginGet(w, r)
@@ -64,13 +64,13 @@ func getUserByName(name string) (*User, error) {
 
 func authUser(r *http.Request) (*SafeUser, error) {
 	authHeader := r.Header.Get("Authorization")
-	disasembledAuthHeader := strings.Split(authHeader, " ")
-	if len(disasembledAuthHeader) != 2 || disasembledAuthHeader[0] != "Basic" {
+	disassembledAuthHeader := strings.Split(authHeader, " ")
+	if len(disassembledAuthHeader) != 2 || disassembledAuthHeader[0] != "Basic" {
 		return nil, ErrInvalidAuthHeader
 	}
 
-	decodedAuthHeaderDigest := make([]byte, base64.StdEncoding.DecodedLen(len(disasembledAuthHeader[1])))
-	n, err := base64.StdEncoding.Decode(decodedAuthHeaderDigest, []byte(disasembledAuthHeader[1]))
+	decodedAuthHeaderDigest := make([]byte, base64.StdEncoding.DecodedLen(len(disassembledAuthHeader[1])))
+	n, err := base64.StdEncoding.Decode(decodedAuthHeaderDigest, []byte(disassembledAuthHeader[1]))
 	if err != nil {
 		return nil, ErrInvalidAuthHeader
 	}

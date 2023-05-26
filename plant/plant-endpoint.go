@@ -17,7 +17,7 @@ func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		handlePlantPost(w, r)
 	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: POST")
 	}
 }
 
@@ -32,12 +32,12 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handlePlantGet(w, r, id)
-	case http.MethodDelete:
-		handlePlantDelete(w, r, id)
 	case http.MethodPut:
 		handlePlantPut(w, r, id)
+	case http.MethodDelete:
+		handlePlantDelete(w, r, id)
 	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET, PUT, DELETE")
 	}
 }
 

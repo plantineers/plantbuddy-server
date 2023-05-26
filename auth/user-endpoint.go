@@ -12,11 +12,17 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: POST")
+		return
+	}
+	handleUserPost(w, r)
+}
+
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/user/")
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
 		utils.HttpBadRequestResponse(w, "No user id supplied")
 		return
 	}
@@ -24,65 +30,13 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handleUserGet(w, r, id)
-	case http.MethodDelete:
-		handleUserDelete(w, r, id)
 	case http.MethodPut:
 		handleUserPut(w, r, id)
+	case http.MethodDelete:
+		handleUserDelete(w, r, id)
 	default:
-		utils.HttpMethodNotAllowedResponse(w, "Method not allowed.")
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET, PUT, DELETE")
 	}
-}
-
-func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.HttpMethodNotAllowedResponse(w, "Method not allowed. User creation only supports POST requests.")
-		return
-	}
-	handleUserPost(w, r)
-}
-
-func handleUserGet(w http.ResponseWriter, r *http.Request, id int64) {
-	user, err := getUserById(id)
-	switch err {
-	case nil:
-		safeUser := &SafeUser{
-			Id:   user.Id,
-			Name: user.Name,
-			Role: user.Role,
-		}
-		b, err := json.Marshal(safeUser)
-		if err != nil {
-			msg := fmt.Sprintf("Error converting safe user %s to JSON: %s", safeUser.Name, err.Error())
-			utils.HttpInternalServerErrorResponse(w, msg)
-			return
-		}
-
-		log.Printf("User %s loaded", safeUser.Name)
-		utils.HttpOkResponse(w, b)
-	case sql.ErrNoRows:
-		msg := fmt.Sprintf("User with id %d not found", id)
-		utils.HttpNotFoundResponse(w, msg)
-	default:
-		msg := fmt.Sprintf("Error while getting user with id %d: %s", id, err.Error())
-		utils.HttpBadRequestResponse(w, msg)
-	}
-}
-
-func getUserById(id int64) (*User, error) {
-	var session = db.NewSession()
-	defer session.Close()
-
-	err := session.Open()
-	if err != nil {
-		return nil, err
-	}
-
-	repo, err := NewUserRepository(session)
-	if err != nil {
-		return nil, err
-	}
-
-	return repo.GetById(id)
 }
 
 func handleUserPost(w http.ResponseWriter, r *http.Request) {
@@ -124,79 +78,31 @@ func handleUserPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createUser(user *User) (*User, error) {
-	session := db.NewSession()
-	defer session.Close()
-
-	err := session.Open()
-	if err != nil {
-		return nil, err
-	}
-
-	repo, err := NewUserRepository(session)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = repo.GetByName(user.Name)
-	if err == nil {
-		return nil, ErrUserAlreadyExists
-	}
-
-	err = repo.Create(user)
-	if err != nil {
-		return nil, err
-	}
-
-	createdUser, err := repo.GetByName(user.Name)
-	if err != nil {
-		return nil, err
-	}
-
-	return createdUser, nil
-}
-
-func handleUserDelete(w http.ResponseWriter, r *http.Request, id int64) {
-	err := deleteUserById(id)
-
+func handleUserGet(w http.ResponseWriter, r *http.Request, id int64) {
+	user, err := getUserById(id)
 	switch err {
 	case nil:
-		log.Printf("Deleted user with id %d", id)
-		utils.HttpOkResponse(w, nil)
-	case ErrCannotDeleteRoot:
-		msg := fmt.Sprintf("Error while deleting user with id %d (user is root): %s", id, err.Error())
-		utils.HttpForbiddenResponse(w, msg)
+		safeUser := &SafeUser{
+			Id:   user.Id,
+			Name: user.Name,
+			Role: user.Role,
+		}
+		b, err := json.Marshal(safeUser)
+		if err != nil {
+			msg := fmt.Sprintf("Error converting safe user %s to JSON: %s", safeUser.Name, err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
+			return
+		}
+
+		log.Printf("User %s loaded", safeUser.Name)
+		utils.HttpOkResponse(w, b)
+	case sql.ErrNoRows:
+		msg := fmt.Sprintf("User with id %d not found", id)
+		utils.HttpNotFoundResponse(w, msg)
 	default:
-		msg := fmt.Sprintf("Error while deleting user with id %d: %s", id, err.Error())
-		utils.HttpInternalServerErrorResponse(w, msg)
+		msg := fmt.Sprintf("Error while getting user with id %d: %s", id, err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 	}
-}
-
-func deleteUserById(id int64) error {
-	session := db.NewSession()
-	defer session.Close()
-
-	err := session.Open()
-	if err != nil {
-		return err
-	}
-
-	repo, err := NewUserRepository(session)
-	if err != nil {
-		return err
-	}
-
-	user, err := getUserById(id)
-	if err != nil {
-		return err
-	}
-
-	// Prevent admins from deleting the root user
-	if user.Name == "root" {
-		return ErrCannotDeleteRoot
-	}
-
-	return repo.DeleteById(id)
 }
 
 func handleUserPut(w http.ResponseWriter, r *http.Request, id int64) {
@@ -235,6 +141,71 @@ func handleUserPut(w http.ResponseWriter, r *http.Request, id int64) {
 	utils.HttpOkResponse(w, b)
 }
 
+func handleUserDelete(w http.ResponseWriter, r *http.Request, id int64) {
+	err := deleteUserById(id)
+
+	switch err {
+	case nil:
+		log.Printf("Deleted user with id %d", id)
+		utils.HttpOkResponse(w, nil)
+	case ErrCannotDeleteRoot:
+		msg := fmt.Sprintf("Error while deleting user with id %d (user is root): %s", id, err.Error())
+		utils.HttpForbiddenResponse(w, msg)
+	default:
+		msg := fmt.Sprintf("Error while deleting user with id %d: %s", id, err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
+	}
+}
+
+func createUser(user *User) (*User, error) {
+	session := db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = repo.GetByName(user.Name)
+	if err == nil {
+		return nil, ErrUserAlreadyExists
+	}
+
+	err = repo.Create(user)
+	if err != nil {
+		return nil, err
+	}
+
+	createdUser, err := repo.GetByName(user.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdUser, nil
+}
+
+func getUserById(id int64) (*User, error) {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return repo.GetById(id)
+}
+
 func updateUser(user *User) error {
 	session := db.NewSession()
 	defer session.Close()
@@ -250,4 +221,31 @@ func updateUser(user *User) error {
 	}
 
 	return repo.Update(user)
+}
+
+func deleteUserById(id int64) error {
+	session := db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repo, err := NewUserRepository(session)
+	if err != nil {
+		return err
+	}
+
+	user, err := getUserById(id)
+	if err != nil {
+		return err
+	}
+
+	// Prevent admins from deleting the root user
+	if user.Name == "root" {
+		return ErrCannotDeleteRoot
+	}
+
+	return repo.DeleteById(id)
 }

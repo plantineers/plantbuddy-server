@@ -4,9 +4,10 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/plantineers/plantbuddy-server/utils"
 	"log"
 	"net/http"
+
+	"github.com/plantineers/plantbuddy-server/utils"
 
 	"github.com/plantineers/plantbuddy-server/db"
 )
@@ -16,7 +17,7 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		handleUsersGet(w, r)
 	default:
-		utils.HttpMethodNotAllowedResponse(w, "Method not allowed.")
+		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
 	}
 }
 
