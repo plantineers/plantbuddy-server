@@ -9,7 +9,7 @@ Content-Type: application/json
 {
     "data": [
         {
-            "controller": "fbf30c62-ce17-45fc-a596-42bc33d11758",
+            "controller": "a955f72e-1e90-492f-bc62-a2145dd39f38",
             "sensor": "temperature",
             "value": 20.7
         }
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 
 ### Get a single plant.
-GET http://localhost:3333/v1/plant/3
+GET http://localhost:3333/v1/plant/1
 Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Create a new plant.
@@ -30,8 +30,8 @@ Content-Type: application/json
     "name": "testplant-3",
     "description": "testplant",
     "plantGroupId": 1,
-    "Species": "Test Plant",
-    "Location": "Das andere Fenster",
+    "species": "Test Plant",
+    "location": "Das andere Fenster",
     "additionalCareTips": ["Wasser geben", "Düngen"]
 }
 
@@ -73,7 +73,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
 {
     "name": "Cactaceae",
     "description": "Mein kleiner grüner Kaktus",
-    "careTips": ["Bene stinkt"],
+    "careTips": [],
     "sensorRanges": [
         {
             "sensorType": {
@@ -93,7 +93,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
 {
     "name": "Cactaceae",
     "description": "Mein kleiner grüner Kaktus",
-    "careTips": ["Bene stinkt nicht mehr"],
+    "careTips": [],
     "sensorRanges": [
         {
             "sensorType": {
@@ -122,7 +122,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get a single controller.
-GET http://localhost:3333/v1/controller/fbf30c62-ce17-45fc-a596-42bc33d11758
+GET http://localhost:3333/v1/controller/a955f72e-1e90-492f-bc62-a2145dd39f38
 Authorization: Basic a3J1c2U6SWxvdmVD
 
 
