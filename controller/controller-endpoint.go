@@ -16,10 +16,7 @@ func ControllerHandler(w http.ResponseWriter, r *http.Request) {
 	uuid, err := utils.PathParameterFilterStr(r.URL.Path, "/v1/controller/")
 	if err != nil {
 		msg := fmt.Sprintf("Error getting path variable (controller UUID): %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
@@ -36,29 +33,18 @@ func handleControllerGet(w http.ResponseWriter, r *http.Request, uuid string) {
 		b, err := json.Marshal(controller)
 		if err != nil {
 			msg := fmt.Sprintf("Error converting controller to JSON: %s", err.Error())
-
-			log.Print(msg)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(msg))
+			utils.HttpInternalServerErrorResponse(w, msg)
 			return
 		}
 
 		log.Printf("Controller with UUID %s loaded", uuid)
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		utils.HttpOkResponse(w, b)
 	case sql.ErrNoRows:
 		msg := fmt.Sprintf("Controller with UUID %s not found", uuid)
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte(msg))
+		utils.HttpNotFoundResponse(w, msg)
 	default:
 		msg := fmt.Sprintf("Error getting controller with UUID %s: %s", uuid, err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 	}
 }
 

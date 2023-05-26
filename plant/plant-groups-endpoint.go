@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func PlantGroupsHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,27 +22,19 @@ func handlePlantGroupsGet(w http.ResponseWriter, r *http.Request) {
 	allPlantGroups, err := getAllPlantGroups()
 	if err != nil {
 		msg := fmt.Sprintf("Error getting all plant groups: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(allPlantGroups)
 	if err != nil {
 		msg := fmt.Sprintf("Error converting all plant groups to JSON: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	log.Printf("Load %d plant groups", len(b))
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	utils.HttpOkResponse(w, b)
 }
 
 func getAllPlantGroups() (*plantGroups, error) {
