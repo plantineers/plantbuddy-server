@@ -1,4 +1,4 @@
-// Author: Yannick Kirschen
+// Author: Maximilian Floto, Yannick Kirschen
 package care_tips
 
 import (
@@ -83,4 +83,24 @@ func (r *CareTipsSqliteRepository) Create(plantGroupId int64, careTips []string)
 func (r *CareTipsSqliteRepository) DeleteAllByPlantGroupId(id int64) error {
 	_, err := r.db.Exec(`DELETE FROM CARE_TIPS WHERE PLANT_GROUP = ?;`, id)
 	return err
+}
+
+func (r *CareTipsSqliteRepository) CreateAdditionalByPlantId(plantId int64, careTips []string) error {
+	for _, careTip := range careTips {
+		_, err := r.db.Exec(`INSERT INTO ADDITIONAL_CARE_TIPS (PLANT, TIP) VALUES (?, ?);`, plantId, careTip)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *CareTipsSqliteRepository) DeleteAdditionalByPlantId(plantId int64) error {
+	_, err := r.db.Exec(`DELETE FROM ADDITIONAL_CARE_TIPS WHERE PLANT = ?;`, plantId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

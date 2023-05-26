@@ -34,6 +34,9 @@ type SensorTypes struct {
 type Plant struct {
 	ID                 int64       `json:"id"`
 	Description        string      `json:"description"`
+	Name               string      `json:"name"`
+	Species            string      `json:"species"`
+	Location           string      `json:"location"`
 	PlantGroup         *PlantGroup `json:"plantGroup"`
 	AdditionalCareTips []string    `json:"additionalCareTips"`
 }

@@ -18,8 +18,43 @@ Content-Type: application/json
 }
 
 ### Get a single plant.
-GET http://localhost:3333/v1/plant/1
+GET http://localhost:3333/v1/plant/3
 X-User-Name: testuser
+X-User-Password: 1234
+
+### Update a plant.
+PUT http://localhost:3333/v1/plant/3
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testplant-3",
+    "description": "testplant that has been modified",
+    "plantGroupId": 1,
+    "Species": "Test Plant",
+    "Location": "Das andere Fenster",
+    "additionalCareTips": ["Wasser geben", "Düngen", "Liebe geben"]
+}
+
+### Create a new plant.
+POST http://localhost:3333/v1/plant
+X-User-Name: root
+X-User-Password: 1234
+Content-Type: application/json
+
+{
+    "name": "testplant-3",
+    "description": "testplant",
+    "plantGroupId": 1,
+    "Species": "Test Plant",
+    "Location": "Das andere Fenster",
+    "additionalCareTips": ["Wasser geben", "Düngen"]
+}
+
+### Delete a plant.
+DELETE http://localhost:3333/v1/plant/4
+X-User-Name: root
 X-User-Password: 1234
 
 ### Get all plant IDs.
