@@ -4,6 +4,11 @@
 [![Go Workflow](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml)
 [![GitHub release](https://img.shields.io/github/release/plantineers/plantbuddy-server.svg)](https://github.com/plantineers/plantbuddy-server/releases/)
 
+This server has been developed by:
+
+- [Maximilian Floto](https://github.com/mfloto)
+- [Yannick Kirschen](https://github.com/yannickkirschen)
+
 ## Usage
 
 - **Start the server:** `go run cmd/main.go` (running on port `3333`)

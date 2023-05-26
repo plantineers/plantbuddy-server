@@ -1,13 +1,15 @@
+// Author: Maximilian Floto
 package user_management
 
 import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"net/http"
+
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
-	"net/http"
 )
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {

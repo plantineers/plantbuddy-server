@@ -1,3 +1,4 @@
+// Author: Maximilian Floto
 package utils
 
 import (
