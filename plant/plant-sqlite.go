@@ -158,29 +158,9 @@ func (r *PlantSqliteRepository) Create(plant *plantChange) (*Plant, error) {
 	return r.GetById(plantId)
 }
 
-func (r *PlantSqliteRepository) DeleteById(id int64) error {
+func (r *PlantSqliteRepository) Update(id int64, plant *plantChange) (*Plant, error) {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	_, err := r.db.Exec(`DELETE FROM PLANT WHERE ID = ?;`, id)
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	err = r.careTipsRepository.DeleteAdditionalByPlantId(id)
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	tx.Commit()
-	return nil
-}
-
-func (r *PlantSqliteRepository) Update(id int64, plant *plantChange) error {
-	tx, _ := r.db.BeginTx(context.Background(), nil)
 	_, err := r.db.Exec(`
     UPDATE PLANT
     SET
@@ -199,17 +179,38 @@ func (r *PlantSqliteRepository) Update(id int64, plant *plantChange) error {
 
 	if err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 
 	err = r.careTipsRepository.DeleteAdditionalByPlantId(id)
 
 	if err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 
 	err = r.careTipsRepository.CreateAdditionalByPlantId(id, plant.AdditionalCareTips)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+	return r.GetById(id)
+}
+
+func (r *PlantSqliteRepository) DeleteById(id int64) error {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	_, err := r.db.Exec(`DELETE FROM PLANT WHERE ID = ?;`, id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.careTipsRepository.DeleteAdditionalByPlantId(id)
 
 	if err != nil {
 		tx.Rollback()

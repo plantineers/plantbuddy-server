@@ -9,12 +9,12 @@ type PlantRepository interface {
 	// Reads all plantIds from the database and returns them as a slice of plants.
 	GetAll(filter *PlantsFilter) ([]int64, error)
 
-	// Creates a new plant and returns its ID.
+	// Creates a new plant and returns it.
 	Create(plant *plantChange) (*Plant, error)
+
+	// Updates a plant by its ID and returns it.
+	Update(id int64, plant *plantChange) (*Plant, error)
 
 	// Deletes a plant by its ID.
 	DeleteById(id int64) error
-
-	// Updates a plant by its ID.
-	Update(id int64, plant *plantChange) error
 }
