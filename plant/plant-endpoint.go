@@ -23,6 +23,8 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		handlePlantGet(w, r, id)
+	case http.MethodPost:
+		handlePlantPost(w, r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -66,4 +68,47 @@ func getPlantById(id int64) (*model.Plant, error) {
 	}
 
 	return repository.GetById(id)
+}
+
+func handlePlantPost(w http.ResponseWriter, r *http.Request) {
+	var plant model.PostPlantRequest
+	err := json.NewDecoder(r.Body).Decode(&plant)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("Error decoding plant: %s", err.Error())))
+		return
+	}
+
+	plantId, err := createPlant(&plant)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Error creating plant: %s", err.Error())))
+		return
+	}
+
+	w.Header().Add("Location", fmt.Sprintf("/v1/plant/%d", plantId))
+	w.WriteHeader(http.StatusCreated)
+}
+
+func createPlant(plant *model.PostPlantRequest) (*model.Plant, error) {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repository, err := NewPlantRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	createPlantId, err := repository.Create(plant)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.GetById(createPlantId)
 }

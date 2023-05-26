@@ -43,15 +43,21 @@ func NewPlantRepository(session *db.Session) (PlantRepository, error) {
 func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 	var plantId int64
 	var plantDescription *string
+	var plantName *string
+	var plantSpecies *string
+	var plantLocation *string
 	var plantGroupId int64
 
 	err := r.db.QueryRow(`
     SELECT
         P.ID,
         P.PLANT_GROUP,
-        P.DESCRIPTION
+        P.DESCRIPTION,
+        P.NAME,
+        P.SPECIES,
+        P.LOCATION
     FROM PLANT P
-    WHERE P.ID = ?;`, id).Scan(&plantId, &plantGroupId, &plantDescription)
+    WHERE P.ID = ?;`, id).Scan(&plantId, &plantGroupId, &plantDescription, &plantName, &plantSpecies, &plantLocation)
 
 	if err != nil {
 		return nil, err
@@ -74,6 +80,9 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 	return &model.Plant{
 		ID:                 plantId,
 		Description:        *plantDescription,
+		Name:               *plantName,
+		Species:            *plantSpecies,
+		Location:           *plantLocation,
 		PlantGroup:         plantGroup,
 		AdditionalCareTips: careTips,
 	}, nil
@@ -107,4 +116,24 @@ func (r *PlantSqliteRepository) getAllApplyFilter(filter *PlantsFilter) (*sql.Ro
 	}
 
 	return r.db.Query(`SELECT ID FROM PLANT;`)
+}
+
+func (r *PlantSqliteRepository) Create(plant *model.PostPlantRequest) (int64, error) {
+	result, err := r.db.Exec(`
+    INSERT INTO PLANT
+        (PLANT_GROUP, DESCRIPTION, NAME, SPECIES, LOCATION)
+    VALUES
+        (?, ?, ?, ?, ?);`,
+		plant.PlantGroupId,
+		plant.Description,
+		plant.Name,
+		plant.Species,
+		plant.Location,
+	)
+
+	if err != nil {
+		return -1, err
+	}
+
+	return result.LastInsertId()
 }
