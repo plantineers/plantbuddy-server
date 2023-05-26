@@ -64,3 +64,14 @@ func (r *CareTipsSqliteRepository) GetAdditionalByPlantId(id int64) ([]string, e
 
 	return careTips, nil
 }
+
+func (r *CareTipsSqliteRepository) CreateAdditionalByPlantId(plantId int64, careTips []string) error {
+	for _, careTip := range careTips {
+		_, err := r.db.Exec(`INSERT INTO ADDITIONAL_CARE_TIPS (PLANT, TIP) VALUES (?, ?);`, plantId, careTip)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

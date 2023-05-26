@@ -2,6 +2,7 @@
 package plant
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -122,12 +123,17 @@ func (r *PlantSqliteRepository) getAllApplyFilter(filter *PlantsFilter) (*sql.Ro
 	return r.db.Query(`SELECT ID FROM PLANT;`)
 }
 
-func (r *PlantSqliteRepository) Create(plant *model.PostPlantRequest) (int64, error) {
-	result, err := r.db.Exec(`
+func (r *PlantSqliteRepository) Create(plant *model.PostPlantRequest) (*model.Plant, error) {
+
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	plantStatement, err := r.db.Prepare(`
     INSERT INTO PLANT
         (PLANT_GROUP, DESCRIPTION, NAME, SPECIES, LOCATION)
     VALUES
-        (?, ?, ?, ?, ?);`,
+        (?, ?, ?, ?, ?);`)
+
+	result, err := plantStatement.Exec(
 		plant.PlantGroupId,
 		plant.Description,
 		plant.Name,
@@ -136,8 +142,18 @@ func (r *PlantSqliteRepository) Create(plant *model.PostPlantRequest) (int64, er
 	)
 
 	if err != nil {
-		return -1, err
+		tx.Rollback()
+		return nil, err
 	}
 
-	return result.LastInsertId()
+	plantId, _ := result.LastInsertId()
+
+	err = r.careTipsRepository.CreateAdditionalByPlantId(plantId, plant.AdditionalCareTips)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	return r.GetById(plantId)
 }

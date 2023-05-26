@@ -12,5 +12,5 @@ type PlantRepository interface {
 	GetAll(filter *PlantsFilter) ([]int64, error)
 
 	// Creates a new plant and returns its ID.
-	Create(plant *model.PostPlantRequest) (int64, error)
+	Create(plant *model.PostPlantRequest) (*model.Plant, error)
 }

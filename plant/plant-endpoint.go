@@ -112,11 +112,5 @@ func createPlant(plant *model.PostPlantRequest) (*model.Plant, error) {
 		return nil, err
 	}
 
-	createPlantId, err := repository.Create(plant)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return repository.GetById(createPlantId)
+	return repository.Create(plant)
 }
