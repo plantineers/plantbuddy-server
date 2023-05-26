@@ -1,8 +1,10 @@
+// Author: Maximilian Floto
 package user_management
 
 import (
 	"database/sql"
 	"errors"
+
 	"github.com/plantineers/plantbuddy-server/db"
 	"github.com/plantineers/plantbuddy-server/model"
 )
