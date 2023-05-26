@@ -3,13 +3,13 @@ package plant
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
-// Returns all plants in database
 func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -24,8 +24,11 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	if plantGroupIdStr != "" {
 		plantGroupId, err := strconv.ParseInt(plantGroupIdStr, 10, 64)
 		if err != nil {
+			msg := fmt.Sprintf("Error parsing plants filter: %s", err.Error())
+
+			log.Print(msg)
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf("Error parsing plantGroupId: %s", err.Error())))
+			w.Write([]byte(msg))
 			return
 		}
 
@@ -36,18 +39,25 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 
 	allPlants, err := getAllPlants(filter)
 	if err != nil {
+		msg := fmt.Sprintf("Error getting all plants: %s", err.Error())
+
+		log.Print(msg)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error getting all plants: %s", err.Error())))
+		w.Write([]byte(msg))
 		return
 	}
 
 	b, err := json.Marshal(allPlants)
 	if err != nil {
+		msg := fmt.Sprintf("Error converting all plants to JSON: %s", err.Error())
+
+		log.Print(msg)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error converting plants to JSON: %s", err.Error())))
+		w.Write([]byte(msg))
 		return
 	}
 
+	log.Printf("Load %d plants", len(b))
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(b)
