@@ -13,4 +13,7 @@ type PlantRepository interface {
 
 	// Creates a new plant and returns its ID.
 	Create(plant *model.PostPlantRequest) (*model.Plant, error)
+
+	// Deletes a plant by its ID.
+	DeleteById(id int64) error
 }

@@ -75,3 +75,12 @@ func (r *CareTipsSqliteRepository) CreateAdditionalByPlantId(plantId int64, care
 
 	return nil
 }
+
+func (r *CareTipsSqliteRepository) DeleteAdditionalByPlantId(plantId int64) error {
+	_, err := r.db.Exec(`DELETE FROM ADDITIONAL_CARE_TIPS WHERE PLANT = ?;`, plantId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

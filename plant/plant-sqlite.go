@@ -155,5 +155,27 @@ func (r *PlantSqliteRepository) Create(plant *model.PostPlantRequest) (*model.Pl
 		return nil, err
 	}
 
+	tx.Commit()
 	return r.GetById(plantId)
+}
+
+func (r *PlantSqliteRepository) DeleteById(id int64) error {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	_, err := r.db.Exec(`DELETE FROM PLANT WHERE ID = ?;`, id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.careTipsRepository.DeleteAdditionalByPlantId(id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
 }

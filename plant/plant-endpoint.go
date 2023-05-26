@@ -18,6 +18,8 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 		handlePlantGet(w, r)
 	case http.MethodPost:
 		handlePlantPost(w, r)
+	case http.MethodDelete:
+		handlePlantDelete(w, r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -113,4 +115,39 @@ func createPlant(plant *model.PostPlantRequest) (*model.Plant, error) {
 	}
 
 	return repository.Create(plant)
+}
+
+func handlePlantDelete(w http.ResponseWriter, r *http.Request) {
+	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	err = deletePlantById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Error deleting plant: %s", err.Error())))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func deletePlantById(id int64) error {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repository, err := NewPlantRepository(session)
+	if err != nil {
+		return err
+	}
+
+	return repository.DeleteById(id)
 }

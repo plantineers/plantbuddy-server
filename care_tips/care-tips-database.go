@@ -6,4 +6,6 @@ type CareTipsRepository interface {
 	GetAdditionalByPlantId(id int64) ([]string, error)
 
 	CreateAdditionalByPlantId(plantId int64, careTips []string) error
+
+	DeleteAdditionalByPlantId(plantId int64) error
 }
