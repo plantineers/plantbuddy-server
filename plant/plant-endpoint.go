@@ -25,10 +25,7 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
 	if err != nil {
 		msg := fmt.Sprintf("Error getting path variable (plant ID): %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
@@ -49,64 +46,48 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&plant)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding new plant: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
 	createdPlantGroup, err := createPlant(&plant)
 	if err != nil {
 		msg := fmt.Sprintf("Error creating plant: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(createdPlantGroup)
 	if err != nil {
 		msg := fmt.Sprintf("Error converting plant %d to JSON: %s", createdPlantGroup.ID, err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
+		return
 	}
 
-	log.Printf("Plant with id %d created", createdPlantGroup.ID)
-	w.Header().Add("Content-Type", "application/json")
-	w.Header().Add("Location", fmt.Sprintf("/v1/plant/%d", createdPlantGroup.ID))
-	w.WriteHeader(http.StatusCreated)
-	w.Write(b)
+	msg := fmt.Sprintf("Plant with id %d created", createdPlantGroup.ID)
+	location := fmt.Sprintf("/v1/plant/%d", createdPlantGroup.ID)
+	utils.HttpCreatedResponse(w, b, location, msg)
 }
 
 func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	plant, err := getPlantById(id)
 	switch err {
 	case sql.ErrNoRows:
-		log.Printf("Plant with id %d not found", id)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Plant not found"))
+		msg := fmt.Sprintf("Plant with id %d not found", id)
+		utils.HttpNotFoundResponse(w, msg)
 	case nil:
 		b, err := json.Marshal(plant)
 		if err != nil {
 			msg := fmt.Sprintf("Error converting plant %d to JSON: %s", plant.ID, err.Error())
-
-			log.Print(msg)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(msg))
+			utils.HttpInternalServerErrorResponse(w, msg)
+			return
 		}
 
 		log.Printf("Plant with id %d loaded", id)
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		utils.HttpOkResponse(w, b)
 	default:
-		log.Printf("Error getting plant with id %d: %s", id, err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		msg := fmt.Sprintf("Error getting plant with id %d: %s", id, err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 	}
 }
 
@@ -115,40 +96,31 @@ func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 	err := json.NewDecoder(r.Body).Decode(&plant)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding plant with id %d: %s", id, err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
 	err = updatePlantById(id, &plant)
 	if err != nil {
 		msg := fmt.Sprintf("Error updating plant with id %d: %s", id, err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	log.Printf("Plant with id %d updated", id)
-	w.WriteHeader(http.StatusOK)
+	utils.HttpOkResponse(w, nil)
 }
 
 func handlePlantDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	err := deletePlantById(id)
 	if err != nil {
 		msg := fmt.Sprintf("Error deleting plant with id %d: %s", id, err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	log.Printf("Plant with id %d deleted", id)
-	w.WriteHeader(http.StatusOK)
+	utils.HttpOkResponse(w, nil)
 }
 
 func createPlant(plant *plantChange) (*Plant, error) {

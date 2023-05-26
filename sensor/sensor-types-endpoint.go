@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func SensorTypesHandler(w http.ResponseWriter, r *http.Request) {
@@ -21,27 +22,19 @@ func handleSensorTypesGet(w http.ResponseWriter, r *http.Request) {
 	types, err := getSensorTypes()
 	if err != nil {
 		msg := fmt.Sprintf("Error getting sensor types: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(sensorTypes{Types: types})
 	if err != nil {
 		msg := fmt.Sprintf("Error converting sensor types to JSON: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	log.Printf("Load %d sensor types", len(types))
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	utils.HttpOkResponse(w, b)
 }
 
 func getSensorTypes() ([]*SensorType, error) {

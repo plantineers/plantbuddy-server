@@ -3,9 +3,11 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func ControllersHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,17 +24,15 @@ func handleControllersGet(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		b, err := json.Marshal(&controllerUUIDs{UUIDs: uuids})
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			msg := fmt.Sprintf("Error converting controller UUIDs to JSON: %s", err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
 			return
 		}
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		utils.HttpOkResponse(w, b)
 	default:
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		msg := fmt.Sprintf("Error getting controller UUIDs: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 	}
 }
 

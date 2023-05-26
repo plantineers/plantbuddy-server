@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/plantineers/plantbuddy-server/db"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,36 +28,25 @@ func handleSensorDataGet(w http.ResponseWriter, r *http.Request) {
 	filter, err := filterSensorData(r)
 	if err != nil {
 		msg := fmt.Sprintf("Error parsing sensor data filter: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
 	allSensorData, err := getAllSensorData(filter)
 	if err != nil {
 		msg := fmt.Sprintf("Error getting all sensor data: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(&sensorDataSet{SensorData: allSensorData})
 	if err != nil {
 		msg := fmt.Sprintf("Error converting all sensor data to JSON: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	utils.HttpOkResponse(w, b)
 }
 
 func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
@@ -65,10 +55,7 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		msg := fmt.Sprintf("Error parsing sensor data: %s", err.Error())
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(msg))
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
@@ -78,17 +65,12 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 		b, err := json.Marshal(data)
 		if err != nil {
 			msg := fmt.Sprintf("Error converting sensor data to JSON: %s", err.Error())
-
-			log.Print(msg)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(msg))
+			utils.HttpInternalServerErrorResponse(w, msg)
 			return
 		}
 
 		log.Printf("Saved %d sensor data sets", len(data.Data))
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		w.Write(b)
+		utils.HttpOkResponse(w, b)
 	default:
 		var errStrings []string
 		for _, err := range errs {
@@ -96,10 +78,7 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		msg := fmt.Sprintf("Error saving sensor data: %s", strings.Join(errStrings, "; "))
-
-		log.Print(msg)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(msg))
+		utils.HttpBadRequestResponse(w, msg)
 	}
 }
 
