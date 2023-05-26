@@ -1,3 +1,4 @@
+// Author: Maximilian Floto, Yannick Kirschen
 package care_tips
 
 type CareTipsRepository interface {
