@@ -88,7 +88,6 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 		return nil, err
 	}
 
-	// Iterate over all rows and query the ID of the plant group..
 	for rows.Next() {
 		var plantGroupId int64
 		err = rows.Scan(&plantGroupId)
@@ -104,15 +103,9 @@ func (r *PlantGroupSqliteRepository) GetAll() ([]int64, error) {
 func (r *PlantGroupSqliteRepository) Create(plantGroup *plantGroupChange) (*model.PlantGroup, error) {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	statement, err := r.db.Prepare(`
+	result, err := r.db.Exec(`
         INSERT INTO PLANT_GROUP (NAME, DESCRIPTION)
-        VALUES (?, ?);`)
-
-	if err != nil {
-		return nil, err
-	}
-
-	result, err := statement.Exec(plantGroup.Name, plantGroup.Description)
+        VALUES (?, ?);`, plantGroup.Name, plantGroup.Description)
 
 	if err != nil {
 		tx.Rollback()
@@ -139,23 +132,20 @@ func (r *PlantGroupSqliteRepository) Create(plantGroup *plantGroupChange) (*mode
 func (r *PlantGroupSqliteRepository) Update(id int64, plantGroup *plantGroupChange) (*model.PlantGroup, error) {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	var statement, err = r.db.Prepare(`
+	_, err := r.db.Exec(`
         UPDATE PLANT_GROUP
         SET NAME = ?,
             DESCRIPTION = ?
         WHERE ID = ?;`,
+		plantGroup.Name,
+		plantGroup.Description,
+		id,
 	)
 
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-
-	_, err = statement.Exec(
-		plantGroup.Name,
-		plantGroup.Description,
-		id,
-	)
 
 	if err != nil {
 		tx.Rollback()
@@ -187,14 +177,8 @@ func (r *PlantGroupSqliteRepository) Update(id int64, plantGroup *plantGroupChan
 func (r *PlantGroupSqliteRepository) Delete(id int64) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	var statement, err = r.db.Prepare(`DELETE FROM PLANT_GROUP WHERE ID = ?;`)
+	_, err := r.db.Exec(`DELETE FROM PLANT_GROUP WHERE ID = ?;`, id)
 
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	_, err = statement.Exec(id)
 	if err != nil {
 		tx.Rollback()
 		return err
