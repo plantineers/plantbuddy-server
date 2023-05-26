@@ -37,6 +37,53 @@ GET http://localhost:3333/v1/plant-group/1
 X-User-Name: testuser
 X-User-Password: 1234
 
+### Create a plant group.
+POST http://localhost:3333/v1/plant-group
+X-User-Name: testuser
+X-User-Password: 1234
+
+{
+    "name": "Cactaceae",
+    "description": "Mein kleiner grüner Kaktus",
+    "careTips": ["Bene stinkt"],
+    "sensorRanges": [
+        {
+            "sensorType": {
+                "name": "humidity",
+                "unit": "percent"
+            },
+            "min": 40,
+            "max": 60
+        }
+    ]
+}
+
+### Update a plant group.
+PUT http://localhost:3333/v1/plant-group/1
+X-User-Name: testuser
+X-User-Password: 1234
+
+{
+    "name": "Cactaceae",
+    "description": "Mein kleiner grüner Kaktus",
+    "careTips": ["Bene stinkt nicht mehr"],
+    "sensorRanges": [
+        {
+            "sensorType": {
+                "name": "humidity",
+                "unit": "percent"
+            },
+            "min": 40,
+            "max": 60
+        }
+    ]
+}
+
+### Delete a plant group.
+DELETE http://localhost:3333/v1/plant-group/1
+X-User-Name: testuser
+X-User-Password: 1234
+
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
 X-User-Name: testuser
