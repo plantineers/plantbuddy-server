@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 func PlantGroupsHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +35,7 @@ func handlePlantGroupsGet(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getAllPlantGroups() (*model.PlantGroups, error) {
+func getAllPlantGroups() (*plantGroups, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -51,5 +50,5 @@ func getAllPlantGroups() (*model.PlantGroups, error) {
 	}
 
 	plantGroupIds, err := repository.GetAll()
-	return &model.PlantGroups{PlantGroups: plantGroupIds}, err
+	return &plantGroups{PlantGroups: plantGroupIds}, err
 }

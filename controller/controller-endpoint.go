@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
@@ -48,7 +47,7 @@ func handleControllerGet(w http.ResponseWriter, r *http.Request, uuid string) {
 	}
 }
 
-func getControllerData(uuid string) (*model.Controller, error) {
+func getControllerData(uuid string) (*Controller, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

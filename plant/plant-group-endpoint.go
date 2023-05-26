@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
@@ -38,13 +37,6 @@ func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	handlePlantGroupPost(w, r)
-}
-
-type plantGroupChange struct {
-	Name         string               `json:"name"`
-	Description  string               `json:"description"`
-	CareTips     []string             `json:"careTips"`
-	SensorRanges []*model.SensorRange `json:"sensorRanges"`
 }
 
 func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
@@ -109,7 +101,7 @@ func handlePlantGroupDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func getPlantGroupById(id int64) (*model.PlantGroup, error) {
+func getPlantGroupById(id int64) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -126,7 +118,7 @@ func getPlantGroupById(id int64) (*model.PlantGroup, error) {
 	return repository.GetById(id)
 }
 
-func updatePlantGroup(id int64, plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+func updatePlantGroup(id int64, plantGroup *plantGroupChange) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -187,7 +179,7 @@ func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(b))
 }
 
-func createPlantGroup(plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+func createPlantGroup(plantGroup *plantGroupChange) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

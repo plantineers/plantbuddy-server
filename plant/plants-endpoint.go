@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 // Returns all plants in database
@@ -54,7 +53,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func getAllPlants(filter *PlantsFilter) (*model.Plants, error) {
+func getAllPlants(filter *PlantsFilter) (*plants, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -69,5 +68,5 @@ func getAllPlants(filter *PlantsFilter) (*model.Plants, error) {
 	}
 
 	plantIds, err := plantRepository.GetAll(filter)
-	return &model.Plants{Plants: plantIds}, err
+	return &plants{Plants: plantIds}, err
 }

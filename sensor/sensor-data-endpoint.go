@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +114,7 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getAllSensorData(filter *SensorDataFilter) ([]*model.SensorData, error) {
+func getAllSensorData(filter *SensorDataFilter) ([]*SensorData, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -132,7 +131,7 @@ func getAllSensorData(filter *SensorDataFilter) ([]*model.SensorData, error) {
 	return repository.GetAll(filter)
 }
 
-func saveSensorData(data []*model.SensorData) []error {
+func saveSensorData(data []*SensorData) []error {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -152,12 +151,4 @@ func saveSensorData(data []*model.SensorData) []error {
 	}
 
 	return repository.SaveAll(data)
-}
-
-type sensorDataSet struct {
-	SensorData []*model.SensorData `json:"data"`
-}
-
-type sensorDataPost struct {
-	Data []*model.SensorData `json:"data"`
 }

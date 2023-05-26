@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
@@ -64,7 +63,7 @@ func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 }
 
-func getPlantById(id int64) (*model.Plant, error) {
+func getPlantById(id int64) (*Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -110,7 +109,7 @@ func deletePlantById(id int64) error {
 }
 
 func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
-	var plant PlantChange
+	var plant plantChange
 	err := json.NewDecoder(r.Body).Decode(&plant)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -128,7 +127,7 @@ func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func updatePlantById(id int64, plant *PlantChange) error {
+func updatePlantById(id int64, plant *plantChange) error {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -146,7 +145,7 @@ func updatePlantById(id int64, plant *PlantChange) error {
 }
 
 func handlePlantPost(w http.ResponseWriter, r *http.Request) {
-	var plant PlantChange
+	var plant plantChange
 	err := json.NewDecoder(r.Body).Decode(&plant)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -174,7 +173,7 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func createPlant(plant *PlantChange) (*model.Plant, error) {
+func createPlant(plant *plantChange) (*Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -189,13 +188,4 @@ func createPlant(plant *PlantChange) (*model.Plant, error) {
 	}
 
 	return repository.Create(plant)
-}
-
-type PlantChange struct {
-	Description        string   `json:"description"`
-	Name               string   `json:"name"`
-	Species            string   `json:"species"`
-	Location           string   `json:"location"`
-	PlantGroupId       int64    `json:"plantGroupId"`
-	AdditionalCareTips []string `json:"additionalCareTips"`
 }

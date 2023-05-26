@@ -8,7 +8,6 @@ import (
 
 	"github.com/plantineers/plantbuddy-server/care_tips"
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 type PlantSqliteRepository struct {
@@ -41,7 +40,7 @@ func NewPlantRepository(session *db.Session) (PlantRepository, error) {
 	}, nil
 }
 
-func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
+func (r *PlantSqliteRepository) GetById(id int64) (*Plant, error) {
 	var plantId int64
 	var plantDescription *string
 	var plantName *string
@@ -82,7 +81,7 @@ func (r *PlantSqliteRepository) GetById(id int64) (*model.Plant, error) {
 		careTips = make([]string, 0)
 	}
 
-	return &model.Plant{
+	return &Plant{
 		ID:                 plantId,
 		Description:        *plantDescription,
 		Name:               *plantName,
@@ -123,7 +122,7 @@ func (r *PlantSqliteRepository) getAllApplyFilter(filter *PlantsFilter) (*sql.Ro
 	return r.db.Query(`SELECT ID FROM PLANT;`)
 }
 
-func (r *PlantSqliteRepository) Create(plant *PlantChange) (*model.Plant, error) {
+func (r *PlantSqliteRepository) Create(plant *plantChange) (*Plant, error) {
 
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
@@ -180,7 +179,7 @@ func (r *PlantSqliteRepository) DeleteById(id int64) error {
 	return nil
 }
 
-func (r *PlantSqliteRepository) Update(id int64, plant *PlantChange) error {
+func (r *PlantSqliteRepository) Update(id int64, plant *plantChange) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 	_, err := r.db.Exec(`
     UPDATE PLANT
