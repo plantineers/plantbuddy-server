@@ -1,5 +1,5 @@
 // Author: Maximilian Floto
-package user_management
+package auth
 
 import "github.com/plantineers/plantbuddy-server/model"
 
