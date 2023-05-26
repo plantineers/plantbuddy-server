@@ -4,10 +4,11 @@ package sensor
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func SensorTypesHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,25 +19,25 @@ func SensorTypesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSensorTypesGet(w http.ResponseWriter, r *http.Request) {
-	sensorTypes, err := getSensorTypes()
+	types, err := getSensorTypes()
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-	} else {
-		b, err := json.Marshal(&model.SensorTypes{Types: sensorTypes})
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error converting sensors to JSON: %s", err.Error())))
-			return
-		}
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		msg := fmt.Sprintf("Error getting sensor types: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
+		return
 	}
+
+	b, err := json.Marshal(sensorTypes{Types: types})
+	if err != nil {
+		msg := fmt.Sprintf("Error converting sensor types to JSON: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
+		return
+	}
+
+	log.Printf("Load %d sensor types", len(types))
+	utils.HttpOkResponse(w, b)
 }
 
-func getSensorTypes() ([]*model.SensorType, error) {
+func getSensorTypes() ([]*SensorType, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

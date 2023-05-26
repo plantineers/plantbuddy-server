@@ -3,10 +3,11 @@ package plant
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func PlantGroupsHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,23 +21,23 @@ func PlantGroupsHandler(w http.ResponseWriter, r *http.Request) {
 func handlePlantGroupsGet(w http.ResponseWriter, r *http.Request) {
 	allPlantGroups, err := getAllPlantGroups()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error getting all plant groups: %s", err.Error())))
+		msg := fmt.Sprintf("Error getting all plant groups: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
+
 	b, err := json.Marshal(allPlantGroups)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error converting plant groups to JSON: %s", err.Error())))
+		msg := fmt.Sprintf("Error converting all plant groups to JSON: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	log.Printf("Load %d plant groups", len(b))
+	utils.HttpOkResponse(w, b)
 }
 
-func getAllPlantGroups() (*model.PlantGroups, error) {
+func getAllPlantGroups() (*plantGroups, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -51,5 +52,5 @@ func getAllPlantGroups() (*model.PlantGroups, error) {
 	}
 
 	plantGroupIds, err := repository.GetAll()
-	return &model.PlantGroups{PlantGroups: plantGroupIds}, err
+	return &plantGroups{PlantGroups: plantGroupIds}, err
 }

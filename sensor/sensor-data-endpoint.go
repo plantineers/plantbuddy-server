@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
 func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,28 +27,59 @@ func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
 func handleSensorDataGet(w http.ResponseWriter, r *http.Request) {
 	filter, err := filterSensorData(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Error parsing sensor data filter: %s", err.Error())))
+		msg := fmt.Sprintf("Error parsing sensor data filter: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
 	allSensorData, err := getAllSensorData(filter)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error getting all sensor data: %s", err.Error())))
+		msg := fmt.Sprintf("Error getting all sensor data: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(&sensorDataSet{SensorData: allSensorData})
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error converting sensor data to JSON: %s", err.Error())))
+		msg := fmt.Sprintf("Error converting all sensor data to JSON: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	utils.HttpOkResponse(w, b)
+}
+
+func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
+	var data sensorDataPost
+
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		msg := fmt.Sprintf("Error parsing sensor data: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
+		return
+	}
+
+	errs := saveSensorData(data.Data)
+	switch errs {
+	case nil:
+		b, err := json.Marshal(data)
+		if err != nil {
+			msg := fmt.Sprintf("Error converting sensor data to JSON: %s", err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
+			return
+		}
+
+		log.Printf("Saved %d sensor data sets", len(data.Data))
+		utils.HttpOkResponse(w, b)
+	default:
+		var errStrings []string
+		for _, err := range errs {
+			errStrings = append(errStrings, err.Error())
+		}
+
+		msg := fmt.Sprintf("Error saving sensor data: %s", strings.Join(errStrings, "; "))
+		utils.HttpBadRequestResponse(w, msg)
+	}
 }
 
 func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
@@ -81,41 +113,7 @@ func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
 	}, nil
 }
 
-func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
-	var data sensorDataPost
-
-	err := json.NewDecoder(r.Body).Decode(&data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	errs := saveSensorData(data.Data)
-	switch errs {
-	case nil:
-		b, err := json.Marshal(data)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error converting sensor data to JSON: %s", err.Error())))
-			return
-		}
-
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		w.Write(b)
-	default:
-		w.WriteHeader(http.StatusBadRequest)
-
-		var errStrings []string
-		for _, err := range errs {
-			errStrings = append(errStrings, err.Error())
-		}
-
-		w.Write([]byte(strings.Join(errStrings, "; ")))
-	}
-}
-
-func getAllSensorData(filter *SensorDataFilter) ([]*model.SensorData, error) {
+func getAllSensorData(filter *SensorDataFilter) ([]*SensorData, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -132,7 +130,7 @@ func getAllSensorData(filter *SensorDataFilter) ([]*model.SensorData, error) {
 	return repository.GetAll(filter)
 }
 
-func saveSensorData(data []*model.SensorData) []error {
+func saveSensorData(data []*SensorData) []error {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -152,12 +150,4 @@ func saveSensorData(data []*model.SensorData) []error {
 	}
 
 	return repository.SaveAll(data)
-}
-
-type sensorDataSet struct {
-	SensorData []*model.SensorData `json:"data"`
-}
-
-type sensorDataPost struct {
-	Data []*model.SensorData `json:"data"`
 }

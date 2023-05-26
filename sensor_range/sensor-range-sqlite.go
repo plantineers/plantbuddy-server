@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/sensor"
 )
 
 type SensorRangeSqliteRepository struct {
@@ -23,8 +23,8 @@ func NewSensorRangeRepository(session *db.Session) (SensorRangeRepository, error
 	return &SensorRangeSqliteRepository{db: session.DB}, nil
 }
 
-func (r *SensorRangeSqliteRepository) GetAllByPlantGroupId(id int64) ([]*model.SensorRange, error) {
-	var sensorRanges []*model.SensorRange
+func (r *SensorRangeSqliteRepository) GetAllByPlantGroupId(id int64) ([]*sensor.SensorRange, error) {
+	var sensorRanges []*sensor.SensorRange
 	rows, err := r.db.Query(`
     SELECT SR.MIN, SR.MAX, ST.NAME, ST.UNIT
         FROM SENSOR_RANGE SR
@@ -38,8 +38,8 @@ func (r *SensorRangeSqliteRepository) GetAllByPlantGroupId(id int64) ([]*model.S
 	defer rows.Close()
 
 	for rows.Next() {
-		var sensorRange model.SensorRange
-		var sensorType model.SensorType
+		var sensorRange sensor.SensorRange
+		var sensorType sensor.SensorType
 
 		err := rows.Scan(&sensorRange.Min, &sensorRange.Max, &sensorType.Name, &sensorType.Unit)
 		if err != nil {
@@ -52,7 +52,7 @@ func (r *SensorRangeSqliteRepository) GetAllByPlantGroupId(id int64) ([]*model.S
 	return sensorRanges, nil
 }
 
-func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *model.SensorRange) error {
+func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *sensor.SensorRange) error {
 	_, err := r.db.Exec(`
     INSERT INTO SENSOR_RANGE (PLANT_GROUP, SENSOR, MIN, MAX)
         VALUES (?, ?, ?, ?);`, plantGroupId, sensorRange.SensorType.Name, sensorRange.Min, sensorRange.Max)
@@ -60,7 +60,7 @@ func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *mo
 	return err
 }
 
-func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges []*model.SensorRange) error {
+func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges []*sensor.SensorRange) error {
 	for _, sensorRange := range sensorRanges {
 		err := r.Create(plantGroupId, sensorRange)
 		if err != nil {
@@ -71,7 +71,7 @@ func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges
 	return nil
 }
 
-func (r *SensorRangeSqliteRepository) Update(plantGroupId int64, sensorRange *model.SensorRange) error {
+func (r *SensorRangeSqliteRepository) Update(plantGroupId int64, sensorRange *sensor.SensorRange) error {
 	_, err := r.db.Exec(`
     UPDATE SENSOR_RANGE
         SET MIN = ?, MAX = ?
@@ -80,7 +80,7 @@ func (r *SensorRangeSqliteRepository) Update(plantGroupId int64, sensorRange *mo
 	return err
 }
 
-func (r *SensorRangeSqliteRepository) UpdateAll(plantGroupId int64, sensorRanges []*model.SensorRange) error {
+func (r *SensorRangeSqliteRepository) UpdateAll(plantGroupId int64, sensorRanges []*sensor.SensorRange) error {
 	for _, sensorRange := range sensorRanges {
 		err := r.Update(plantGroupId, sensorRange)
 		if err != nil {

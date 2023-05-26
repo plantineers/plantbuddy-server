@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 type ControllerSqliteRepository struct {
@@ -45,8 +44,8 @@ func (r *ControllerSqliteRepository) GetAllUUIDs() ([]string, error) {
 	return uuids, nil
 }
 
-func (r *ControllerSqliteRepository) GetByUUID(uuid string) (*model.Controller, error) {
-	var controller model.Controller
+func (r *ControllerSqliteRepository) GetByUUID(uuid string) (*Controller, error) {
+	var controller Controller
 
 	err := r.db.QueryRow(`
     SELECT C.UUID, C.PLANT

@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 )
 
 type SensorTypeSqliteRepository struct {
@@ -24,14 +23,14 @@ func NewSensorTypeRepository(session *db.Session) (SensorTypeRepository, error) 
 	return &SensorTypeSqliteRepository{db: session.DB}, nil
 }
 
-func (r *SensorTypeSqliteRepository) GetAll() ([]*model.SensorType, error) {
+func (r *SensorTypeSqliteRepository) GetAll() ([]*SensorType, error) {
 	var rows, err = r.db.Query(`SELECT NAME, UNIT FROM SENSOR_TYPE;`)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var types []*model.SensorType
+	var types []*SensorType
 	for rows.Next() {
 		var name string
 		var unit string
@@ -41,7 +40,7 @@ func (r *SensorTypeSqliteRepository) GetAll() ([]*model.SensorType, error) {
 			rows.Close()
 			return nil, err
 		}
-		types = append(types, &model.SensorType{Name: name, Unit: unit})
+		types = append(types, &SensorType{Name: name, Unit: unit})
 	}
 
 	return types, nil

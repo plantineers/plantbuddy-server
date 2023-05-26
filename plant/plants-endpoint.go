@@ -3,14 +3,14 @@ package plant
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
+	"github.com/plantineers/plantbuddy-server/utils"
 )
 
-// Returns all plants in database
 func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -25,8 +25,8 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	if plantGroupIdStr != "" {
 		plantGroupId, err := strconv.ParseInt(plantGroupIdStr, 10, 64)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf("Error parsing plantGroupId: %s", err.Error())))
+			msg := fmt.Sprintf("Error parsing plants filter: %s", err.Error())
+			utils.HttpBadRequestResponse(w, msg)
 			return
 		}
 
@@ -37,24 +37,23 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 
 	allPlants, err := getAllPlants(filter)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error getting all plants: %s", err.Error())))
+		msg := fmt.Sprintf("Error getting all plants: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(allPlants)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error converting plants to JSON: %s", err.Error())))
+		msg := fmt.Sprintf("Error converting all plants to JSON: %s", err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(b)
+	log.Printf("Load %d plants", len(b))
+	utils.HttpOkResponse(w, b)
 }
 
-func getAllPlants(filter *PlantsFilter) (*model.Plants, error) {
+func getAllPlants(filter *PlantsFilter) (*plants, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -69,5 +68,5 @@ func getAllPlants(filter *PlantsFilter) (*model.Plants, error) {
 	}
 
 	plantIds, err := plantRepository.GetAll(filter)
-	return &model.Plants{Plants: plantIds}, err
+	return &plants{Plants: plantIds}, err
 }

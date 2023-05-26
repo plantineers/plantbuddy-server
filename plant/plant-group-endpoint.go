@@ -4,18 +4,29 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/model"
 	"github.com/plantineers/plantbuddy-server/utils"
 )
+
+const convertErrorStr = "Error converting plant group %d to JSON: %s"
+
+func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	handlePlantGroupPost(w, r)
+}
 
 func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant-group/")
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		msg := fmt.Sprintf("Error getting path variable (plant group ID): %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
@@ -31,20 +42,31 @@ func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
+	var plantGroup plantGroupChange
+	err := json.NewDecoder(r.Body).Decode(&plantGroup)
+	if err != nil {
+		msg := fmt.Sprintf("Error decoding new plant group: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
-	handlePlantGroupPost(w, r)
-}
+	createdPlantGroup, err := createPlantGroup(&plantGroup)
+	if err != nil {
+		msg := fmt.Sprintf("Error creating new plant group: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
 
-type plantGroupChange struct {
-	Name         string               `json:"name"`
-	Description  string               `json:"description"`
-	CareTips     []string             `json:"careTips"`
-	SensorRanges []*model.SensorRange `json:"sensorRanges"`
+	b, err := json.Marshal(createdPlantGroup)
+	if err != nil {
+		msg := fmt.Sprintf(convertErrorStr, createdPlantGroup.ID, err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
+	}
+
+	msg := fmt.Sprintf("Plant group with id %d created", createdPlantGroup.ID)
+	location := fmt.Sprintf("/v1/plant-group/%d", createdPlantGroup.ID)
+	utils.HttpCreatedResponse(w, b, location, msg)
 }
 
 func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
@@ -52,21 +74,20 @@ func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
 
 	switch err {
 	case sql.ErrNoRows:
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Plant group not found"))
+		msg := fmt.Sprintf("Plant group with id %d not found", id)
+		utils.HttpNotFoundResponse(w, msg)
 	case nil:
 		b, err := json.Marshal(plantGroup)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf("Error converting plant group %d to JSON: %s", plantGroup.ID, err.Error())))
+			msg := fmt.Sprintf(convertErrorStr, plantGroup.ID, err.Error())
+			utils.HttpInternalServerErrorResponse(w, msg)
 		}
 
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(b)
+		log.Printf("Plant group with id %d loaded", id)
+		utils.HttpOkResponse(w, b)
 	default:
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		msg := fmt.Sprintf("Error loading plant group with id %d: %s", id, err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 	}
 }
 
@@ -74,42 +95,58 @@ func handlePlantGroupPut(w http.ResponseWriter, r *http.Request, id int64) {
 	var plantGroup plantGroupChange
 	err := json.NewDecoder(r.Body).Decode(&plantGroup)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Error decoding JSON: %s", err.Error())))
+		msg := fmt.Sprintf("Error decoding plant group with id %d: %s", id, err.Error())
+		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
 	updatedPlantGroup, err := updatePlantGroup(id, &plantGroup)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error updating plant group: %s", err.Error())))
+		msg := fmt.Sprintf("Error updating plant group with id %d: %s", id, err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
 	b, err := json.Marshal(updatedPlantGroup)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error converting plant group %d to JSON: %s", updatedPlantGroup.ID, err.Error())))
+		msg := fmt.Sprintf(convertErrorStr, updatedPlantGroup.ID, err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(b))
+	log.Printf("Plant group with id %d updated", id)
+	utils.HttpOkResponse(w, b)
 }
 
 func handlePlantGroupDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	err := deletePlantGroup(id)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error deleting plant group: %s", err.Error())))
+		msg := fmt.Sprintf("Error deleting plant group with id %d: %s", id, err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	log.Printf("Plant group with id %d deleted", id)
+	utils.HttpOkResponse(w, nil)
 }
 
-func getPlantGroupById(id int64) (*model.PlantGroup, error) {
+func createPlantGroup(plantGroup *plantGroupChange) (*PlantGroup, error) {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	repository, err := NewPlantGroupRepository(session)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.Create(plantGroup)
+}
+
+func getPlantGroupById(id int64) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -126,7 +163,7 @@ func getPlantGroupById(id int64) (*model.PlantGroup, error) {
 	return repository.GetById(id)
 }
 
-func updatePlantGroup(id int64, plantGroup *plantGroupChange) (*model.PlantGroup, error) {
+func updatePlantGroup(id int64, plantGroup *plantGroupChange) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -158,48 +195,4 @@ func deletePlantGroup(id int64) error {
 	}
 
 	return repository.Delete(id)
-}
-
-func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
-	var plantGroup plantGroupChange
-	err := json.NewDecoder(r.Body).Decode(&plantGroup)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Error decoding JSON: %s", err.Error())))
-		return
-	}
-
-	createdPlantGroup, err := createPlantGroup(&plantGroup)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	b, err := json.Marshal(createdPlantGroup)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error converting plant group %d to JSON: %s", createdPlantGroup.ID, err.Error())))
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(b))
-}
-
-func createPlantGroup(plantGroup *plantGroupChange) (*model.PlantGroup, error) {
-	var session = db.NewSession()
-	defer session.Close()
-
-	err := session.Open()
-	if err != nil {
-		return nil, err
-	}
-
-	repository, err := NewPlantGroupRepository(session)
-	if err != nil {
-		return nil, err
-	}
-
-	return repository.Create(plantGroup)
 }
