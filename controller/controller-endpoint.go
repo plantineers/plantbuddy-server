@@ -4,6 +4,8 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/db"
@@ -13,8 +15,11 @@ import (
 func ControllerHandler(w http.ResponseWriter, r *http.Request) {
 	uuid, err := utils.PathParameterFilterStr(r.URL.Path, "/v1/controller/")
 	if err != nil {
+		msg := fmt.Sprintf("Error getting path variable (controller UUID): %s", err.Error())
+
+		log.Print(msg)
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(msg))
 		return
 	}
 
@@ -30,20 +35,30 @@ func handleControllerGet(w http.ResponseWriter, r *http.Request, uuid string) {
 	case nil:
 		b, err := json.Marshal(controller)
 		if err != nil {
+			msg := fmt.Sprintf("Error converting controller to JSON: %s", err.Error())
+
+			log.Print(msg)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
+			w.Write([]byte(msg))
 			return
 		}
 
+		log.Printf("Controller with UUID %s loaded", uuid)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(b)
 	case sql.ErrNoRows:
+		msg := fmt.Sprintf("Controller with UUID %s not found", uuid)
+
+		log.Print(msg)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Controller not found"))
+		w.Write([]byte(msg))
 	default:
+		msg := fmt.Sprintf("Error getting controller with UUID %s: %s", uuid, err.Error())
+
+		log.Print(msg)
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(msg))
 	}
 }
 

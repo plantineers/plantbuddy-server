@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/plantineers/plantbuddy-server/model"
@@ -43,5 +44,6 @@ func main() {
 	http.Handle("/v1/user/", user_management.UserAuthMiddleware(user_management.UserHandler, model.Admin, []string{}))
 	http.HandleFunc("/v1/user/login", user_management.LoginHandler)
 
+	log.Printf("Server running on port %d", config.PlantBuddyConfig.Port)
 	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%d", config.PlantBuddyConfig.Port), nil))
 }
