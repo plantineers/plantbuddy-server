@@ -12,6 +12,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+const convertPlantErrorStr = "Error converting plant %d to JSON: %s"
+
 func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
@@ -59,7 +61,7 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(createdPlantGroup)
 	if err != nil {
-		msg := fmt.Sprintf("Error converting plant %d to JSON: %s", createdPlantGroup.ID, err.Error())
+		msg := fmt.Sprintf(convertPlantErrorStr, createdPlantGroup.ID, err.Error())
 		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
@@ -78,7 +80,7 @@ func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	case nil:
 		b, err := json.Marshal(plant)
 		if err != nil {
-			msg := fmt.Sprintf("Error converting plant %d to JSON: %s", plant.ID, err.Error())
+			msg := fmt.Sprintf(convertPlantErrorStr, plant.ID, err.Error())
 			utils.HttpInternalServerErrorResponse(w, msg)
 			return
 		}
@@ -92,23 +94,30 @@ func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 }
 
 func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
-	var plant plantChange
-	err := json.NewDecoder(r.Body).Decode(&plant)
+	var plantChange plantChange
+	err := json.NewDecoder(r.Body).Decode(&plantChange)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding plant with id %d: %s", id, err.Error())
 		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
 
-	err = updatePlantById(id, &plant)
+	plant, err := updatePlantById(id, &plantChange)
 	if err != nil {
 		msg := fmt.Sprintf("Error updating plant with id %d: %s", id, err.Error())
 		utils.HttpInternalServerErrorResponse(w, msg)
 		return
 	}
 
+	b, err := json.Marshal(plant)
+	if err != nil {
+		msg := fmt.Sprintf(convertPlantErrorStr, plant.ID, err.Error())
+		utils.HttpInternalServerErrorResponse(w, msg)
+		return
+	}
+
 	log.Printf("Plant with id %d updated", id)
-	utils.HttpOkResponse(w, nil)
+	utils.HttpOkResponse(w, b)
 }
 
 func handlePlantDelete(w http.ResponseWriter, r *http.Request, id int64) {
@@ -157,18 +166,18 @@ func getPlantById(id int64) (*Plant, error) {
 	return repository.GetById(id)
 }
 
-func updatePlantById(id int64, plant *plantChange) error {
+func updatePlantById(id int64, plant *plantChange) (*Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
 	err := session.Open()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	repository, err := NewPlantRepository(session)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	return repository.Update(id, plant)

@@ -11,7 +11,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
-const convertErrorStr = "Error converting plant group %d to JSON: %s"
+const convertPlantGroupErrorStr = "Error converting plant group %d to JSON: %s"
 
 func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -60,7 +60,7 @@ func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(createdPlantGroup)
 	if err != nil {
-		msg := fmt.Sprintf(convertErrorStr, createdPlantGroup.ID, err.Error())
+		msg := fmt.Sprintf(convertPlantGroupErrorStr, createdPlantGroup.ID, err.Error())
 		utils.HttpInternalServerErrorResponse(w, msg)
 	}
 
@@ -79,7 +79,7 @@ func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
 	case nil:
 		b, err := json.Marshal(plantGroup)
 		if err != nil {
-			msg := fmt.Sprintf(convertErrorStr, plantGroup.ID, err.Error())
+			msg := fmt.Sprintf(convertPlantGroupErrorStr, plantGroup.ID, err.Error())
 			utils.HttpInternalServerErrorResponse(w, msg)
 		}
 
@@ -109,7 +109,7 @@ func handlePlantGroupPut(w http.ResponseWriter, r *http.Request, id int64) {
 
 	b, err := json.Marshal(updatedPlantGroup)
 	if err != nil {
-		msg := fmt.Sprintf(convertErrorStr, updatedPlantGroup.ID, err.Error())
+		msg := fmt.Sprintf(convertPlantGroupErrorStr, updatedPlantGroup.ID, err.Error())
 		utils.HttpInternalServerErrorResponse(w, msg)
 	}
 
