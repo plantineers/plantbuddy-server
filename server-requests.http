@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ### Create a new plant.
-POST http://localhost:3333/v1/plant/
+POST http://localhost:3333/v1/plant
 X-User-Name: root
 X-User-Password: 1234
 Content-Type: application/json
