@@ -123,7 +123,7 @@ func (r *PlantSqliteRepository) getAllApplyFilter(filter *PlantsFilter) (*sql.Ro
 	return r.db.Query(`SELECT ID FROM PLANT;`)
 }
 
-func (r *PlantSqliteRepository) Create(plant *model.PostPlantRequest) (*model.Plant, error) {
+func (r *PlantSqliteRepository) Create(plant *PlantChange) (*model.Plant, error) {
 
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
@@ -170,6 +170,47 @@ func (r *PlantSqliteRepository) DeleteById(id int64) error {
 	}
 
 	err = r.careTipsRepository.DeleteAdditionalByPlantId(id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
+}
+
+func (r *PlantSqliteRepository) Update(id int64, plant *PlantChange) error {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+	_, err := r.db.Exec(`
+    UPDATE PLANT
+    SET
+        PLANT_GROUP = ?,
+        DESCRIPTION = ?,
+        NAME = ?,
+        SPECIES = ?,
+        LOCATION = ?
+    WHERE ID = ?;`,
+		plant.PlantGroupId,
+		plant.Description,
+		plant.Name,
+		plant.Species,
+		plant.Location,
+		id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.careTipsRepository.DeleteAdditionalByPlantId(id)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = r.careTipsRepository.CreateAdditionalByPlantId(id, plant.AdditionalCareTips)
 
 	if err != nil {
 		tx.Rollback()

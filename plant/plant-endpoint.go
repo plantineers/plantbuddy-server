@@ -13,25 +13,35 @@ import (
 )
 
 func PlantHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		handlePlantGet(w, r)
-	case http.MethodPost:
-		handlePlantPost(w, r)
-	case http.MethodDelete:
-		handlePlantDelete(w, r)
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
-
-func handlePlantGet(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
 	}
+
+	switch r.Method {
+	case http.MethodGet:
+		handlePlantGet(w, r, id)
+	case http.MethodDelete:
+		handlePlantDelete(w, r, id)
+	case http.MethodPut:
+		handlePlantPut(w, r, id)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		handlePlantPost(w, r)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	plant, err := getPlantById(id)
 	switch err {
 	case sql.ErrNoRows:
@@ -71,8 +81,72 @@ func getPlantById(id int64) (*model.Plant, error) {
 	return repository.GetById(id)
 }
 
+func handlePlantDelete(w http.ResponseWriter, r *http.Request, id int64) {
+	err := deletePlantById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Error deleting plant: %s", err.Error())))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func deletePlantById(id int64) error {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repository, err := NewPlantRepository(session)
+	if err != nil {
+		return err
+	}
+
+	return repository.DeleteById(id)
+}
+
+func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
+	var plant PlantChange
+	err := json.NewDecoder(r.Body).Decode(&plant)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("Error decoding plant: %s", err.Error())))
+		return
+	}
+
+	err = updatePlantById(id, &plant)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Error updating plant: %s", err.Error())))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func updatePlantById(id int64, plant *PlantChange) error {
+	var session = db.NewSession()
+	defer session.Close()
+
+	err := session.Open()
+	if err != nil {
+		return err
+	}
+
+	repository, err := NewPlantRepository(session)
+	if err != nil {
+		return err
+	}
+
+	return repository.Update(id, plant)
+}
+
 func handlePlantPost(w http.ResponseWriter, r *http.Request) {
-	var plant model.PostPlantRequest
+	var plant PlantChange
 	err := json.NewDecoder(r.Body).Decode(&plant)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -100,7 +174,7 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func createPlant(plant *model.PostPlantRequest) (*model.Plant, error) {
+func createPlant(plant *PlantChange) (*model.Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
 
@@ -117,37 +191,11 @@ func createPlant(plant *model.PostPlantRequest) (*model.Plant, error) {
 	return repository.Create(plant)
 }
 
-func handlePlantDelete(w http.ResponseWriter, r *http.Request) {
-	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	err = deletePlantById(id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("Error deleting plant: %s", err.Error())))
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func deletePlantById(id int64) error {
-	var session = db.NewSession()
-	defer session.Close()
-
-	err := session.Open()
-	if err != nil {
-		return err
-	}
-
-	repository, err := NewPlantRepository(session)
-	if err != nil {
-		return err
-	}
-
-	return repository.DeleteById(id)
+type PlantChange struct {
+	Description        string   `json:"description"`
+	Name               string   `json:"name"`
+	Species            string   `json:"species"`
+	Location           string   `json:"location"`
+	PlantGroupId       int64    `json:"plantGroupId"`
+	AdditionalCareTips []string `json:"additionalCareTips"`
 }

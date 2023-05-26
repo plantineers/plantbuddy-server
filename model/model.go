@@ -45,15 +45,6 @@ type Plants struct {
 	Plants []int64 `json:"plants"`
 }
 
-type PostPlantRequest struct {
-	Description        string   `json:"description"`
-	Name               string   `json:"name"`
-	Species            string   `json:"species"`
-	Location           string   `json:"location"`
-	PlantGroupId       int64    `json:"plantGroupId"`
-	AdditionalCareTips []string `json:"additionalCareTips"`
-}
-
 type PlantGroup struct {
 	ID           int64          `json:"id"`
 	Name         string         `json:"name"`
