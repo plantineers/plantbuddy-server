@@ -20,6 +20,12 @@ type SensorRange struct {
 	Max        float64     `json:"max"`
 }
 
+type SensorRangeChange struct {
+	Sensor string  `json:"sensor"`
+	Min    float64 `json:"min"`
+	Max    float64 `json:"max"`
+}
+
 type SensorType struct {
 	Name string `json:"name"`
 	Unit string `json:"unit"`

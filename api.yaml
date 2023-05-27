@@ -841,7 +841,7 @@ components:
             required:
                 - "id"
                 - "type"
-                - "ranges"
+                - "sensorRanges"
 
             properties:
                 id:
@@ -868,7 +868,7 @@ components:
                             - "Play Mozart music every evening"
                             - "Place in the sun"
 
-                ranges:
+                sensorRanges:
                     type: array
                     description: Ranges of values to be interpreted as normal for the sensors of the plant group.
 
@@ -881,7 +881,7 @@ components:
 
             required:
                 - "type"
-                - "ranges"
+                - "sensorRanges"
 
             properties:
                 name:
@@ -904,12 +904,12 @@ components:
                             - "Play Mozart music every evening"
                             - "Place in the sun"
 
-                ranges:
+                sensorRanges:
                     type: array
                     description: Ranges of values to be interpreted as normal for the sensors of the plant group.
 
                     items:
-                        $ref: "#/components/schemas/SensorRange"
+                        $ref: "#/components/schemas/SensorRangeChange"
 
         PlantGroupIds:
             type: object
@@ -937,6 +937,31 @@ components:
 
             properties:
                 type:
+                    type: string
+                    description: Type of the sensor.
+                    example: "humidity"
+
+                min:
+                    type: number
+                    description: Minimum value of the range (inclusive).
+                    example: 20
+
+                max:
+                    type: number
+                    description: Maximum value of the range (inclusive).
+                    example: 80
+
+        SensorRangeChange:
+            type: object
+            description: Update for the range of values to be interpreted as normal for a sensor.
+
+            required:
+                - "sensor"
+                - "min"
+                - "max"
+
+            properties:
+                sensor:
                     type: string
                     description: Type of the sensor.
                     example: "humidity"

@@ -4,13 +4,9 @@ package sensor
 type SensorRangeRepository interface {
 	GetAllByPlantGroupId(id int64) ([]*SensorRange, error)
 
-	Create(plantGroupId int64, sensorRange *SensorRange) error
+	Create(plantGroupId int64, sensorRange *SensorRangeChange) error
 
-	CreateAll(plantGroupId int64, sensorRanges []*SensorRange) error
-
-	Update(plantGroupId int64, sensorRange *SensorRange) error
-
-	UpdateAll(plantGroupId int64, sensorRanges []*SensorRange) error
+	CreateAll(plantGroupId int64, sensorRanges []*SensorRangeChange) error
 
 	DeleteAllByPlantGroupId(id int64) error
 }

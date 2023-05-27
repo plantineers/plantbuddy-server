@@ -51,37 +51,17 @@ func (r *SensorRangeSqliteRepository) GetAllByPlantGroupId(id int64) ([]*SensorR
 	return sensorRanges, nil
 }
 
-func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *SensorRange) error {
+func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *SensorRangeChange) error {
 	_, err := r.db.Exec(`
     INSERT INTO SENSOR_RANGE (PLANT_GROUP, SENSOR, MIN, MAX)
-        VALUES (?, ?, ?, ?);`, plantGroupId, sensorRange.SensorType.Name, sensorRange.Min, sensorRange.Max)
+        VALUES (?, ?, ?, ?);`, plantGroupId, sensorRange.Sensor, sensorRange.Min, sensorRange.Max)
 
 	return err
 }
 
-func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges []*SensorRange) error {
+func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges []*SensorRangeChange) error {
 	for _, sensorRange := range sensorRanges {
 		err := r.Create(plantGroupId, sensorRange)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (r *SensorRangeSqliteRepository) Update(plantGroupId int64, sensorRange *SensorRange) error {
-	_, err := r.db.Exec(`
-    UPDATE SENSOR_RANGE
-        SET MIN = ?, MAX = ?
-        WHERE PLANT_GROUP = ? AND SENSOR = ?;`, sensorRange.Min, sensorRange.Max, plantGroupId, sensorRange.SensorType.Name)
-
-	return err
-}
-
-func (r *SensorRangeSqliteRepository) UpdateAll(plantGroupId int64, sensorRanges []*SensorRange) error {
-	for _, sensorRange := range sensorRanges {
-		err := r.Update(plantGroupId, sensorRange)
 		if err != nil {
 			return err
 		}
