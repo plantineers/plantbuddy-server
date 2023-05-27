@@ -92,7 +92,7 @@ func (r *PlantSqliteRepository) GetById(id int64) (*Plant, error) {
 	}, nil
 }
 
-func (r *PlantSqliteRepository) GetAll(filter *PlantsFilter) ([]int64, error) {
+func (r *PlantSqliteRepository) GetAll(filter *plantsFilter) ([]int64, error) {
 	rows, err := r.getAllApplyFilter(filter)
 	if err != nil {
 		return nil, err
@@ -114,7 +114,7 @@ func (r *PlantSqliteRepository) GetAll(filter *PlantsFilter) ([]int64, error) {
 	return plantIds, nil
 }
 
-func (r *PlantSqliteRepository) getAllApplyFilter(filter *PlantsFilter) (*sql.Rows, error) {
+func (r *PlantSqliteRepository) getAllApplyFilter(filter *plantsFilter) (*sql.Rows, error) {
 	if filter != nil {
 		return r.db.Query(`SELECT ID FROM PLANT WHERE PLANT_GROUP = ?;`, filter.PlantGroupId)
 	}
