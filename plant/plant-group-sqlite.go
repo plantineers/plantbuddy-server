@@ -163,7 +163,13 @@ func (r *PlantGroupSqliteRepository) Update(id int64, plantGroup *plantGroupChan
 		return nil, err
 	}
 
-	err = r.sensorRangeRepository.UpdateAll(id, plantGroup.SensorRanges)
+	err = r.sensorRangeRepository.DeleteAllByPlantGroupId(id)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = r.sensorRangeRepository.CreateAll(id, plantGroup.SensorRanges)
 	if err != nil {
 		tx.Rollback()
 		return nil, err

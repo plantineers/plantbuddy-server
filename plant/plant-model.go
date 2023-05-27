@@ -38,8 +38,8 @@ type plantChange struct {
 }
 
 type plantGroupChange struct {
-	Name         string                `json:"name"`
-	Description  string                `json:"description"`
-	CareTips     []string              `json:"careTips"`
-	SensorRanges []*sensor.SensorRange `json:"sensorRanges"`
+	Name         string                      `json:"name"`
+	Description  string                      `json:"description"`
+	CareTips     []string                    `json:"careTips"`
+	SensorRanges []*sensor.SensorRangeChange `json:"sensorRanges"`
 }
