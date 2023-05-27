@@ -7,6 +7,13 @@ type SensorData struct {
 	Timestamp  string  `json:"timestamp"`
 }
 
+type SensorDataFilter struct {
+	Sensor string // Sensor Type
+	Plant  int64  // Plant ID
+	From   string // ISO 8601
+	To     string // ISO 8601
+}
+
 type SensorRange struct {
 	SensorType *SensorType `json:"sensorType"`
 	Min        float64     `json:"min"`

@@ -48,9 +48,9 @@ func (r *ControllerSqliteRepository) GetByUUID(uuid string) (*Controller, error)
 	var controller Controller
 
 	err := r.db.QueryRow(`
-    SELECT C.UUID, C.PLANT
+    SELECT C.UUID, C.PLANT_GROUP
         FROM CONTROLLER C
-        WHERE C.UUID = ?;`, uuid).Scan(&controller.UUID, &controller.Plant)
+        WHERE C.UUID = ?;`, uuid).Scan(&controller.UUID, &controller.PlantGroup)
 
 	if err != nil {
 		return nil, err

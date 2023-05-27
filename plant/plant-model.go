@@ -24,6 +24,10 @@ type plants struct {
 	Plants []int64 `json:"plants"`
 }
 
+type plantsFilter struct {
+	PlantGroupId int64
+}
+
 type plantGroups struct {
 	PlantGroups []int64 `json:"plantGroups"`
 }

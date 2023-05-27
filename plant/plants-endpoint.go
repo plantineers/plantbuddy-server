@@ -21,7 +21,7 @@ func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 
 func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	plantGroupIdStr := r.URL.Query().Get("plantGroupId")
-	var filter *PlantsFilter
+	var filter *plantsFilter
 	if plantGroupIdStr != "" {
 		plantGroupId, err := strconv.ParseInt(plantGroupIdStr, 10, 64)
 		if err != nil {
@@ -30,7 +30,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		filter = &PlantsFilter{
+		filter = &plantsFilter{
 			PlantGroupId: plantGroupId,
 		}
 	}
@@ -53,7 +53,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	utils.HttpOkResponse(w, b)
 }
 
-func getAllPlants(filter *PlantsFilter) (*plants, error) {
+func getAllPlants(filter *plantsFilter) (*plants, error) {
 	var session = db.NewSession()
 	defer session.Close()
 

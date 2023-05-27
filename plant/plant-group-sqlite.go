@@ -7,13 +7,13 @@ import (
 
 	"github.com/plantineers/plantbuddy-server/care_tips"
 	"github.com/plantineers/plantbuddy-server/db"
-	"github.com/plantineers/plantbuddy-server/sensor_range"
+	"github.com/plantineers/plantbuddy-server/sensor"
 )
 
 type PlantGroupSqliteRepository struct {
 	db                    *sql.DB
 	careTipsRepository    care_tips.CareTipsRepository
-	sensorRangeRepository sensor_range.SensorRangeRepository
+	sensorRangeRepository sensor.SensorRangeRepository
 }
 
 // NewPlantGroupRepository creates a new repository for plant-groups.
@@ -28,7 +28,7 @@ func NewPlantGroupRepository(session *db.Session) (PlantGroupRepository, error) 
 		return nil, err
 	}
 
-	sensorRangeRepository, err := sensor_range.NewSensorRangeRepository(session)
+	sensorRangeRepository, err := sensor.NewSensorRangeRepository(session)
 	if err != nil {
 		return nil, err
 	}

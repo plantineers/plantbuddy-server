@@ -696,7 +696,7 @@ components:
 
             required:
                 - "uuid"
-                - "plant"
+                - "plantGroup"
                 - "sensors"
 
             properties:
@@ -705,9 +705,9 @@ components:
                     description: UUID of the micro controller.
                     example: "fbf30c62-ce17-45fc-a596-42bc33d11758"
 
-                plant:
+                plantGroup:
                     type: integer
-                    description: ID of the Plant the controller monitors.
+                    description: ID of the plant group the controller monitors.
                     example: 1
 
                 sensors:
