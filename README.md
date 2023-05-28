@@ -2,6 +2,7 @@
 
 [![Lint commit message](https://github.com/plantineers/plantbuddy-server/actions/workflows/commit-lint.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/commit-lint.yml)
 [![Go Workflow](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml)
+[![Python Workflow](https://github.com/plantineers/plantbuddy-server/actions/workflows/python.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/python.yml)
 [![GitHub release](https://img.shields.io/github/release/plantineers/plantbuddy-server.svg)](https://github.com/plantineers/plantbuddy-server/releases/)
 
 This server has been developed by:

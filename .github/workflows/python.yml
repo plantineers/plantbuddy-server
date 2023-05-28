@@ -1,4 +1,4 @@
-name: Push
+name: Python Workflow (Scripts)
 
 on: [push]
 
