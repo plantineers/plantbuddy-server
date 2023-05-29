@@ -31,7 +31,7 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*Sensor
        SD.TIMESTAMP
     FROM SENSOR_DATA SD
     LEFT JOIN CONTROLLER C on SD.CONTROLLER = C.UUID
-    WHERE C.PLANT = ?
+    WHERE C.PLANT_GROUP = ?
         AND SD.SENSOR = ?
         AND SD.TIMESTAMP BETWEEN DATETIME(?) AND DATETIME(?);`,
 		filter.Plant, filter.Sensor, filter.From, filter.To)

@@ -12,6 +12,11 @@ type Plant struct {
 	AdditionalCareTips []string    `json:"additionalCareTips"`
 }
 
+type PlantStub struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
 type PlantGroup struct {
 	ID           int64                 `json:"id"`
 	Name         string                `json:"name"`
@@ -22,6 +27,10 @@ type PlantGroup struct {
 
 type plants struct {
 	Plants []int64 `json:"plants"`
+}
+
+type plantsOverview struct {
+	Plants []PlantStub `json:"plants"`
 }
 
 type plantsFilter struct {

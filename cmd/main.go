@@ -31,6 +31,7 @@ func main() {
 	http.Handle("/v1/controller/", auth.UserAuthMiddleware(controller.ControllerHandler, auth.Gardener, []string{}))
 
 	http.Handle("/v1/plants", auth.UserAuthMiddleware(plant.PlantsHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plants/overview", auth.UserAuthMiddleware(plant.PlantOverviewHandler, auth.Gardener, []string{}))
 	http.Handle("/v1/plant", auth.UserAuthMiddleware(plant.PlantCreateHandler, auth.Gardener, []string{}))
 	http.Handle("/v1/plant/", auth.UserAuthMiddleware(plant.PlantHandler, auth.Gardener, []string{}))
 
