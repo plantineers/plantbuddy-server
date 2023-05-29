@@ -220,3 +220,33 @@ func (r *PlantSqliteRepository) DeleteById(id int64) error {
 	tx.Commit()
 	return nil
 }
+
+func (r *PlantSqliteRepository) GetAllOverview() ([]PlantStub, error) {
+	rows, err := r.db.Query(`
+    SELECT
+        P.ID,
+        P.NAME
+        FROM PLANT P;`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var plantStubs []PlantStub
+	for rows.Next() {
+		var plantId int64
+		var plantName string
+
+		err = rows.Scan(&plantId, &plantName)
+		if err != nil {
+			return nil, err
+		}
+
+		plantStubs = append(plantStubs, PlantStub{
+			ID:   plantId,
+			Name: plantName,
+		})
+	}
+
+	return plantStubs, nil
+}
