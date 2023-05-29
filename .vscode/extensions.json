@@ -6,6 +6,7 @@
         "sonarsource.sonarlint-vscode",
         "wayou.vscode-todo-highlight",
         "redhat.vscode-yaml",
-        "golang.go"
+        "golang.go",
+        "ms-python.python"
     ]
 }
