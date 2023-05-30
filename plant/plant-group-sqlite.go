@@ -64,9 +64,17 @@ func (r *PlantGroupSqliteRepository) GetById(id int64) (*PlantGroup, error) {
 		return nil, err
 	}
 
-	sensor_ranges, err := r.sensorRangeRepository.GetAllByPlantGroupId(plantGroupId)
+	if careTips == nil {
+		careTips = make([]string, 0)
+	}
+
+	sensorRanges, err := r.sensorRangeRepository.GetAllByPlantGroupId(plantGroupId)
 	if err != nil {
 		return nil, err
+	}
+
+	if sensorRanges == nil {
+		sensorRanges = make([]*sensor.SensorRange, 0)
 	}
 
 	var plantGroup = PlantGroup{
@@ -74,7 +82,7 @@ func (r *PlantGroupSqliteRepository) GetById(id int64) (*PlantGroup, error) {
 		Name:         plantGroupName,
 		Description:  *plantGroupDescription,
 		CareTips:     careTips,
-		SensorRanges: sensor_ranges,
+		SensorRanges: sensorRanges,
 	}
 
 	return &plantGroup, nil
