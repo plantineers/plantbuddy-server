@@ -172,6 +172,20 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/PlantIds"
 
+    /plants/overview:
+        get:
+            summary: Returns an overview of all plants
+            description: Returns an overview of all plants in short form.
+            operationId: getPlantsOverview
+
+            responses:
+                "200":
+                    description: An array of plant-stubs
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PlantOverview"
+
     /plant/{id}:
         get:
             summary: Returns a plant
@@ -777,6 +791,39 @@ components:
                     items:
                         type: string
                         example: ["Massage every morning"]
+
+        PlantStub:
+            type: object
+            description: A plant.
+
+            required:
+                - "id"
+                - "group"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the plant.
+                    example: 1
+
+                name:
+                    type: string
+                    description: Name of the plant.
+                    example: "Cactus"
+
+        PlantOverview:
+            type: object
+            description: An array of plant-stubs.
+
+            required:
+                - "plants"
+
+            properties:
+                plants:
+                    type: array
+                    description: An array of plant-stubs.
+                    items:
+                        $ref: "#/components/schemas/PlantStub"
 
         PlantChange:
             type: object
