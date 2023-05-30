@@ -56,6 +56,12 @@ Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Get all plant IDs.
 GET http://localhost:3333/v1/plants
+Authorization: Basic a3J1c2U6SWxvdmVD
+
+
+### Get all plant-stubs.
+GET http://localhost:3333/v1/plants/overview
+Authorization: Basic a3J1c2U6SWxvdmVD
 
 
 ### Get all plants in a plant group.
@@ -135,7 +141,7 @@ GET http://localhost:3333/v1/user/7
 Authorization: Basic cm9vdDpyb290
 
 ### Create a new user.
-POST http://localhost:3333/v1/user/
+POST http://localhost:3333/v1/user
 Authorization: Basic cm9vdDpyb290
 Content-Type: application/json
 
