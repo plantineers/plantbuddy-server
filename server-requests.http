@@ -135,7 +135,7 @@ GET http://localhost:3333/v1/user/7
 Authorization: Basic cm9vdDpyb290
 
 ### Create a new user.
-POST http://localhost:3333/v1/user/
+POST http://localhost:3333/v1/user
 Authorization: Basic cm9vdDpyb290
 Content-Type: application/json
 
