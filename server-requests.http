@@ -82,7 +82,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
     "careTips": [],
     "sensorRanges": [
         {
-            "sensorType": "humidity",
+            "sensor": "humidity",
             "min": 40,
             "max": 60
         }
@@ -99,7 +99,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
     "careTips": [],
     "sensorRanges": [
         {
-            "sensorType": "humidity",
+            "sensor": "humidity",
             "min": 40,
             "max": 60
         }
