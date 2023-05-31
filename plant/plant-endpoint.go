@@ -18,7 +18,6 @@ const convertPlantErrorStr = "Error converting plant %d to JSON: %s"
 var validate *validator.Validate
 
 func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
-	validate = validator.New()
 	switch r.Method {
 	case http.MethodPost:
 		handlePlantPost(w, r)
@@ -28,7 +27,6 @@ func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PlantHandler(w http.ResponseWriter, r *http.Request) {
-	validate = validator.New()
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
 	if err != nil {
 		msg := fmt.Sprintf("Error getting path variable (plant ID): %s", err.Error())

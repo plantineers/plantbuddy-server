@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"log"
 	"net/http"
 
@@ -15,7 +14,6 @@ import (
 const convertPlantGroupErrorStr = "Error converting plant group %d to JSON: %s"
 
 func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
-	validate = validator.New()
 	if r.Method != http.MethodPost {
 		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: POST")
 		return
@@ -25,7 +23,6 @@ func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
-	validate = validator.New()
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant-group/")
 	if err != nil {
 		msg := fmt.Sprintf("Error getting path variable (plant group ID): %s", err.Error())
