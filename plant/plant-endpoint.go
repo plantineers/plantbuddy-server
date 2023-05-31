@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"log"
 	"net/http"
 
@@ -14,8 +13,6 @@ import (
 )
 
 const convertPlantErrorStr = "Error converting plant %d to JSON: %s"
-
-var validate *validator.Validate
 
 func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
