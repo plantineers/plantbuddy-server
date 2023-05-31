@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"log"
 	"net/http"
 
@@ -14,7 +15,10 @@ import (
 
 const convertPlantErrorStr = "Error converting plant %d to JSON: %s"
 
+var validate *validator.Validate
+
 func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
+	validate = validator.New()
 	switch r.Method {
 	case http.MethodPost:
 		handlePlantPost(w, r)
@@ -24,6 +28,7 @@ func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PlantHandler(w http.ResponseWriter, r *http.Request) {
+	validate = validator.New()
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
 	if err != nil {
 		msg := fmt.Sprintf("Error getting path variable (plant ID): %s", err.Error())
@@ -52,7 +57,7 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = validatePlantChange(&plant)
+	err = validate.Struct(plant)
 	if err != nil {
 		msg := fmt.Sprintf("Error validating new plant: %s", err.Error())
 		utils.HttpBadRequestResponse(w, msg)
@@ -109,7 +114,7 @@ func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 		return
 	}
 
-	err = validatePlantChange(&plantChange)
+	err = validate.Struct(plantChange)
 	if err != nil {
 		msg := fmt.Sprintf("Error validating new plant: %s", err.Error())
 		utils.HttpBadRequestResponse(w, msg)
