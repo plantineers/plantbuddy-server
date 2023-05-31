@@ -51,6 +51,13 @@ func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = validatePlantGroupChange(&plantGroup)
+	if err != nil {
+		msg := fmt.Sprintf("Error validating new plant group: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
+
 	createdPlantGroup, err := createPlantGroup(&plantGroup)
 	if err != nil {
 		msg := fmt.Sprintf("Error creating new plant group: %s", err.Error())
@@ -96,6 +103,13 @@ func handlePlantGroupPut(w http.ResponseWriter, r *http.Request, id int64) {
 	err := json.NewDecoder(r.Body).Decode(&plantGroup)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding plant group with id %d: %s", id, err.Error())
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
+
+	err = validatePlantGroupChange(&plantGroup)
+	if err != nil {
+		msg := fmt.Sprintf("Error validating new plant group: %s", err.Error())
 		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
