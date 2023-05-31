@@ -204,3 +204,32 @@ func (r *PlantGroupSqliteRepository) Delete(id int64) error {
 	tx.Commit()
 	return nil
 }
+
+func (r *PlantGroupSqliteRepository) GetAllOverview() ([]PlantGroupStub, error) {
+	var plantGroups []PlantGroupStub
+	rows, err := r.db.Query(`
+    SELECT PG.ID,
+        PG.NAME
+        FROM PLANT_GROUP PG;`)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var plantGroupId int64
+		var plantGroupName string
+		err = rows.Scan(&plantGroupId, &plantGroupName)
+		if err != nil {
+			return nil, err
+		}
+
+		var plantGroup = PlantGroupStub{
+			ID:   plantGroupId,
+			Name: plantGroupName,
+		}
+
+		plantGroups = append(plantGroups, plantGroup)
+	}
+
+	return plantGroups, nil
+}

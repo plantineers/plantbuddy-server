@@ -8,6 +8,9 @@ type PlantGroupRepository interface {
 	// Reads all plantGroupIds from the database and returns them as a slice of plant groups.
 	GetAll() ([]int64, error)
 
+	// Read all plant groups in the database and return them in short form (PlantGroupStub)
+	GetAllOverview() ([]PlantGroupStub, error)
+
 	// Create creates a new plant group in the database.
 	Create(plantGroup *plantGroupChange) (*PlantGroup, error)
 

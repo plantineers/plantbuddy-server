@@ -82,7 +82,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
     "careTips": [],
     "sensorRanges": [
         {
-            "sensorType": "humidity",
+            "sensor": "humidity",
             "min": 40,
             "max": 60
         }
@@ -113,6 +113,11 @@ Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Get all plant group IDs.
 GET http://localhost:3333/v1/plant-groups
+Authorization: Basic a3J1c2U6SWxvdmVD
+
+
+### Get all plant group stubs.
+GET http://localhost:3333/v1/plant-groups/overview
 Authorization: Basic a3J1c2U6SWxvdmVD
 
 
