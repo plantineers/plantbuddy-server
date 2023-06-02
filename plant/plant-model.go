@@ -25,6 +25,11 @@ type PlantGroup struct {
 	SensorRanges []*sensor.SensorRange `json:"sensorRanges"`
 }
 
+type PlantGroupStub struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
 type plants struct {
 	Plants []int64 `json:"plants"`
 }
@@ -39,6 +44,10 @@ type plantsFilter struct {
 
 type plantGroups struct {
 	PlantGroups []int64 `json:"plantGroups"`
+}
+
+type plantGroupsOverview struct {
+	PlantGroups []PlantGroupStub `json:"plantGroups"`
 }
 
 type plantChange struct {

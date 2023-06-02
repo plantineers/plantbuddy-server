@@ -116,6 +116,11 @@ GET http://localhost:3333/v1/plant-groups
 Authorization: Basic a3J1c2U6SWxvdmVD
 
 
+### Get all plant group stubs.
+GET http://localhost:3333/v1/plant-groups/overview
+Authorization: Basic a3J1c2U6SWxvdmVD
+
+
 ### Get all sensor types.
 GET http://localhost:3333/v1/sensor-types
 Authorization: Basic a3J1c2U6SWxvdmVD

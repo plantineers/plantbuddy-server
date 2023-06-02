@@ -2,7 +2,7 @@ module github.com/plantineers/plantbuddy-server
 
 go 1.20
 
-require github.com/mattn/go-sqlite3 v1.14.16
+require github.com/mattn/go-sqlite3 v1.14.17
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect

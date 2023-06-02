@@ -345,6 +345,20 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/PlantGroupIds"
 
+    /plant-groups/overview:
+        get:
+            summary: Returns an overview of all plant groups
+            description: Returns an overview of all plant groups in short form.
+            operationId: getPlantGroupsOverview
+
+            responses:
+                "200":
+                    description: An array of plant group-stubs
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PlantGroupOverview"
+
     /plant-group/{id}:
         get:
             summary: Returns a plant group
@@ -798,7 +812,7 @@ components:
 
             required:
                 - "id"
-                - "group"
+                - "name"
 
             properties:
                 id:
@@ -921,6 +935,39 @@ components:
 
                     items:
                         $ref: "#/components/schemas/SensorRange"
+
+        PlantGroupStub:
+            type: object
+            description: A plant group.
+
+            required:
+                - "id"
+                - "name"
+
+            properties:
+                id:
+                    type: integer
+                    description: ID of the plant group.
+                    example: 1
+
+                name:
+                    type: string
+                    description: Name of the plant group.
+                    example: "Tulips"
+
+        PlantGroupOverview:
+            type: object
+            description: An array of plant group stubs.
+
+            required:
+                - "plantGroups"
+
+            properties:
+                plantGroups:
+                    type: array
+                    description: An array of plant group stubs.
+                    items:
+                        $ref: "#/components/schemas/PlantGroupStub"
 
         PlantGroupChange:
             type: object
