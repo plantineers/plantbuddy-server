@@ -22,6 +22,9 @@ func main() {
 		panic(err)
 	}
 
+	// Initialize the validator for the plant package
+	plant.InitializeValidator()
+
 	// The POST method is not subject to user authentication as it is used by aggregators to send data
 	http.Handle("/v1/sensor-data", auth.UserAuthMiddleware(sensor.SensorDataHandler, auth.Gardener, []string{"POST"}))
 

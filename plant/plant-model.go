@@ -52,16 +52,16 @@ type plantGroupsOverview struct {
 
 type plantChange struct {
 	Description        string   `json:"description"`
-	Name               string   `json:"name"`
+	Name               string   `json:"name" validate:"required"`
 	Species            string   `json:"species"`
 	Location           string   `json:"location"`
-	PlantGroupId       int64    `json:"plantGroupId"`
+	PlantGroupId       int64    `json:"plantGroupId" validate:"required"`
 	AdditionalCareTips []string `json:"additionalCareTips"`
 }
 
 type plantGroupChange struct {
-	Name         string                      `json:"name"`
+	Name         string                      `json:"name" validate:"required"`
 	Description  string                      `json:"description"`
 	CareTips     []string                    `json:"careTips"`
-	SensorRanges []*sensor.SensorRangeChange `json:"sensorRanges"`
+	SensorRanges []*sensor.SensorRangeChange `json:"sensorRanges" validate:"dive"`
 }

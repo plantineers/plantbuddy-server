@@ -52,6 +52,13 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = validate.Struct(plant)
+	if err != nil {
+		msg := fmt.Sprintf("Error validating new plant: %s", err.Error())
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
+
 	createdPlantGroup, err := createPlant(&plant)
 	if err != nil {
 		msg := fmt.Sprintf("Error creating plant: %s", err.Error())
@@ -98,6 +105,13 @@ func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 	err := json.NewDecoder(r.Body).Decode(&plantChange)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding plant with id %d: %s", id, err.Error())
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
+
+	err = validate.Struct(plantChange)
+	if err != nil {
+		msg := fmt.Sprintf("Error validating new plant: %s", err.Error())
 		utils.HttpBadRequestResponse(w, msg)
 		return
 	}
