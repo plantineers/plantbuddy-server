@@ -24,6 +24,21 @@ func NewSensorDataRepository(session *db.Session) (SensorDataRepository, error) 
 }
 
 func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*SensorData, error) {
+	var plantGroupId int64
+
+	if filter.Plant != 0 {
+		err := r.db.QueryRow(`
+        SELECT
+            P.PLANT_GROUP
+        FROM PLANT P
+        WHERE P.ID = ?;`, filter.Plant).Scan(&plantGroupId)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		plantGroupId = filter.PlantGroup
+	}
+
 	rows, err := r.db.Query(`
     SELECT SD.CONTROLLER,
        SD.SENSOR,
@@ -34,7 +49,7 @@ func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*Sensor
     WHERE C.PLANT_GROUP = ?
         AND SD.SENSOR = ?
         AND SD.TIMESTAMP BETWEEN DATETIME(?) AND DATETIME(?);`,
-		filter.Plant, filter.Sensor, filter.From, filter.To)
+		plantGroupId, filter.Sensor, filter.From, filter.To)
 	if err != nil {
 		return nil, err
 	}
