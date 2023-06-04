@@ -26,13 +26,17 @@ func NewSensorDataRepository(session *db.Session) (SensorDataRepository, error) 
 func (r *SensorDataSqliteRepository) GetAll(filter *SensorDataFilter) ([]*SensorData, error) {
 	var plantGroupId int64
 
-	err := r.db.QueryRow(`
-    SELECT
-        P.PLANT_GROUP
-    FROM PLANT P
-    WHERE P.ID = ?;`, filter.Plant).Scan(&plantGroupId)
-	if err != nil {
-		return nil, err
+	if filter.Plant != 0 {
+		err := r.db.QueryRow(`
+        SELECT
+            P.PLANT_GROUP
+        FROM PLANT P
+        WHERE P.ID = ?;`, filter.Plant).Scan(&plantGroupId)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		plantGroupId = filter.PlantGroup
 	}
 
 	rows, err := r.db.Query(`

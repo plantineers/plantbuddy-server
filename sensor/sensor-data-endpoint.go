@@ -85,14 +85,32 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
 	sensor := r.URL.Query().Get("sensor")
 	plantStr := r.URL.Query().Get("plant")
+	plantGroupStr := r.URL.Query().Get("plantGroup")
 
-	if sensor == "" || plantStr == "" {
-		return nil, errors.New("sensor type and plant ID must be set")
+	if sensor == "" || (plantStr == "" && plantGroupStr == "") {
+		return nil, errors.New("sensor type and either plant ID or plantGroup ID must be set")
 	}
 
-	plant, e := strconv.ParseInt(plantStr, 10, 64)
-	if e != nil {
-		return nil, errors.New("plant ID must be an integer")
+	var plant int64
+	var plantGroup int64
+	var err error
+
+	if plantStr != "" {
+		plant, err = strconv.ParseInt(plantStr, 10, 64)
+		if err != nil {
+			return nil, errors.New("plant ID must be an integer")
+		}
+	}
+
+	if plantGroupStr != "" {
+		plantGroup, err = strconv.ParseInt(plantGroupStr, 10, 64)
+		if err != nil {
+			return nil, errors.New("plantGroup ID must be an integer")
+		}
+	}
+
+	if plant != 0 && plantGroup != 0 {
+		return nil, errors.New("plant ID and plantGroup ID cannot be set at the same time")
 	}
 
 	from := r.URL.Query().Get("from")
@@ -106,10 +124,11 @@ func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
 	}
 
 	return &SensorDataFilter{
-		Sensor: sensor,
-		Plant:  plant,
-		From:   from,
-		To:     to,
+		Sensor:     sensor,
+		Plant:      plant,
+		PlantGroup: plantGroup,
+		From:       from,
+		To:         to,
 	}, nil
 }
 

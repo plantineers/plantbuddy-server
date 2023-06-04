@@ -8,10 +8,11 @@ type SensorData struct {
 }
 
 type SensorDataFilter struct {
-	Sensor string // Sensor Type
-	Plant  int64  // Plant ID
-	From   string // ISO 8601
-	To     string // ISO 8601
+	Sensor     string // Sensor Type
+	Plant      int64  // Plant ID
+	PlantGroup int64  // Plant Group ID
+	From       string // ISO 8601
+	To         string // ISO 8601
 }
 
 type SensorRange struct {
