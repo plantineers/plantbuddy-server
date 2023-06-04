@@ -60,6 +60,12 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createdPlantGroup, err := createPlant(&plant)
+	if err == ErrPlantGroupNotExisting {
+		msg := fmt.Sprintf("Plant group with id %d does not exist", plant.PlantGroupId)
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
+
 	if err != nil {
 		msg := fmt.Sprintf("Error creating plant: %s", err.Error())
 		utils.HttpInternalServerErrorResponse(w, msg)
@@ -117,6 +123,12 @@ func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 
 	plant, err := updatePlantById(id, &plantChange)
+	if err == ErrPlantGroupNotExisting {
+		msg := fmt.Sprintf("Plant group with id %d does not exist", plantChange.PlantGroupId)
+		utils.HttpBadRequestResponse(w, msg)
+		return
+	}
+
 	if err != nil {
 		msg := fmt.Sprintf("Error updating plant with id %d: %s", id, err.Error())
 		utils.HttpInternalServerErrorResponse(w, msg)

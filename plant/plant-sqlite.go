@@ -123,8 +123,13 @@ func (r *PlantSqliteRepository) getAllApplyFilter(filter *plantsFilter) (*sql.Ro
 }
 
 func (r *PlantSqliteRepository) Create(plant *plantChange) (*Plant, error) {
-
 	tx, _ := r.db.BeginTx(context.Background(), nil)
+
+	_, err := r.plantGroupRepository.GetById(plant.PlantGroupId)
+	if err != nil {
+		tx.Rollback()
+		return nil, ErrPlantGroupNotExisting
+	}
 
 	plantStatement, err := r.db.Prepare(`
     INSERT INTO PLANT
@@ -161,7 +166,13 @@ func (r *PlantSqliteRepository) Create(plant *plantChange) (*Plant, error) {
 func (r *PlantSqliteRepository) Update(id int64, plant *plantChange) (*Plant, error) {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	_, err := r.db.Exec(`
+	_, err := r.plantGroupRepository.GetById(plant.PlantGroupId)
+	if err != nil {
+		tx.Rollback()
+		return nil, ErrPlantGroupNotExisting
+	}
+
+	_, err = r.db.Exec(`
     UPDATE PLANT
     SET
         PLANT_GROUP = ?,
