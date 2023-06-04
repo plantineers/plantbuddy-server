@@ -1,5 +1,9 @@
-### Get sensor data sets.
+### Get sensor data sets vai plant id.
 GET http://localhost:3333/v1/sensor-data?sensor=humidity&plant=1&from=2019-01-01T00:00:00.000Z&to=2023-05-20T00:00:00.000Z
+Authorization: Basic a3J1c2U6SWxvdmVD
+
+### Get sensor data sets via plantGroup id.
+GET http://localhost:3333/v1/sensor-data?sensor=temperature&plantGroup=2&from=2019-01-01T00:00:00.000Z&to=2023-06-20T00:00:00.000Z
 Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Save a new sensor data set.
