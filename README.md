@@ -1,7 +1,8 @@
 # PlantBuddy Server
 
 [![Lint commit message](https://github.com/plantineers/plantbuddy-server/actions/workflows/commit-lint.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/commit-lint.yml)
-[![Go Workflow](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go.yml)
+[![Go Workflow (Push)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go-push.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go-push.yml)
+[![Go Workflow (Release)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go-release.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/go-release.yml)
 [![Python Workflow](https://github.com/plantineers/plantbuddy-server/actions/workflows/python.yml/badge.svg)](https://github.com/plantineers/plantbuddy-server/actions/workflows/python.yml)
 [![GitHub release](https://img.shields.io/github/release/plantineers/plantbuddy-server.svg)](https://github.com/plantineers/plantbuddy-server/releases/)
 

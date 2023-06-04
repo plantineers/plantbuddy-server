@@ -1,10 +1,8 @@
-name: Go Workflow
+name: Go Workflow (Release)
 
 on:
-  push:
-    branches: ["**"]
-  pull_request:
-    branches: ["**"]
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -113,4 +111,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}, ghcr.io/${{ github.repository }}:latest-dev
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref }}, ghcr.io/${{ github.repository }}:latest
