@@ -190,7 +190,14 @@ func (r *PlantGroupSqliteRepository) Update(id int64, plantGroup *plantGroupChan
 func (r *PlantGroupSqliteRepository) Delete(id int64) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
-	_, err := r.db.Exec(`DELETE FROM PLANT_GROUP WHERE ID = ?;`, id)
+	// Cannot import PlantRepository here because of circular dependency
+	_, err := r.db.Exec(`SELECT ID FROM PLANT WHERE PLANT_GROUP = ?;`)
+	if err != sql.ErrNoRows {
+		tx.Rollback()
+		return ErrPlantGroupStillInUse
+	}
+
+	_, err = r.db.Exec(`DELETE FROM PLANT_GROUP WHERE ID = ?;`, id)
 
 	if err != nil {
 		tx.Rollback()
