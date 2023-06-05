@@ -2,6 +2,7 @@
 package sensor
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -60,13 +61,33 @@ func (r *SensorRangeSqliteRepository) Create(plantGroupId int64, sensorRange *Se
 }
 
 func (r *SensorRangeSqliteRepository) CreateAll(plantGroupId int64, sensorRanges []*SensorRangeChange) error {
+	tx, _ := r.db.BeginTx(context.Background(), nil)
+
 	for _, sensorRange := range sensorRanges {
 		err := r.Create(plantGroupId, sensorRange)
 		if err != nil {
+			tx.Rollback()
 			return err
 		}
 	}
 
+	// add missing sensor ranges
+	_, err := r.db.Exec(`
+    INSERT INTO SENSOR_RANGE (PLANT_GROUP, SENSOR, MIN, MAX)
+        SELECT ?, ST.NAME, 0, 0
+        FROM SENSOR_TYPE ST
+        WHERE ST.NAME NOT IN (
+            SELECT SR.SENSOR
+            FROM SENSOR_RANGE SR
+            WHERE SR.PLANT_GROUP = ?
+        );`, plantGroupId, plantGroupId)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
 	return nil
 }
 
