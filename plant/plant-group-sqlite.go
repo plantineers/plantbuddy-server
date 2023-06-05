@@ -191,7 +191,7 @@ func (r *PlantGroupSqliteRepository) Delete(id int64) error {
 	tx, _ := r.db.BeginTx(context.Background(), nil)
 
 	// Cannot import PlantRepository here because of circular dependency
-	_, err := r.db.Exec(`SELECT ID FROM PLANT WHERE PLANT_GROUP = ?;`)
+	_, err := r.db.Exec(`SELECT ID FROM PLANT WHERE PLANT_GROUP = ?;`, id)
 	if err != sql.ErrNoRows {
 		tx.Rollback()
 		return ErrPlantGroupStillInUse
