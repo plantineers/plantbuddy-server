@@ -57,7 +57,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Load %d plants", len(b))
+	log.Printf("Load %d plants", len(allPlants.Plants))
 	utils.HttpOkResponse(w, b)
 }
 
@@ -94,7 +94,7 @@ func handlePlantOverviewGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Load %d plants", len(b))
+	log.Printf("Load %d plants", len(allPlants.Plants))
 	utils.HttpOkResponse(w, b)
 }
 

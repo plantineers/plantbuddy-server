@@ -41,7 +41,7 @@ func handlePlantGroupsGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Load %d plant groups", len(b))
+	log.Printf("Load %d plant groups", len(allPlantGroups.PlantGroups))
 	utils.HttpOkResponse(w, b)
 }
 
@@ -78,7 +78,7 @@ func handlePlantGroupOverviewGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Load %d plant groups", len(b))
+	log.Printf("Load %d plant groups", len(allPlantGroups.PlantGroups))
 	utils.HttpOkResponse(w, b)
 }
 
