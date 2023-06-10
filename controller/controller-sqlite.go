@@ -8,6 +8,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// ControllerSqliteRepository implements the ControllerRepository interface.
+// It uses a SQLite database as data source.
 type ControllerSqliteRepository struct {
 	db *sql.DB
 }

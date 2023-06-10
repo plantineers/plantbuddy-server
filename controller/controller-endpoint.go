@@ -12,6 +12,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+// ControllerHandler handles all requests to the controller endpoint.
 func ControllerHandler(w http.ResponseWriter, r *http.Request) {
 	uuid, err := utils.PathParameterFilterStr(r.URL.Path, "/v1/controller/")
 	if err != nil {
@@ -26,6 +27,7 @@ func ControllerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleControllerGet handles GET requests to the controller endpoint.
 func handleControllerGet(w http.ResponseWriter, r *http.Request, uuid string) {
 	controller, err := getControllerData(uuid)
 	switch err {
@@ -48,6 +50,7 @@ func handleControllerGet(w http.ResponseWriter, r *http.Request, uuid string) {
 	}
 }
 
+// getControllerData returns the controller with the given UUID.
 func getControllerData(uuid string) (*Controller, error) {
 	var session = db.NewSession()
 	defer session.Close()
