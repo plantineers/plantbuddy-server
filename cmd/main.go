@@ -26,26 +26,26 @@ func main() {
 	plant.InitializeValidator()
 
 	// The POST method is not subject to user authentication as it is used by aggregators to send data
-	http.Handle("/v1/sensor-data", auth.UserAuthMiddleware(sensor.SensorDataHandler, auth.Gardener, []string{"POST"}))
+	http.Handle("/v1/sensor-data", auth.UserAuthMiddleware(sensor.SensorDataHandler, auth.Gardener))
 
-	http.Handle("/v1/sensor-types", auth.UserAuthMiddleware(sensor.SensorTypesHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/sensor-types", auth.UserAuthMiddleware(sensor.SensorTypesHandler, auth.Gardener))
 
-	http.Handle("/v1/controllers", auth.UserAuthMiddleware(controller.ControllersHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/controller/", auth.UserAuthMiddleware(controller.ControllerHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/controllers", auth.UserAuthMiddleware(controller.ControllersHandler, auth.Gardener))
+	http.Handle("/v1/controller/", auth.UserAuthMiddleware(controller.ControllerHandler, auth.Gardener))
 
-	http.Handle("/v1/plants", auth.UserAuthMiddleware(plant.PlantsHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/plants/overview", auth.UserAuthMiddleware(plant.PlantOverviewHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/plant", auth.UserAuthMiddleware(plant.PlantCreateHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/plant/", auth.UserAuthMiddleware(plant.PlantHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plants", auth.UserAuthMiddleware(plant.PlantsHandler, auth.Gardener))
+	http.Handle("/v1/plants/overview", auth.UserAuthMiddleware(plant.PlantOverviewHandler, auth.Gardener))
+	http.Handle("/v1/plant", auth.UserAuthMiddleware(plant.PlantCreateHandler, auth.Gardener))
+	http.Handle("/v1/plant/", auth.UserAuthMiddleware(plant.PlantHandler, auth.Gardener))
 
-	http.Handle("/v1/plant-groups", auth.UserAuthMiddleware(plant.PlantGroupsHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/plant-groups/overview", auth.UserAuthMiddleware(plant.PlantGroupOverviewHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/plant-group", auth.UserAuthMiddleware(plant.PlantGroupCreateHandler, auth.Gardener, []string{}))
-	http.Handle("/v1/plant-group/", auth.UserAuthMiddleware(plant.PlantGroupHandler, auth.Gardener, []string{}))
+	http.Handle("/v1/plant-groups", auth.UserAuthMiddleware(plant.PlantGroupsHandler, auth.Gardener))
+	http.Handle("/v1/plant-groups/overview", auth.UserAuthMiddleware(plant.PlantGroupOverviewHandler, auth.Gardener))
+	http.Handle("/v1/plant-group", auth.UserAuthMiddleware(plant.PlantGroupCreateHandler, auth.Gardener))
+	http.Handle("/v1/plant-group/", auth.UserAuthMiddleware(plant.PlantGroupHandler, auth.Gardener))
 
-	http.Handle("/v1/users", auth.UserAuthMiddleware(auth.UsersHandler, auth.Admin, []string{}))
-	http.Handle("/v1/user", auth.UserAuthMiddleware(auth.UserCreateHandler, auth.Admin, []string{}))
-	http.Handle("/v1/user/", auth.UserAuthMiddleware(auth.UserHandler, auth.Admin, []string{}))
+	http.Handle("/v1/users", auth.UserAuthMiddleware(auth.UsersHandler, auth.Admin))
+	http.Handle("/v1/user", auth.UserAuthMiddleware(auth.UserCreateHandler, auth.Admin))
+	http.Handle("/v1/user/", auth.UserAuthMiddleware(auth.UserHandler, auth.Admin))
 	http.HandleFunc("/v1/user/login", auth.LoginHandler)
 
 	log.Printf("Server running on port %d", config.PlantBuddyConfig.Port)

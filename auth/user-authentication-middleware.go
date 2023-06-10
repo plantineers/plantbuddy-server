@@ -8,19 +8,10 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
-// Takes as parameters the function serving the endpoint, the minimum role, an array of functions that are not subject to authentication
-func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role Role, unrestrictedMethods []string) http.Handler {
+// Takes as parameters the function serving the endpoint, the minimum role
+func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role Role) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handler := http.HandlerFunc(f)
-
-		// Check if method is unrestricted
-		for _, unrestrictedMethod := range unrestrictedMethods {
-			// Unrestricted methods skip the authentication process
-			if r.Method == unrestrictedMethod {
-				handler.ServeHTTP(w, r)
-				return
-			}
-		}
 
 		user, err := authUser(r)
 		switch err {

@@ -8,6 +8,7 @@ Authorization: Basic a3J1c2U6SWxvdmVD
 
 ### Save a new sensor data set.
 POST http://localhost:3333/v1/sensor-data
+Authorization: Basic a3J1c2U6SWxvdmVD
 Content-Type: application/json
 
 {
