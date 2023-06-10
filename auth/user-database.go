@@ -1,6 +1,7 @@
 // Author: Maximilian Floto
 package auth
 
+// UserRepository provieds access to the user data.
 type UserRepository interface {
 	// GetByName returns a user by its name.
 	GetById(id int64) (*User, error)
