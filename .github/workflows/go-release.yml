@@ -84,6 +84,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: Download executable
         uses: actions/download-artifact@v3
         with:
@@ -111,4 +115,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.ref }}, ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}, ghcr.io/${{ github.repository }}:latest
