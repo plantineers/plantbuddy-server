@@ -10,6 +10,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+// ControllersHandler handles all requests to the controllers endpoint.
 func ControllersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -17,6 +18,7 @@ func ControllersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleControllersGet handles GET requests to the controllers endpoint.
 func handleControllersGet(w http.ResponseWriter, r *http.Request) {
 	uuids, err := getAllControllerUUIDs()
 
@@ -36,6 +38,7 @@ func handleControllersGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getAllControllerUUIDs returns all UUIDs of all controllers.
 func getAllControllerUUIDs() ([]string, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -51,8 +54,4 @@ func getAllControllerUUIDs() ([]string, error) {
 	}
 
 	return repository.GetAllUUIDs()
-}
-
-type controllerUUIDs struct {
-	UUIDs []string `json:"controllers"`
 }

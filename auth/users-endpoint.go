@@ -12,15 +12,17 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// UsersHandler handles all requests to the users endpoint.
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		handleUsersGet(w, r)
-	default:
+	// UsersHandler only accepts GET requests.
+	if r.Method != http.MethodGet {
 		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
+		return
 	}
+	handleUsersGet(w, r)
 }
 
+// handleUsersGet handles GET requests to the users endpoint.
 func handleUsersGet(w http.ResponseWriter, r *http.Request) {
 	users, err := getAllUsers()
 	switch err {
@@ -39,6 +41,7 @@ func handleUsersGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getAllUsers returns all user ids from the database.
 func getAllUsers() ([]int64, error) {
 	var session = db.NewSession()
 	defer session.Close()

@@ -50,16 +50,20 @@ linted as well!
 
 ### Go packages
 
-- `cmd/`: main applications for this project, executable via the command line.
-- `config/`: configuration model (read from `buddy.json`, see [Configuration](#configuration))
+- `auth`: authentication and authorization (see [Authentication and Authorization](#authentication-and-authorization))
+- `care_tips`: access to care tips
+- `cmd`: main applications for this project, executable via the command line.
+- `config`: configuration model (read from `buddy.json`, see [Configuration](#configuration))
+- `controller`: business logic for working with controllers
 - `db`: database session model (see [Access the database](#access-the-database))
-- `model`: data models for the API (see [api.yaml](./api.yaml))
 - `plant`: business logic for working with plants
+- `sensor`: business logic for working with sensors
 - `utils`: utility functions (see [utils](#utils))
 
 ### Other directories or files
 
-- `/docs/sql`: SQL scripts for development
+- `docs/sql`: SQL scripts for development
+- `scripts/generate_sensor_data.py`: generates random sensor data for testing purposes
 - `auth-proposal.md`: proposal for authentication and authorization
 - `plantbuddy.sqlite`: the database used for development
 - `server-requests.http`: example requests for the API
@@ -92,11 +96,20 @@ if err != nil {
 
 See [Code structure](#code-structure) on how to use session in a repository pattern.
 
+## Authentication and Authorization
+
+We use basic auth to authenticate. Take a look at `buddy-default.md` to learn about the default users
+we provide. There are two roles:
+
+- `Admin`: manage users
+- `Gardener`: normal user
+
 ## Code structure
 
 We want to have a dedicated package for every business domain. I.e. the package `plant` contains
 all logic for working with plants and the following files:
 
+- `plant-model.go`: data model uses for plants
 - `plant-endpoint.go`: contains the HTTP handlers for the plant domain
 - `plant-database.go`: contains the repository interface to access the database
 - `plant-sqlite.go`: contains the implementation of the repository interface for SQLite

@@ -1,6 +1,7 @@
 // Author: Maximilian Floto, Yannick Kirschen
 package plant
 
+// PlantGroupRepository provides access to the plant group database.
 type PlantGroupRepository interface {
 	// GetPlantGroupById returns a plant group by its ID.
 	GetById(id int64) (*PlantGroup, error)

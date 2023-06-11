@@ -1,3 +1,4 @@
+// Author: Yannick Kirschen
 package utils
 
 import (

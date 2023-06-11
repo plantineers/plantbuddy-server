@@ -11,6 +11,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+// SensorTypesHandler handles requests to the sensor-types endpoint.
 func SensorTypesHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -18,6 +19,7 @@ func SensorTypesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleSensorTypesGet handles GET requests to the sensor-types endpoint.
 func handleSensorTypesGet(w http.ResponseWriter, r *http.Request) {
 	types, err := getSensorTypes()
 	if err != nil {
@@ -37,6 +39,7 @@ func handleSensorTypesGet(w http.ResponseWriter, r *http.Request) {
 	utils.HttpOkResponse(w, b)
 }
 
+// getSensorTypes returns all sensor types from the database.
 func getSensorTypes() ([]*SensorType, error) {
 	var session = db.NewSession()
 	defer session.Close()

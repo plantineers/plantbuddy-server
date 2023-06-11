@@ -8,7 +8,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
-// Takes as parameters the function serving the endpoint, the minimum role, an array of functions that are not subject to authentication
+// UserAuthMiddleware takes as parameters the function serving the endpoint, the minimum role, an array of methods that are not subject to authentication
 func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role Role, unrestrictedMethods []string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handler := http.HandlerFunc(f)
@@ -22,6 +22,7 @@ func UserAuthMiddleware(f func(http.ResponseWriter, *http.Request), role Role, u
 			}
 		}
 
+		// Check if user is authorized
 		user, err := authUser(r)
 		switch err {
 		case ErrWrongCredentials:

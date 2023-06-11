@@ -1,3 +1,4 @@
+// Author: Maximilian Floto
 package auth
 
 import "errors"

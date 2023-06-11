@@ -9,6 +9,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// SensorRangeSqliteRepository implements the SensorRangeRepository interface.
+// It uses a SQLite database as data source.
 type SensorRangeSqliteRepository struct {
 	db *sql.DB
 }

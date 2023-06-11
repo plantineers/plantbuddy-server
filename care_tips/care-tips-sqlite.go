@@ -8,6 +8,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// CareTipsSqliteRepository implements the CareTipsRepository interface.
+// It uses a SQLite database as its data source.
 type CareTipsSqliteRepository struct {
 	db *sql.DB
 }
