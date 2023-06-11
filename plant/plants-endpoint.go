@@ -11,6 +11,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+// PlantsHandler handles all requests to the plants endpoint.
 func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
@@ -19,6 +20,7 @@ func PlantsHandler(w http.ResponseWriter, r *http.Request) {
 	handlePlantsGet(w, r)
 }
 
+// PlantOverviewHandler handles all requests to the plant overview endpoint.
 func PlantOverviewHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: GET")
@@ -27,6 +29,7 @@ func PlantOverviewHandler(w http.ResponseWriter, r *http.Request) {
 	handlePlantOverviewGet(w, r)
 }
 
+// handlePlantsGet handles the retrieval of all plants.
 func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	plantGroupIdStr := r.URL.Query().Get("plantGroupId")
 	var filter *plantsFilter
@@ -61,6 +64,7 @@ func handlePlantsGet(w http.ResponseWriter, r *http.Request) {
 	utils.HttpOkResponse(w, b)
 }
 
+// getAllPlants retrieves all plants from the database.
 func getAllPlants(filter *plantsFilter) (*plants, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -79,6 +83,7 @@ func getAllPlants(filter *plantsFilter) (*plants, error) {
 	return &plants{Plants: plantIds}, err
 }
 
+// handlePlantOverviewGet handles the retrieval of all plants.
 func handlePlantOverviewGet(w http.ResponseWriter, r *http.Request) {
 	allPlants, err := getAllPlantOverview()
 	if err != nil {
@@ -98,6 +103,7 @@ func handlePlantOverviewGet(w http.ResponseWriter, r *http.Request) {
 	utils.HttpOkResponse(w, b)
 }
 
+// getAllPlantOverview retrieves all plants from the database.
 func getAllPlantOverview() (*plantsOverview, error) {
 	var session = db.NewSession()
 	defer session.Close()
