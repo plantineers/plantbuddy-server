@@ -10,6 +10,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// PlantSqliteRepository implements the PlantRepository interface.
+// It uses a SQLite database as its data source.
 type PlantSqliteRepository struct {
 	db                   *sql.DB
 	plantGroupRepository PlantGroupRepository

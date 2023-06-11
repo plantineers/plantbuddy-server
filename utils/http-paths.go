@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// PathParameterFilter filters the path for a parameter of type integer after the last slash.
 func PathParameterFilter(path string, prefix string) (int64, error) {
 	suffix := strings.TrimPrefix(path, prefix)
 	var parameter string
@@ -25,6 +26,7 @@ func PathParameterFilter(path string, prefix string) (int64, error) {
 	return 0, errors.New("no parameter found")
 }
 
+// PathParameterFilterStr filters the path for a parameter of type string after the last slash.
 func PathParameterFilterStr(path string, prefix string) (string, error) {
 	suffix := strings.TrimPrefix(path, prefix)
 	var parameter string

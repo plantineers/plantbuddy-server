@@ -12,7 +12,9 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+// UserCreateHandler handles user creation requests.
 func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
+	// UserCreateHandler only accepts POST requests.
 	if r.Method != http.MethodPost {
 		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: POST")
 		return
@@ -20,6 +22,7 @@ func UserCreateHandler(w http.ResponseWriter, r *http.Request) {
 	handleUserPost(w, r)
 }
 
+// UserHandler handles all requests to the user endpoint, except POST.
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/user/")
 	if err != nil {
@@ -39,8 +42,10 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleUserPost handles POST requests to the user endpoint.
 func handleUserPost(w http.ResponseWriter, r *http.Request) {
 	var user User
+	// Get user from request body
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding new user: %s", err.Error())
@@ -78,6 +83,7 @@ func handleUserPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleUserGet handles GET requests to the user endpoint.
 func handleUserGet(w http.ResponseWriter, r *http.Request, id int64) {
 	user, err := getUserById(id)
 	switch err {
@@ -105,6 +111,7 @@ func handleUserGet(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 }
 
+// handleUserPut handles PUT requests to the user endpoint.
 func handleUserPut(w http.ResponseWriter, r *http.Request, id int64) {
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -141,6 +148,7 @@ func handleUserPut(w http.ResponseWriter, r *http.Request, id int64) {
 	utils.HttpOkResponse(w, b)
 }
 
+// handleUserDelete handles DELETE requests to the user endpoint.
 func handleUserDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	err := deleteUserById(id)
 
@@ -157,6 +165,7 @@ func handleUserDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 }
 
+// createUser creates a new user in the database.
 func createUser(user *User) (*User, error) {
 	session := db.NewSession()
 	defer session.Close()
@@ -189,6 +198,7 @@ func createUser(user *User) (*User, error) {
 	return createdUser, nil
 }
 
+// getUserById gets a user from the database by id.
 func getUserById(id int64) (*User, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -206,6 +216,7 @@ func getUserById(id int64) (*User, error) {
 	return repo.GetById(id)
 }
 
+// updateUser updates a user in the database.
 func updateUser(user *User) error {
 	session := db.NewSession()
 	defer session.Close()
@@ -223,6 +234,7 @@ func updateUser(user *User) error {
 	return repo.Update(user)
 }
 
+// deleteUserById deletes a user from the database by id.
 func deleteUserById(id int64) error {
 	session := db.NewSession()
 	defer session.Close()

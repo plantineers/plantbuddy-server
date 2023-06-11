@@ -15,6 +15,7 @@ import (
 	"github.com/plantineers/plantbuddy-server/utils"
 )
 
+// SensorDataHandler handles requests to the sensor-data endpoint.
 func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -24,6 +25,7 @@ func SensorDataHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleSensorDataGet handles GET requests to the sensor-data endpoint.
 func handleSensorDataGet(w http.ResponseWriter, r *http.Request) {
 	filter, err := filterSensorData(r)
 	if err != nil {
@@ -49,6 +51,7 @@ func handleSensorDataGet(w http.ResponseWriter, r *http.Request) {
 	utils.HttpOkResponse(w, b)
 }
 
+// handleSensorDataPost handles POST requests to the sensor-data endpoint.
 func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 	var data sensorDataPost
 
@@ -82,6 +85,7 @@ func handleSensorDataPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// filterSensorData parses the query parameters of a request and returns a SensorDataFilter.
 func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
 	sensor := r.URL.Query().Get("sensor")
 	plantStr := r.URL.Query().Get("plant")
@@ -132,6 +136,7 @@ func filterSensorData(r *http.Request) (*SensorDataFilter, error) {
 	}, nil
 }
 
+// getAllSensorData returns all sensor data matching the given filter.
 func getAllSensorData(filter *SensorDataFilter) ([]*SensorData, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -149,6 +154,7 @@ func getAllSensorData(filter *SensorDataFilter) ([]*SensorData, error) {
 	return repository.GetAll(filter)
 }
 
+// saveSensorData saves the given sensor data.
 func saveSensorData(data []*SensorData) []error {
 	var session = db.NewSession()
 	defer session.Close()

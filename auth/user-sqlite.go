@@ -8,10 +8,12 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// UserSqliteRepository implements the UserRepository interface.
 type UserSqliteRepository struct {
 	db *sql.DB
 }
 
+// NewUserRepository creates a new UserRepository.
 func NewUserRepository(session *db.Session) (UserRepository, error) {
 	if !session.IsOpen() {
 		return nil, errors.New("session is not open")
@@ -22,6 +24,7 @@ func NewUserRepository(session *db.Session) (UserRepository, error) {
 	}, nil
 }
 
+// GetById returns a user by its id.
 func (r *UserSqliteRepository) GetById(id int64) (*User, error) {
 	var userId int64
 	var userName string
@@ -49,6 +52,7 @@ func (r *UserSqliteRepository) GetById(id int64) (*User, error) {
 	}, nil
 }
 
+// GetByName returns a user by its name.
 func (r *UserSqliteRepository) GetByName(name string) (*User, error) {
 	var userId int64
 	var userName string
@@ -76,6 +80,7 @@ func (r *UserSqliteRepository) GetByName(name string) (*User, error) {
 	}, nil
 }
 
+// GetAll returns all user ids.
 func (r *UserSqliteRepository) GetAll() ([]int64, error) {
 	var users []int64
 
@@ -103,6 +108,7 @@ func (r *UserSqliteRepository) GetAll() ([]int64, error) {
 	return users, nil
 }
 
+// Create creates a new user.
 func (r *UserSqliteRepository) Create(user *User) error {
 	_, err := r.db.Exec(`
     INSERT INTO USERS (NAME, PASSWORD, ROLE)
@@ -114,6 +120,7 @@ func (r *UserSqliteRepository) Create(user *User) error {
 	return err
 }
 
+// DeleteById deletes a user by its id.
 func (r *UserSqliteRepository) DeleteById(id int64) error {
 	_, err := r.db.Exec(`
     DELETE FROM USERS
@@ -122,6 +129,7 @@ func (r *UserSqliteRepository) DeleteById(id int64) error {
 	return err
 }
 
+// Update updates a user.
 func (r *UserSqliteRepository) Update(user *User) error {
 	_, err := r.db.Exec(`
     UPDATE USERS

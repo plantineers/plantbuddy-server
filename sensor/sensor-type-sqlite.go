@@ -9,6 +9,8 @@ import (
 	"github.com/plantineers/plantbuddy-server/db"
 )
 
+// SensorTypeRepository provides access to sensor types.
+// It uses a SQLite database as data source.
 type SensorTypeSqliteRepository struct {
 	db *sql.DB
 }

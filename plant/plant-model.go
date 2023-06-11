@@ -25,6 +25,7 @@ type PlantGroup struct {
 	SensorRanges []*sensor.SensorRange `json:"sensorRanges"`
 }
 
+// A simple representation of a plant group.
 type PlantGroupStub struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`

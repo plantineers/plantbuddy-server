@@ -14,6 +14,7 @@ import (
 
 const convertPlantErrorStr = "Error converting plant %d to JSON: %s"
 
+// PlantCreateHandler handles the creation of a new plant.
 func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
@@ -23,6 +24,7 @@ func PlantCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PlantHandler handles all requests to the plant endpoint.
 func PlantHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant/")
 	if err != nil {
@@ -43,6 +45,7 @@ func PlantHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handlePlantPost handles the creation of a new plant.
 func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 	var plant plantChange
 	err := json.NewDecoder(r.Body).Decode(&plant)
@@ -84,6 +87,7 @@ func handlePlantPost(w http.ResponseWriter, r *http.Request) {
 	utils.HttpCreatedResponse(w, b, location, msg)
 }
 
+// handlePlantGet handles the retrieval of a plant by its ID.
 func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	plant, err := getPlantById(id)
 	switch err {
@@ -106,6 +110,7 @@ func handlePlantGet(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 }
 
+// handlePlantPut handles the update of a plant by its ID.
 func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 	var plantChange plantChange
 	err := json.NewDecoder(r.Body).Decode(&plantChange)
@@ -146,6 +151,7 @@ func handlePlantPut(w http.ResponseWriter, r *http.Request, id int64) {
 	utils.HttpOkResponse(w, b)
 }
 
+// handlePlantDelete handles the deletion of a plant by its ID.
 func handlePlantDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	err := deletePlantById(id)
 	if err != nil {
@@ -158,6 +164,7 @@ func handlePlantDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	utils.HttpOkResponse(w, nil)
 }
 
+// createPlant creates a new plant.
 func createPlant(plant *plantChange) (*Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -175,6 +182,7 @@ func createPlant(plant *plantChange) (*Plant, error) {
 	return repository.Create(plant)
 }
 
+// getPlantById retrieves a plant by its ID.
 func getPlantById(id int64) (*Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -192,6 +200,7 @@ func getPlantById(id int64) (*Plant, error) {
 	return repository.GetById(id)
 }
 
+// updatePlantById updates a plant by its ID.
 func updatePlantById(id int64, plant *plantChange) (*Plant, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -209,6 +218,7 @@ func updatePlantById(id int64, plant *plantChange) (*Plant, error) {
 	return repository.Update(id, plant)
 }
 
+// deletePlantById deletes a plant by its ID.
 func deletePlantById(id int64) error {
 	var session = db.NewSession()
 	defer session.Close()

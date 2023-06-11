@@ -13,6 +13,7 @@ import (
 
 const convertPlantGroupErrorStr = "Error converting plant group %d to JSON: %s"
 
+// PlantGroupCreateHandler handles the creation of a new plant group.
 func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.HttpMethodNotAllowedResponse(w, "Allowed methods: POST")
@@ -22,6 +23,7 @@ func PlantGroupCreateHandler(w http.ResponseWriter, r *http.Request) {
 	handlePlantGroupPost(w, r)
 }
 
+// PlantGroupHandler handles all requests to the plant group endpoint.
 func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := utils.PathParameterFilter(r.URL.Path, "/v1/plant-group/")
 	if err != nil {
@@ -42,6 +44,7 @@ func PlantGroupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handlePlantGroupPost handles the creation of a new plant group.
 func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
 	var plantGroup plantGroupChange
 	err := json.NewDecoder(r.Body).Decode(&plantGroup)
@@ -76,6 +79,7 @@ func handlePlantGroupPost(w http.ResponseWriter, r *http.Request) {
 	utils.HttpCreatedResponse(w, b, location, msg)
 }
 
+// handlePlantGroupGet handles the retrieval of a plant group by its ID.
 func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
 	plantGroup, err := getPlantGroupById(id)
 
@@ -98,6 +102,7 @@ func handlePlantGroupGet(w http.ResponseWriter, r *http.Request, id int64) {
 	}
 }
 
+// handlePlantGroupPut handles the update of a plant group by its ID.
 func handlePlantGroupPut(w http.ResponseWriter, r *http.Request, id int64) {
 	var plantGroup plantGroupChange
 	err := json.NewDecoder(r.Body).Decode(&plantGroup)
@@ -131,6 +136,7 @@ func handlePlantGroupPut(w http.ResponseWriter, r *http.Request, id int64) {
 	utils.HttpOkResponse(w, b)
 }
 
+// handlePlantGroupDelete handles the deletion of a plant group by its ID.
 func handlePlantGroupDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	err := deletePlantGroup(id)
 	if err != nil {
@@ -143,6 +149,7 @@ func handlePlantGroupDelete(w http.ResponseWriter, r *http.Request, id int64) {
 	utils.HttpOkResponse(w, nil)
 }
 
+// createPlantGroup creates a new plant group.
 func createPlantGroup(plantGroup *plantGroupChange) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -160,6 +167,7 @@ func createPlantGroup(plantGroup *plantGroupChange) (*PlantGroup, error) {
 	return repository.Create(plantGroup)
 }
 
+// getPlantGroupById retrieves a plant group by its ID.
 func getPlantGroupById(id int64) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -177,6 +185,7 @@ func getPlantGroupById(id int64) (*PlantGroup, error) {
 	return repository.GetById(id)
 }
 
+// updatePlantGroup updates a plant group by its ID.
 func updatePlantGroup(id int64, plantGroup *plantGroupChange) (*PlantGroup, error) {
 	var session = db.NewSession()
 	defer session.Close()
@@ -194,6 +203,7 @@ func updatePlantGroup(id int64, plantGroup *plantGroupChange) (*PlantGroup, erro
 	return repository.Update(id, plantGroup)
 }
 
+// deletePlantGroup deletes a plant group by its ID.
 func deletePlantGroup(id int64) error {
 	var session = db.NewSession()
 	defer session.Close()

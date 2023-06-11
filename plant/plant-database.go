@@ -1,6 +1,7 @@
 // Author: Maximilian Floto, Yannick Kirschen
 package plant
 
+// PlantRepository provides access to the plant database.
 type PlantRepository interface {
 	// GetPlantById returns a plant by its ID.
 	// If the plant does not exist, it will return nil.
